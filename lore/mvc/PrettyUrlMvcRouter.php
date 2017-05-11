@@ -1,6 +1,7 @@
 <?php
 namespace lore\mvc;
 
+use lore\Lore;
 use lore\util\DocCommentUtil;
 use lore\util\ReflectionManager;
 
@@ -11,6 +12,12 @@ require_once __DIR__ . "/../utils/DocCommentUtil.php";
 
 class PrettyUrlMvcRouter extends ReflexiveMvcRouter
 {
+
+    /**
+     * @var array
+     */
+    private $methodArguments = [];
+
     /**
      * @param \ReflectionMethod $method
      * @param string $actionName
@@ -18,6 +25,13 @@ class PrettyUrlMvcRouter extends ReflexiveMvcRouter
      */
     protected function methodMatchActionName($method, $actionName){
         $uri = DocCommentUtil::readAnnotation($method->getDocComment(), "uri");
+        $httpMethod = DocCommentUtil::readAnnotation($method->getDocComment(), "method");
+
+        //Check if the http method of the controller method is compative with the method of the request
+        if($httpMethod && ! Lore::app()->getRequest()->is($httpMethod)){
+            return false;
+        }
+
         if($uri){
             $actionName = "/" . $actionName;
 
@@ -36,7 +50,6 @@ class PrettyUrlMvcRouter extends ReflexiveMvcRouter
                         $args[] = substr($explodedAction[$i], 1, strlen($explodedAction[$i]));
                         continue;
                     }
-
                     if($explodedAction[$i] !== $explodedUri[$i]){
                         return false;
                     }
@@ -54,15 +67,16 @@ class PrettyUrlMvcRouter extends ReflexiveMvcRouter
     {
         foreach (ReflectionManager::listMethods($controller) as $method){
             $args = $this->methodMatchActionName($method, $actionName);
-            if($args){
-
+            if($args !== false){
+                $this->methodArguments = $args;
+                return $method;
             }
         }
     }
 
-    public function getControllerMethodArguments()
+    public  function getControllerMethodArguments()
     {
-        return [];
+        return $this->methodArguments;
     }
 
 }

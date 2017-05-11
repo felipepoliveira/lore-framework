@@ -32,7 +32,8 @@ abstract class ReflexiveMvcRouter extends MvcRouter
         //If the file exists load it
         if($controllerFile){
             try{
-                $controller = ReflectionManager::instanceFromFile($controllerName, $controllerFile, null, false);
+                //Pass this object as parameter to the controller
+                $controller = ReflectionManager::instanceFromFile($controllerName, $controllerFile, $this, false);
                 return $controller;
             }catch(\Exception $e){}
         }

@@ -18,6 +18,6 @@ abstract class DocCommentUtil
      */
     public static function readAnnotation($doc, $tag){
         preg_match_all("#@$tag(.*?)\n#s", $doc, $annotations);
-        return $annotations[1][0] ?? false;
+        return (isset($annotations[1][0]))? trim($annotations[1][0]) : false;
     }
 }

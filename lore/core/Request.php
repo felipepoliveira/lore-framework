@@ -59,6 +59,31 @@ class Request
     }
 
     /**
+     * @param string|int $method
+     * @return bool
+     */
+    public function is($method){
+        if(is_string($method)){
+            switch (trim($method)) {
+                case "get":
+                    return $this->isGet();
+                case "post":
+                    return $this->isPost();
+                case "put":
+                    return $this->isPost();
+                case "delete":
+                    return $this->isDelete();
+                default:
+                    return false;
+            }
+        }else if(is_int($method)){
+            return $this->method === $method;
+        }else{
+            return false;
+        }
+    }
+
+    /**
      * Return if the request method is a GET method
      * @return bool
      */

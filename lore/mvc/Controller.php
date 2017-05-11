@@ -1,6 +1,7 @@
 <?php
 namespace lore\mvc;
 
+use lore\Lore;
 use lore\Response;
 use lore\util\File;
 
@@ -58,6 +59,7 @@ abstract class Controller
 
         //If the view is found put data into the response
         if($viewPath){
+            //Disable NOTICE reporting
             error_reporting(E_ALL ^ E_NOTICE);
 
             $this->response->setCode(200);
@@ -75,8 +77,13 @@ abstract class Controller
      * @param string $uri
      */
     public function redirect($uri){
-        //Put the uri into the response and tell that it will redirect to another controller method
-        $this->response->setUri($uri);
+        //Check if the redirect uri is relative of the project root
+        if(strlen($uri) > 0 && $uri[0] !== "/"){
+            $this->response->setUri(Lore::app()->getContext()->getRelativePath() . "/$uri" );
+        }else{
+            //otherwise put the absolute path over the host domain
+            $this->response->setUri($uri);
+        }
         $this->response->setRedirect(true);
     }
 

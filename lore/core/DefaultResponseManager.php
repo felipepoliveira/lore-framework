@@ -35,7 +35,7 @@ class DefaultResponseManager extends ResponseManager
      * @param Response $response
      */
     protected function redirect($response){
-        http_redirect($response->getUri());
+        header("location:" . $response->getUri());
     }
 
     /**
