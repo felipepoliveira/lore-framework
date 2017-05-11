@@ -34,7 +34,6 @@ class PrettyUrlMvcRouter extends ReflexiveMvcRouter
 
         if($uri){
             $actionName = "/" . $actionName;
-
             $explodedUri = explode("/", $uri);
             $explodedAction = explode("/", $actionName);
 
@@ -42,14 +41,14 @@ class PrettyUrlMvcRouter extends ReflexiveMvcRouter
             $countAction = count($explodedAction);
 
             if($countAction === $countUri){
-
                 $args = [];
-
                 for($i = 0; $i < $countAction; $i++){
-                    if(strlen($explodedAction[0]) > 0 && $explodedAction[$i][0] === "$"){
-                        $args[] = substr($explodedAction[$i], 1, strlen($explodedAction[$i]));
+
+                    if(strlen($explodedUri[$i]) > 0 && $explodedUri[$i][0] === "$"){
+                        $args[] = $explodedAction[$i];
                         continue;
                     }
+
                     if($explodedAction[$i] !== $explodedUri[$i]){
                         return false;
                     }

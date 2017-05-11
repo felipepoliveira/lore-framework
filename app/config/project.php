@@ -8,5 +8,9 @@ return [
     "responseManager" => [
         "file" => "lore/core/DefaultResponseManager.php",
         "class" => "\\lore\\DefaultResponseManager",
+
+        "service" => [
+            "defaultType" => "txt" //can be: html, json, txt or xml
+        ]
     ],
 ];

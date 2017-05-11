@@ -1,6 +1,4 @@
 <?php
-require_once "Model.php";
-
 /**
  * Created by PhpStorm.
  * User: Felipe

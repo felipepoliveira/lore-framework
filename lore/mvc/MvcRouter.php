@@ -2,6 +2,7 @@
 namespace lore\mvc;
 
 require_once "Controller.php";
+require_once "Model.php";
 
 use lore\Configurations;
 use lore\Response;
