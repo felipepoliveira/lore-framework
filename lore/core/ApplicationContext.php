@@ -1,16 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Felipe
- * Date: 08/05/2017
- * Time: 10:35
- */
-
 namespace lore;
 
-
+/**
+ * Class ApplicationContext - Class that store data about the application runtime environment
+ * @package lore
+ */
 class ApplicationContext
 {
+    /**
+     * Store the relative path (to server document root)
+     * @var string
+     */
     private $relativePath;
 
     function __construct()
@@ -21,6 +21,8 @@ class ApplicationContext
     }
 
     /**
+     * Return the relative path (relative to server document root). This information is loaded in the __construct method
+     * of this class
      * @return string
      */
     public function getRelativePath(): string
@@ -29,6 +31,7 @@ class ApplicationContext
     }
 
     /**
+     * Return the absolute path (relative to server document root) that this application is running
      * @return string
      */
     public function getAbsolutePath() : string {

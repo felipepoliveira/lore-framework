@@ -9,8 +9,6 @@
 </head>
 <body>
     <h1>Olá mundo!</h1>
-<form>
-
-</form>
+    <img src="res/img/1.png" alt="An image">
 </body>
 </html>

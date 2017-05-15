@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Felipe
- * Date: 10/05/2017
- * Time: 18:35
- */
 
 namespace lore\util;
 

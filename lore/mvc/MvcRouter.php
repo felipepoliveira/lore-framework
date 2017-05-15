@@ -1,14 +1,12 @@
 <?php
 namespace lore\mvc;
-
 require_once "Controller.php";
 require_once "Model.php";
+require_once __DIR__ . "/../web/Router.php";
 
 use lore\Configurations;
-use lore\Response;
-use lore\Router;
-
-require_once __DIR__ .  "/../core/Router.php";
+use lore\web\Response;
+use lore\web\Router;
 
 
 abstract class MvcRouter extends Router

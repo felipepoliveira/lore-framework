@@ -1,11 +1,11 @@
 <?php
 namespace lore\mvc;
 
-use lore\Lore;
-use lore\Response;
-use lore\util\File;
-
 require_once __DIR__ . "/../utils/File.php";
+
+use lore\Lore;
+use lore\util\File;
+use lore\web\Response;
 
 abstract class Controller
 {

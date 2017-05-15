@@ -8,7 +8,7 @@ require_once "ConfigurationNotFoundException.php";
  * Class Configurations
  * @package lore
  */
-class Configurations
+abstract class Configurations
 {
     /**
      * Store the configuration file data
@@ -30,6 +30,13 @@ class Configurations
         }
     }
 
+    /**
+     * Return an configuration value stored in the configurations scripts.
+     * @param $key - The configuration file key name
+     * @param $configKey - The configuration key that will be returned
+     * @return string
+     * @throws ConfigurationNotFoundException - If the configuration file or configuration is not found
+     */
     public static function get($key, $configKey){
         $configs = Configurations::$configurations;
 

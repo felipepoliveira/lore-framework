@@ -5,9 +5,10 @@ require_once "MvcRouter.php";
 require_once __DIR__ .  "/../utils/File.php";
 require_once __DIR__ .  "/../utils/ReflectionManager.php";
 
-use lore\util\ReflectionManager;
-use lore\Response;
 use lore\util\File;
+use lore\util\ReflectionManager;
+use lore\web\Request;
+use lore\web\Response;
 
 abstract class ReflexiveMvcRouter extends MvcRouter
 {
