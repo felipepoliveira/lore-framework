@@ -2,7 +2,7 @@
 namespace lore;
 
 use lore\util\ReflectionManager;
-use lore\web\AbstractResourcesManager;
+use lore\web\ResourcesManager;
 use lore\web\Request;
 use lore\web\Response;
 use lore\web\ResponseManager;
@@ -11,7 +11,7 @@ use lore\web\Router;
 require_once "ApplicationContext.php";
 require_once "Configurations.php";
 require_once __DIR__ . "/../utils/ReflectionManager.php";
-require_once __DIR__ . "/../web/AbstractResourcesManager.php";
+require_once __DIR__ . "/../web/ResourcesManager.php";
 require_once __DIR__ . "/../web/Request.php";
 require_once __DIR__ . "/../web/Response.php";
 
@@ -33,7 +33,7 @@ class Application
     private $request;
 
     /**
-     * @var AbstractResourcesManager
+     * @var ResourcesManager
      */
     private $resourcesManager;
 
@@ -118,9 +118,9 @@ class Application
     }
 
     /**
-     * @return AbstractResourcesManager
+     * @return ResourcesManager
      */
-    public function getResourcesManager(): AbstractResourcesManager
+    public function getResourcesManager(): ResourcesManager
     {
         return $this->resourcesManager;
     }
@@ -156,7 +156,7 @@ class Application
 
     private function loadResourcesManager(){
         return ReflectionManager::instanceFromFile( Configurations::get("project", "resourcesManager")["class"],
-            Configurations::get("project", "resourcesManager")["file"]);
+            Configurations::get("project", "resourcesManager")["file"], $this->request);
     }
 
     /**
@@ -178,7 +178,7 @@ class Application
             $this->response = $this->router->route($this->request);
         }else{
             //otherwise the resource manager will handle the request
-            $this->resourcesManager->handle($this->request);
+            $this->response = $this->resourcesManager->handle($this->request);
         }
     }
 

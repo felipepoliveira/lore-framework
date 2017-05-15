@@ -21,4 +21,13 @@ abstract class Lore
 
         return Lore::$app;
     }
+
+    /**
+     * Return an relative path to application app root
+     * @param $path
+     * @return string
+     */
+    public static function res($path) : string {
+        return Lore::app()->getContext()->getRelativePath() . "/app/" . $path;
+    }
 }

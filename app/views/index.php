@@ -1,3 +1,6 @@
+<?php
+use lore\Lore;
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,6 +12,6 @@
 </head>
 <body>
     <h1>Olá mundo!</h1>
-    <img src="res/img/1.png" alt="An image">
+    <img src="<?=Lore::res("res/imgs/1.png")?>" alt="An image">
 </body>
 </html>

@@ -1,10 +1,10 @@
 <?php
 namespace lore\mvc;
 
-require_once "MvcRouter.php";
-require_once "ReflexiveMvcRouter.php";
-require_once __DIR__ . "/../web/Response.php";
-require_once __DIR__ . "/../utils/DocCommentUtil.php";
+require_once __DIR__ . "/../MvcRouter.php";
+require_once __DIR__ . "/../ReflexiveMvcRouter.php";
+require_once __DIR__ . "/../../web/Response.php";
+require_once __DIR__ . "/../../utils/DocCommentUtil.php";
 
 use lore\Lore;
 use lore\util\DocCommentUtil;

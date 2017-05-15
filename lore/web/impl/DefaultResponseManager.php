@@ -1,7 +1,7 @@
 <?php
 namespace lore\web;
 
-require_once "ResponseManager.php";
+require_once __DIR__ . "/../ResponseManager.php";
 
 /**
  * Class DefaultResponseManager - Implementation of ResponseManager that handle the response that will be sended
@@ -22,24 +22,36 @@ class DefaultResponseManager extends ResponseManager
      */
     public function handle($response)
     {
+        $charset = ($response->getCharset() != null)? "; charset=" . $response->getCharset() : "";
+
+        //Set the content type and the response code
+        header("Content-type:" . $response->getContentType() . $charset);
+        http_response_code($response->getCode());
+
         if(is_string($response->getUri())) {
-            if ($response->isRedirect()) {
+            if($response->isSendingResource()){
+                $this->sendResource($response);
+            }else if ($response->isRedirect()) {
                 $this->redirect($response);
             } else {
                 $this->render($response);
             }
         }else{
-            $this->send($response);
+            $this->service($response);
         }
     }
 
     /**
      * @param Response $response
      */
-    protected function send($response){
-        //Define the response code
-        http_response_code($response->getCode());
+    protected function sendResource($response){
+        readfile($response->getUri());
+    }
 
+    /**
+     * @param Response $response
+     */
+    protected function service($response){
         //Send the data if it was informed
         if($response->getData() != null){
             echo $response->getData();
@@ -57,9 +69,6 @@ class DefaultResponseManager extends ResponseManager
      * @param Response $response
      */
     protected function render($response){
-        //Define the status to the request
-        http_response_code($response->getCode());
-
         //Extract the variables that data and the errors that will be send to the page
         if(is_array($response->getData())) {
             extract($response->getData());

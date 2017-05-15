@@ -17,11 +17,13 @@ class Request
                     DELETE =    1 << 3;
 
     /**
+     * Store the relative requested uri sent by the client
      * @var string
      */
     private $requestedUri;
 
     /**
+     * Store the http method in the request sent by the client
      * @var integer
      */
     private $method;
@@ -37,6 +39,8 @@ class Request
     }
 
     /**
+     * Return the http request method sent by the client
+     * @see Request static (GET, POST, PUT, DELETE)
      * @return int
      */
     public function getMethod(): int
@@ -45,6 +49,7 @@ class Request
     }
 
     /**
+     * Get the relative uri based on DOCUMENT_ROOT
      * @return string
      */
     public function getRawRequestedUri(): string
@@ -53,6 +58,7 @@ class Request
     }
 
     /**
+     *Get the relative uri based on project folder
      * @return string
      */
     public function getRequestedUri(): string
@@ -61,7 +67,9 @@ class Request
     }
 
     /**
-     * @param string|int $method
+     * Return an flag if the request is an specific $method
+     * @param string|int $method - When string: The method name in lowercase, when int: the method name based on
+     * Request:: constants
      * @return bool
      */
     public function is($method){
