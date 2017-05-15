@@ -103,8 +103,8 @@ abstract class MvcRouter extends Router
             }
         }
 
-        //Concat all values after the 1 index into the 2 index
-        $explodedUri = [$explodedRawUri[0] ?? "index"];
+        //Get the value in the 1 index
+        $explodedUri = [$explodedRawUri[1] ?? "index"];
 
         //Get the rest of the action
         $action = "";

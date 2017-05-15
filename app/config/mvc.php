@@ -12,6 +12,6 @@ return [
     ],
 
     "views" => [
-        "dirs" => ["app/views"],
+        "dirs" => ["app/views", "app/views/2"],
     ],
 ];

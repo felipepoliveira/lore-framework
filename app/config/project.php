@@ -25,6 +25,7 @@ return [
          * Mode
          * "allow" => Allow all kinds of file, minus the files that matches the values in "exceptions" array
          * "deny" => Deny all kinds of file, minus the files that matches the values in "exceptions" array
+         * default: deny
          */
         "mode" => "deny",
         "exceptions" => [".*\\.css", ".*\\.gif", ".*\\.jpg", ".*\\.js", ".*\\.pdf", ".*\\.png"],

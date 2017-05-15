@@ -1,4 +1,6 @@
 <?php
+
+use lore\Lore;
 use lore\mvc\Controller;
 
 class IndexController extends Controller
