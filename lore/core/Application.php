@@ -15,6 +15,9 @@ require_once __DIR__ . "/../web/ResourcesManager.php";
 require_once __DIR__ . "/../web/Request.php";
 require_once __DIR__ . "/../web/Response.php";
 
+//AUTOLOAD
+require_once __DIR__ . "/../web/Session.php";
+
 /**
  * Class Application - Store data to be used in all scope of the system. An singleton instance of this class can be found
  * In the Lore::app() function.

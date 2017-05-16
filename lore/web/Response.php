@@ -1,6 +1,8 @@
 <?php
 namespace lore\web;
 
+require_once "ResponseCache.php";
+
 use lore\Configurations;
 
 /**
@@ -41,22 +43,26 @@ class Response
     private $redirect = false;
 
     /**
-     * The content type of the response
-     * @var string
-     */
-    private $contentType;
-
-    /**
      * The charset encoding of the response
      * @var string
      */
     private $charset;
 
     /**
+     * @var array
+     */
+    private $headers = [];
+
+    /**
      * An flag indicating if a resource (file like image, pdf, etc.) will be sent to the client
      * @var bool
      */
     private $sendResource;
+
+    /**
+     * @var ResponseCache
+     */
+    private $cache;
 
     /**
      * The http response code
@@ -82,9 +88,10 @@ class Response
         $this->uri = $uri;
         $this->redirect = $redirect;
         $this->code = $code;
-        $this->contentType = $contentType;
+        $this->headers["Content-Type"] = $contentType;
         $this->charset = $charset ?? Configurations::get("project", "response")["defaultCharset"];
         $this->sendResource = $sendResource;
+        $this->cache = new ResponseCache();
     }
 
     /**
@@ -192,7 +199,7 @@ class Response
      */
     public function getContentType()
     {
-        return $this->contentType;
+        return $this->headers["Content-Type"];
     }
 
     /**
@@ -201,7 +208,7 @@ class Response
      */
     public function setContentType(string $contentType)
     {
-        $this->contentType = $contentType;
+        $this->headers["Content-Type"] = $contentType;
     }
 
     /**
@@ -220,5 +227,39 @@ class Response
     public function setSendResource(bool $sendResource)
     {
         $this->sendResource = $sendResource;
+    }
+
+    /**
+     * Store an header value in the response
+     * @param $key
+     * @param $value
+     */
+    public function putHeader(string $key, string $value){
+        $this->headers[$key] = $value;
+    }
+
+    /**
+     * Get an stored header value
+     * @param string $key
+     * @return string
+     */
+    public function getHeader(string $key){
+        return $this->headers[$key];
+    }
+
+    /**
+     * Return the headers map of the response
+     * @return array
+     */
+    public function getHeaders(){
+        return $this->headers;
+    }
+
+    /**
+     * @return ResponseCache
+     */
+    public function getCache(): ResponseCache
+    {
+        return $this->cache;
     }
 }

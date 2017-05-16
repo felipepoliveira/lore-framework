@@ -1,14 +1,22 @@
 <?php
-
-use lore\Lore;
 use lore\mvc\Controller;
+use lore\web\Session;
+
+require_once __DIR__ .  "/../models/User.php";
 
 class IndexController extends Controller
 {
     /**
-     * @uri /
+     * @var User
      */
-    public function index(){
-        $this->render("index.php");
+    private $model;
+
+    /**
+     * @uri /
+     * @method get
+     */
+    public function openHome(){
+        $this->getResponse()->getCache()->noCache();
+        $this->getResponse()->getCache()->revalidate();
     }
 }

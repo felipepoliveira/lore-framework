@@ -97,4 +97,30 @@ abstract class Controller
         $this->response->setCode($code);
         $this->response->setData($data);
     }
+
+    /**
+     * Load the model data with request given data (GET and POST array), validates it if $validate is true
+     * and, in case of error, put the errors into response
+     * @param Model $model
+     * @param int $validationMode
+     * @param array $validationExceptions
+     * @return bool
+     */
+    public function load(Model $model, $validationMode = null, $validationExceptions = null){
+        //Load the model data passing the request
+        $model->load(Lore::app()->getRequest());
+
+        //If validate flag is active, do validation
+        if(isset($validationRules)){
+            $validationResult = $model->validate($validationMode, $validationExceptions ?? []);
+            if($validationResult === true){
+                return true;
+            }else{
+                $this->response->setErrors($validationResult);
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
 }

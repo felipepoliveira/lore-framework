@@ -95,34 +95,36 @@ abstract class MvcRouter extends Router
         });
 
         //Remove get parameters from uri
-        $countExpodedRawUri = count($explodedRawUri);
-        for ($i = 1; $i <= $countExpodedRawUri; $i++){
+        $countExplodedRawUri = count($explodedRawUri);
+        for ($i = 1; $i <= $countExplodedRawUri; $i++){
             $pos = strrpos($explodedRawUri[$i], "?");
             if($pos){
                 $explodedRawUri[$i] = substr($explodedRawUri[$i], 0, $pos);
             }
         }
 
-        //Get the value in the 1 index
+        //If the controller name is not found set 'index' as default controller name
         $explodedUri = [$explodedRawUri[1] ?? "index"];
 
         //Get the rest of the action
         $action = "";
-        for($i = 2; $i <= $countExpodedRawUri; $i++){
+        for($i = 2; $i <= $countExplodedRawUri; $i++){
             $action .= $explodedRawUri[$i];
-            if($i < $countExpodedRawUri){
+            if($i < $countExplodedRawUri){
                 $action .= "/";
             }
         }
 
         //Put the action in the exploded array and return it
         $explodedUri[] = $action;
+
         return $explodedUri;
     }
 
     public  function route($request): Response
     {
         $explodedUri = $this->explodeUri($request->getRequestedUri());;
+
         //Get and format the controller name
         $this->controllerName = ucfirst($explodedUri[0]) . "Controller";
         //Get the action name
