@@ -2,22 +2,28 @@
 use lore\mvc\Model;
 use lore\mvc\ValidatorMessageProvider;
 
-class User extends Model implements ValidatorMessageProvider
+class User extends Model
 {
     /**
      * @var int
+     * @number
      */
     private $id;
     /**
      * @var string
+     * @max 20
+     * @min 2
      */
     private $name;
     /**
      * @var string
+     * @max 60
+     * @min 2
      */
     private $lastName;
     /**
      * @var string
+     * @regex /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/
      */
     private $email;
     /**
@@ -104,18 +110,4 @@ class User extends Model implements ValidatorMessageProvider
     {
         $this->password = $password;
     }
-
-    public function validationsMessages(): array
-    {
-        return [
-            "email.max" => "The maximum characters of name is 127",
-            "email.regex" => "You must enter an valid email",
-            "name.max" => "The maximum characters of name is 20",
-            "name.min" => "The minimum characters of name is 2",
-            "lastName.max" => "The maximum characters of the is 60",
-            "lastName.min" => "The minimum characters of the is 2",
-        ];
-    }
-
-
 }

@@ -2,6 +2,7 @@
 use lore\Lore;
 use lore\mvc\Controller;
 use lore\web\Session;
+require_once  __DIR__ . "/../models/User.php";
 
 class UserController extends Controller
 {
@@ -15,10 +16,17 @@ class UserController extends Controller
      */
     private $model;
 
-    function __construct(MvcRouter $mvcRouter)
+    /**
+     * @uri /$id
+     * @param $id
+     */
+    public function buscar($id){
+        $this->send($id);
+    }
+
+    function __construct($mvcRouter)
     {
         parent::__construct($mvcRouter);
-        $this->dao = new UserDAO();
         $this->model = new User();
     }
 

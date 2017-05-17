@@ -1,5 +1,12 @@
 <?php
 return [
+    "messageProvider" => [
+        "file" => "lore/web/impl/DefaultMessageProvider.php",
+        "class" => "\\lore\\web\\DefaultMessageProvider",
+
+        "dirs" => ["app/messages"],
+    ],
+
     "response" => [
       "defaultCharset" => "utf-8"
     ],

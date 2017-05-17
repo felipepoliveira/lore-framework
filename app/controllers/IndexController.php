@@ -16,7 +16,6 @@ class IndexController extends Controller
      * @method get
      */
     public function openHome(){
-        $this->getResponse()->getCache()->noCache();
-        $this->getResponse()->getCache()->revalidate();
+        $this->render("index.php");
     }
 }

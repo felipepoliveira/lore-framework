@@ -18,12 +18,12 @@ abstract class ReflectionManager
      * @param $class - The name of the class
      * @param $file string Relative path (based on project root) to class file to be instanced
      * @param $args mixed - Arguments to the object instance
-     * @param bool $relative - Define if the sent $file is relative
+     * @param bool $absolute - Define if the sent $file is absolute
      * @return mixed
      * @throws \ReflectionException if the file containing the class does not exists or the class was not found
      */
-    public static function instanceFromFile($class, $file, $args = null, $relative = true){
-        $file = ($relative) ? __DIR__ . "/../../" . $file : $file;
+    public static function instanceFromFile($class, $file, $args = null, $absolute = true){
+        $file = ($absolute) ? __DIR__ . "/../../" . $file : $file;
 
         if(file_exists($file)){
             require_once "$file";

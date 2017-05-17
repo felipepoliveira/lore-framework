@@ -6,9 +6,6 @@ use lore\Configurations;
 use lore\util\ReflectionManager;
 use lore\web\Request;
 
-//INCLUDES
-require_once "ValidatorMessageProvider.php";
-
 abstract class Model
 {
     /**
@@ -17,16 +14,28 @@ abstract class Model
     private static $validator = null;
 
     /**
+     * Validator singleton
      * @return ModelValidator
      */
     public static function validator(){
         $validator = &Model::$validator;
-        if($validator === null){
-            $validator = ReflectionManager::instanceFromFile( Configurations::get("mvc", "models")["validator"]["file"],
-                                                                    Configurations::get("mvc", "models")["validator"]["class"]);
+        if(isset(Configurations::get("mvc", "models")["validator"])){
+            if($validator === null){
+                $validator = ReflectionManager::instanceFromFile(
+                    Configurations::get("mvc", "models")["validator"]["class"],
+                    Configurations::get("mvc", "models")["validator"]["file"]);
+            }
         }
 
         return $validator;
+    }
+
+    /**
+     * Check if validator is defined in configuration files
+     * @return bool
+     */
+    public static function isValidatorLoaded(){
+        return self::validator() !== null;
     }
 
     public function load(Request $request){
@@ -34,11 +43,17 @@ abstract class Model
     }
 
     /**
+     * Call Model::validator to validated the model. If the validator is not loaded (Model::isValidatorLoaded used)
+     * return false automatically
      * @param int $validationMode
      * @param array $validationExceptions
      * @return bool|array
      */
     public function validate($validationMode = null, $validationExceptions = null){
-        return Model::validator()->validate($this, $validationMode, $validationExceptions);
+        if(Model::isValidatorLoaded()){
+            return Model::validator()->validate($this, $validationMode, $validationExceptions);
+        }else{
+            return false;
+        }
     }
 }

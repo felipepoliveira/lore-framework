@@ -17,6 +17,24 @@ abstract class Configurations
     private static $configurations = [];
 
     /**
+     * Check if a configuration exists
+     * @param $key
+     * @param $configKey
+     * @return bool
+     */
+    public static function contains($key, $configKey){
+        $configs = Configurations::$configurations;
+
+        if(!isset($configs[$key])){
+            return false;
+        }else if(!isset($configs[$key][$configKey])){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    /**
      * Load an configuration file
      * @param $key string  - An unique key to identify the configuration file
      * @param $file string - The configuration file path
