@@ -9,7 +9,7 @@ require_once __DIR__ . "/../../utils/DocCommentUtil.php";
 
 class ReflexiveModelValidator extends ModelValidator
 {
-    public static function validate(Model $model, $validationMode, $validationArgs)
+    public function validate(Model $model, $validationMode, $validationArgs)
     {
         $errors = [];
         $className = get_class($model);
@@ -20,12 +20,21 @@ class ReflexiveModelValidator extends ModelValidator
 
         foreach ($reflectionClass->getProperties() as $prop) {
             switch ($validationMode){
+                //If is on except mode and the name of the property is in the validation args go to another prop
                 case ValidationModes::EXCEPT:
+                    if(in_array($prop->getName(), $validationArgs)){
+                        continue 2;
+                    }
                     break;
+                //If in on only mode and the name of the property is not on the validation args go to another prop
                 case ValidationModes::ONLY:
+                    if(!in_array($prop->getName(), $validationArgs)){
+                        continue 2;
+                    }
                     break;
             }
 
+            //Store if the property can be accessed externaly
             $canAccess = $prop->isPublic();
 
             //Enable access to property
@@ -60,10 +69,9 @@ class ReflexiveModelValidator extends ModelValidator
      * @param string $value
      * @param bool $useValidationValue
      * @param \ReflectionProperty $prop
-     * @param string $className
      * @return string|true
      */
-    public static function validateSpecific($docComment, $callback, $value, $useValidationValue = false, $prop, $className){
+    public static function validateSpecific($docComment, $callback, $value, $useValidationValue = false, $prop){
         if(self::validateCallback(DocCommentUtil::readAnnotation($prop->getDocComment(), $docComment),
                 $callback,
                 $value,
@@ -93,7 +101,7 @@ class ReflexiveModelValidator extends ModelValidator
      * @param Model $model
      * @return array|true
      */
-    public static function validateProperty(\ReflectionProperty $prop, Model $model, $className){
+    public static function validateProperty(\ReflectionProperty $prop, Model $model){
         //Store errors
         $errors = [];
 
@@ -103,8 +111,7 @@ class ReflexiveModelValidator extends ModelValidator
             function($v, $a){return ModelValidator::validateMax($v, $a);},
             $prop->getValue($model),
             true,
-            $prop,
-            $className);
+            $prop);
 
         //Validating min
         $errors["min"] = self::validateSpecific(
@@ -112,8 +119,7 @@ class ReflexiveModelValidator extends ModelValidator
             function($v, $a){return ModelValidator::validateMin($v, $a);},
             $prop->getValue($model),
             true,
-            $prop,
-            $className);
+            $prop);
 
         //Validate not null
         $errors["notNull"] =  self::validateSpecific(
@@ -121,8 +127,7 @@ class ReflexiveModelValidator extends ModelValidator
             function($v){return ModelValidator::validateNotNull($v);},
             $prop->getValue($model),
             false,
-            $prop,
-            $className);
+            $prop);
 
         //Validate regex
         $errors["regex"] =  self::validateSpecific(
@@ -130,8 +135,7 @@ class ReflexiveModelValidator extends ModelValidator
             function($v, $r){return preg_match($r, $v);},
             $prop->getValue($model),
             true,
-            $prop,
-            $className);
+            $prop);
 
         //Filter where errors where not found
         $errors = array_filter($errors, function($e){

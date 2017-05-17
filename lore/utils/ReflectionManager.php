@@ -59,4 +59,54 @@ abstract class ReflectionManager
     public static function listMethods($object){
         return ReflectionManager::reflectionClass(get_class($object))->getMethods();
     }
+
+    public static function propertyIsArray(\ReflectionProperty $prop, $model){
+        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        if($var){
+            return ($var === "array" || strpos($var, "[]") !== false);
+        }else{
+            return is_array($prop->getValue($model));
+        }
+    }
+
+    public static function propertyIsBoolean(\ReflectionProperty $prop, $model){
+        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        if($var){
+            return ($var === "bool" || $var === "boolean");
+        }else{
+            return is_array($prop->getValue($model));
+        }
+    }
+
+    public static function propertyIsNumber(\ReflectionProperty $prop, $model){
+        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        if($var){
+            return ($var === "double" || $var === "float" || $var === "int" || $var === "integer");
+        }else{
+            return is_numeric($prop->getValue($model));
+        }
+    }
+
+    public static function propertyIsObject(\ReflectionProperty $prop, $model){
+        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        if($var){
+            if (!self::propertyIsArray($prop, $model) && !self::propertyIsBoolean($prop, $model)&&
+                !self::propertyIsString($prop, $model) && !self::propertyIsNumber($prop, $model)){
+                return $var;
+            }else{
+                return false;
+            }
+        }else{
+            return is_object($prop->getValue($model));
+        }
+    }
+
+    public static function propertyIsString(\ReflectionProperty $prop, $model){
+        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        if($var){
+            return ($var === "string");
+        }else{
+            return is_string($prop->getValue($model));
+        }
+    }
 }

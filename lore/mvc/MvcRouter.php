@@ -22,6 +22,11 @@ abstract class MvcRouter extends Router
     private $controllersDirectories;
 
     /**
+     * @var string[]
+     */
+    private $modelsDirectories;
+
+    /**
      * @var Controller
      */
     protected $controller;
@@ -40,6 +45,7 @@ abstract class MvcRouter extends Router
     {
         Configurations::load("mvc", __DIR__ . "/../../app/config/mvc.php");
         $this->controllersDirectories = Configurations::get("mvc", "controllers")["dirs"];
+        $this->modelsDirectories = Configurations::get("mvc", "models")["dirs"];
         $this->viewsDirectories = Configurations::get("mvc", "views")["dirs"];
     }
 
@@ -81,6 +87,14 @@ abstract class MvcRouter extends Router
     public function getViewsDirectories(): array
     {
         return $this->viewsDirectories;
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getModelsDirectories(): array
+    {
+        return $this->modelsDirectories;
     }
 
     /**

@@ -18,7 +18,7 @@ abstract class ModelValidator
      * @return true|array
      * @see ValidationModes
      */
-    public abstract static function validate(Model $model, $validationMode, $validationArgs);
+    public abstract function validate(Model $model, $validationMode, $validationArgs);
 
     /**
      * Validation for max value
@@ -26,7 +26,7 @@ abstract class ModelValidator
      * @param mixed $value - The value to be checked
      * @return bool
      */
-    public static function validateMax($value, $max){
+    public function validateMax($value, $max){
         if(is_numeric($value)){
             return $value <= $max;
         }else if(is_string($value)){
@@ -44,7 +44,7 @@ abstract class ModelValidator
      * @param mixed $value - The value to be checked
      * @return bool
      */
-    public static function validateMin($value, $min){
+    public function validateMin($value, $min){
         if(is_numeric($value)){
             return $value >= $min;
         }else if(is_string($value)){
@@ -52,7 +52,7 @@ abstract class ModelValidator
         }else if(is_array($value)){
             return count($value) >= $min;
         }else{
-            return true;
+            return ($value !== null);
         }
     }
 
@@ -61,7 +61,7 @@ abstract class ModelValidator
      * @param mixed $value - The value to be checked
      * @return bool
      */
-    public static function validateNotNull($value){
+    public function validateNotNull($value){
         return $value !== null;
     }
 }

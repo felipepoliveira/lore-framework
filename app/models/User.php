@@ -2,6 +2,8 @@
 use lore\mvc\Model;
 use lore\mvc\ValidatorMessageProvider;
 
+require_once "Address.php";
+
 class User extends Model
 {
     /**
@@ -30,6 +32,11 @@ class User extends Model
      * @var string
      */
     private $password;
+
+    /**
+     * @var Address
+     */
+    private $address;
 
     /**
      * @return int
@@ -109,5 +116,21 @@ class User extends Model
     public function setPassword(string $password)
     {
         $this->password = $password;
+    }
+
+    /**
+     * @return Address
+     */
+    public function getAddress(): Address
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param Address $address
+     */
+    public function setAddress(Address $address)
+    {
+        $this->address = $address;
     }
 }

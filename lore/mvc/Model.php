@@ -11,35 +11,83 @@ abstract class Model
     /**
      * @var ModelValidator
      */
-    private static $validator = null;
+    private $validator = null;
+
+    /**
+     * @var ModelLoader
+     */
+    private $loader = null;
+
+    function __construct()
+    {
+        $this->loader = $this->loadLoader();
+        $this->validator = $this->loadValidator();
+    }
+
+    protected function loadLoader(){
+        if(isset(Configurations::get("mvc", "models")["loader"])){
+            return ReflectionManager::instanceFromFile(
+                Configurations::get("mvc", "models")["loader"]["class"],
+                Configurations::get("mvc", "models")["loader"]["file"]
+            );
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * Load the ModelValidator from the configuration files
+     * @return ModelValidator|null
+     */
+    protected function loadValidator(){
+        if(isset(Configurations::get("mvc", "models")["validator"]))
+        {
+            return ReflectionManager::instanceFromFile(
+                Configurations::get("mvc", "models")["validator"]["class"],
+                Configurations::get("mvc", "models")["validator"]["file"]);
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * @return ModelLoader
+     */
+    public function getLoader(): ModelLoader
+    {
+        return $this->loader;
+    }
 
     /**
      * Validator singleton
      * @return ModelValidator
      */
-    public static function validator(){
-        $validator = &Model::$validator;
-        if(isset(Configurations::get("mvc", "models")["validator"])){
-            if($validator === null){
-                $validator = ReflectionManager::instanceFromFile(
-                    Configurations::get("mvc", "models")["validator"]["class"],
-                    Configurations::get("mvc", "models")["validator"]["file"]);
-            }
-        }
-
-        return $validator;
+    public function getValidator(){
+        return $this->validator;
     }
 
     /**
-     * Check if validator is defined in configuration files
-     * @return bool
+     * Check if loader is defined in configuration file
      */
-    public static function isValidatorLoaded(){
-        return self::validator() !== null;
+    private function isLoaderLoaded(){
+        return $this->loader !== null;
     }
 
-    public function load(Request $request){
+    /**
+     * Check if validator is defined in configuration file
+     * @return bool
+     */
+    private function isValidatorLoaded(){
+        return $this->validator !== null;
+    }
 
+    /**
+     * @param Request $request
+     */
+    public function load(Request $request){
+        if($this->isLoaderLoaded()){
+            $this->loader->load($this, $request);
+        }
     }
 
     /**
@@ -50,10 +98,10 @@ abstract class Model
      * @return bool|array
      */
     public function validate($validationMode = null, $validationExceptions = null){
-        if(Model::isValidatorLoaded()){
-            return Model::validator()->validate($this, $validationMode, $validationExceptions);
+        if($this->isValidatorLoaded()){
+            return $this->getValidator()->validate($this, $validationMode, $validationExceptions);
         }else{
-            return false;
+            return true;
         }
     }
 }
