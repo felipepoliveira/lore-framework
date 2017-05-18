@@ -19,6 +19,7 @@ abstract class File
     }
 
     /**
+     * Check if an file exists in given directories
      * @param $file string
      * @param $dirs array
      * @param bool $relative - Define if the $file is relative or not
@@ -27,8 +28,8 @@ abstract class File
     public static function checkFileInDirectories($file, $dirs, $relative = true){
         foreach ($dirs as $dir){
             //Put full path into the view file
-
             $fullName = ($relative) ? Lore::app()->getContext()->getAbsolutePath() .  "/$dir/$file" : "$dir/$file";
+
             if(file_exists($fullName)){
                 return $fullName;
                 break;

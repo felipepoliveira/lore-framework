@@ -6,6 +6,5 @@
 </head>
 <body>
     <h1>Index</h1>
-    <img src="<?=\lore\Lore::res("views/1.jpg")?>"/>
 </body>
 </html>

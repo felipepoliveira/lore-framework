@@ -67,6 +67,55 @@ class Request
     }
 
     /**
+     * Return the requested data depending on resquest method. If the request method is post or put the request data
+     * is returned ver the $_POST array, otherwise is returned from $_GET array
+     * @return array
+     */
+    public function requestData(){
+        return ($this->isPost() || $this->isPut())? $_POST : $_GET;
+    }
+
+    /**
+     * Return the data sent by the client in request in an formatted array
+     * @return array
+     */
+    public function requestDataAsRecursiveArray(){
+        $array = array();
+
+        //Iterate over
+        foreach ($this->requestData() as $key => $value) {
+            $this->lastRecursiveIterationOf($array, $key, $trueKey, $value);
+        }
+
+        return $array;
+    }
+
+    protected function lastRecursiveIterationOf(&$array, $key, &$trueKey, $value){
+        //Check if the key has an composition value (separting . or _ )
+        $pos = strpos($key, ".");
+        if(!$pos) $pos = strpos($key, "_");
+
+        if($pos){
+            //Get the key before the first dot
+            $keyBeforeDot = substr($key, 0, $pos);
+            //Get the key after the first dot
+            $trueKey = substr($key, $pos+1, strlen($key));
+
+            //If the index is not defined craete an array
+            if(!isset($array[$keyBeforeDot])){
+                $array[$keyBeforeDot] = [];
+            }
+
+            //Iterate over the last index while the key has a dot
+            $this->lastRecursiveIterationOf($array[$keyBeforeDot], $trueKey, $trueKey, $value);
+        }else{
+            //If the key does not have a dot put the value into array
+            $trueKey = $key;
+            $array[$trueKey] = $value;
+        }
+    }
+
+    /**
      * Return an flag if the request is an specific $method
      * @param string|int $method - When string: The method name in lowercase, when int: the method name based on
      * Request:: constants

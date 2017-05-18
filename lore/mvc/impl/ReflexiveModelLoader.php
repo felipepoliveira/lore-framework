@@ -26,15 +26,7 @@ class ReflexiveModelLoader extends ModelLoader
 
     public function load(Model $model, Request $request)
     {
-        //Will store all data sent in request
-        $data = $_GET;
-
-        //If the request method is post or put merge the $_POST array
-        if($request->isPost() || $request->isPut()){
-            $data = array_merge($data, $_POST);
-        }
-
-        $this->loadRecursive($model, $data);
+        $this->loadRecursive($model, $request->requestDataAsRecursiveArray());
     }
 
     /**
@@ -60,7 +52,7 @@ class ReflexiveModelLoader extends ModelLoader
             }
 
             //Check if the property exists in the array data...
-            $propName = $className . "." . $prop->getName();
+            $propName = $prop->getName();
             if(isset($array[$propName])){
 
                 //Get the value from data array
@@ -69,7 +61,8 @@ class ReflexiveModelLoader extends ModelLoader
                 //If the data is an array, check if the property is a array...
                 if(is_array($arrayValue) && $propClassName = ReflectionManager::propertyIsObject($prop, $model)){
                     $reflectionClass = new \ReflectionClass($propClassName);
-                    $this->loadRecursive($reflectionClass->newInstance(), $arrayValue);
+                    $prop->setValue($model, $reflectionClass->newInstance());
+                    $this->loadRecursive($prop->getValue($model), $arrayValue);
                 }else{
                     $prop->setValue($model, $arrayValue);
                 }

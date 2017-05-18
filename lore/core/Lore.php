@@ -22,6 +22,27 @@ abstract class Lore
         return Lore::$app;
     }
 
+    public static function error($errorCode, $html){
+
+        if( Lore::app()->getResponse()->hasErrors() &&
+            isset(Lore::app()->getResponse()->getErrors()[$errorCode]))
+        {
+            $errors = Lore::app()->getResponse()->getErrors()[$errorCode];
+
+            if(is_array($errors)){
+                $concatStr = "";
+                foreach ($errors as $error){
+                    $concatStr .= str_replace("%%", $error, $html);
+                }
+                return $concatStr;
+            }else{
+                return str_replace("%%", $errors, $html);
+            }
+        }else{
+            return "";
+        }
+    }
+
     /**
      * Return an relative path to application app root
      * @param $path

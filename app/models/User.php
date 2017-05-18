@@ -30,6 +30,8 @@ class User extends Model
     private $email;
     /**
      * @var string
+     * @min 6
+     * @max 30
      */
     private $password;
 

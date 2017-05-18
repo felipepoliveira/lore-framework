@@ -16,12 +16,6 @@ class IndexController extends Controller
      * @method get
      */
     public function openHome(){
-        $_GET = [
-            "user.name" => "Felipe",
-            "user.lastName" => "Pereira de Oliveira",
-            "user.email" => ["a", "b"]
-        ];
-        $model = new User();
-        $model->load(\lore\Lore::app()->getRequest());
+        $this->render("index.php");
     }
 }

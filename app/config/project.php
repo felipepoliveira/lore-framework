@@ -1,12 +1,5 @@
 <?php
 return [
-    "messageProvider" => [
-        "file" => "lore/web/impl/DefaultMessageProvider.php",
-        "class" => "\\lore\\web\\DefaultMessageProvider",
-
-        "dirs" => ["app/messages"],
-    ],
-
     "response" => [
       "defaultCharset" => "utf-8"
     ],
@@ -45,5 +38,12 @@ return [
         "service" => [
             "defaultType" => "txt" //can be: html, json, txt or xml
         ]
+    ],
+
+    "stringProvider" => [
+        "file" => "lore/core/impl/DefaultStringProvider.php",
+        "class" => "\\lore\\DefaultStringProvider",
+
+        "dirs" => ["app/strings"],
     ],
 ];

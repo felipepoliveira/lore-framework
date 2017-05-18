@@ -56,6 +56,11 @@ class Application
     private $router;
 
     /**
+     * @var StringProvider
+     */
+    private $stringProvider;
+
+    /**
      * Flag that indicates if the application was already been loaded
      * @var bool
      */
@@ -71,6 +76,7 @@ class Application
         $this->loadConfigurations();
         $this->context = new ApplicationContext();
         $this->request = new Request($this->context);
+        $this->stringProvider = $this->loadStringProvider(); //Can be null
         $this->router = $this->loadRouter();
         $this->responseManager = $this->loadResponseManager();
         $this->resourcesManager = $this->loadResourcesManager();
@@ -129,6 +135,16 @@ class Application
     }
 
     /**
+     * Return the default string provider of the application. This object can be null if the string provider module
+     * is not enabled in project
+     * @return StringProvider
+     */
+    public function getStringProvider()
+    {
+        return $this->stringProvider;
+    }
+
+    /**
      * Load the application processing the request and creating the response object. This method can be only called once.
      * The script responsible to do so is the bootstrap.php, that is called in any request that the server receives.
      */
@@ -169,6 +185,29 @@ class Application
     private function loadRouter(){
         return ReflectionManager::instanceFromFile( Configurations::get("project", "router")["class"],
             Configurations::get("project", "router")["file"]);
+    }
+
+    /**
+     * Load the StringProvider of the application in project.php config file
+     * @return StringProvider|null
+     */
+    private function loadStringProvider(){
+        if(Configurations::contains("project", "stringProvider")){
+            return ReflectionManager::instanceFromFile(
+                Configurations::get("project", "stringProvider")["class"],
+                Configurations::get("project", "stringProvider")["file"]
+            );
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * Check if StringProvider module is implemented in Application
+     * @return bool
+     */
+    public function isStringProviderEnabled() : bool {
+        return $this->stringProvider !== null;
     }
 
     /**

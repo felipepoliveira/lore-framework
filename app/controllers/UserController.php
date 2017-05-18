@@ -16,18 +16,18 @@ class UserController extends Controller
      */
     private $model;
 
-    /**
-     * @uri /$id
-     * @param $id
-     */
-    public function buscar($id){
-        $this->send($id);
-    }
-
     function __construct($mvcRouter)
     {
         parent::__construct($mvcRouter);
         $this->model = new User();
+    }
+
+    /**
+     * @uri /signin
+     * @method get
+     */
+    public function openLogin(){
+        $this->render("user/login.php");
     }
 
     /**
@@ -39,19 +39,23 @@ class UserController extends Controller
     }
 
     /**
-     * @uri /login
-     * @method get
-     */
-    public function openLogin(){
-        $this->render("user/login.php");
-    }
-
-    /**
      * @uri /changePassword
      * @method post
      */
     public function changePassword(){
 
+    }
+
+    /**
+     * @uri /authenticate
+     */
+    public function authenticate(){
+        if($this->load($this->model, \lore\mvc\ValidationModes::ONLY, ["email", "password"])){
+            $this->redirect("/");
+        }else{
+            die(var_dump($this->getResponse()->getErrors()));
+            $this->render("user/login.php");
+        }
     }
 
     /**

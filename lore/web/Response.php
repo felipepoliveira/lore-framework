@@ -262,4 +262,8 @@ class Response
     {
         return $this->cache;
     }
+
+    public function hasErrors(){
+        return $this->errors !== null && count($this->errors) > 0;
+    }
 }
