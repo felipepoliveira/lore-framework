@@ -75,8 +75,11 @@ class ReflexiveModelValidator extends ModelValidator
 
             //If the property is another model, call validate it validate method
             if(is_object($prop->getValue($model))){
-                $return = $prop->getValue($model)->validate($validationMode, $validationArgs);
+                //Validate recursively the models inside the current model. In validation args, just get the validations
+                //that is inside the prop validation array
+                $return = $prop->getValue($model)->validate($validationMode, $validationArgs[$prop->getName()] ?? []);
 
+                //if validation contains errors add in pre recursive method call error array
                 if($return !== true){
                     $errors = array_merge($errors, $return);
                 }
@@ -99,6 +102,7 @@ class ReflexiveModelValidator extends ModelValidator
                     }
                     break;
             }
+
             //Make the validation
             $validationResult = $this->validateProperty($prop, $model);
 
@@ -131,6 +135,7 @@ class ReflexiveModelValidator extends ModelValidator
      */
     public function validateSpecific($docComment, $callback, $value, $useValidationValue = false, $prop){
         $docCommentValue = DocCommentUtil::readAnnotation($prop->getDocComment(), $docComment);
+
         if(self::validateCallback(
             $docCommentValue,
             $callback,

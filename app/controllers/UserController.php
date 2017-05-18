@@ -27,7 +27,7 @@ class UserController extends Controller
      * @method get
      */
     public function openLogin(){
-        $this->render("user/login.php");
+        $this->render("user/login.php", [$this->model]);
     }
 
     /**
@@ -35,7 +35,7 @@ class UserController extends Controller
      * @method get
      */
     public function openForm(){
-        $this->render("user/form.php");
+        $this->render("user/form.php", [$this->model]);
     }
 
     /**
@@ -48,12 +48,12 @@ class UserController extends Controller
 
     /**
      * @uri /authenticate
+     * @method post
      */
     public function authenticate(){
-        if($this->load($this->model, \lore\mvc\ValidationModes::ONLY, ["email", "password"])){
+        if($this->load($this->model)){
             $this->redirect("/");
         }else{
-            die(var_dump($this->getResponse()->getErrors()));
             $this->render("user/login.php");
         }
     }
@@ -64,7 +64,7 @@ class UserController extends Controller
      */
     public function save(){
         //If model loading and validation is OK...
-        if($this->load($this->model, true)){
+        if($this->load($this->model, \lore\mvc\ValidationModes::ALL)){
 
             //Get the authenticated user id
             $userId = Session::get("user.id");

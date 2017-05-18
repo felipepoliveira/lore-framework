@@ -110,13 +110,18 @@ abstract class Controller
         //Load the model data passing the request
         $model->load(Lore::app()->getRequest());
 
-        //Validate the model and, if errors were founded, send it to the response
-        $validationResult = $model->validate($validationMode, $validationExceptions);
-        if($validationResult !== true){
-            $this->response->setErrors($validationResult);
-            return false;
+        //Only validate if validation mode is inputed
+        if(isset($validationMode)){
+            //Validate the model and, if errors were founded, send it to the response
+            $validationResult = $model->validate($validationMode, $validationExceptions ?? []);
+            if($validationResult !== true){
+                $this->response->setErrors($validationResult);
+                return false;
+            }else{
+                return true;
+            }
         }else{
-            return true;
+            return false;
         }
     }
 }

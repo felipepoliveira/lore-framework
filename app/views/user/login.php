@@ -14,8 +14,11 @@ use lore\Lore;
             <div class="form-group">
                 <label for="inputEmail">Email</label>
                 <input type="text" id="inputEmail" name="email">
-                <input type="text"  name="address.address" value="R. Arraial da Piranga">
                 <?=Lore::error("User.email", "<div class='alert alert-danger'>%%</div>")?>
+            </div>
+            <div class="form-group">
+                <input type="text"  name="address.address" value="R. Arraial da Piranga">
+                <?=Lore::error("Address.address", "<div class='alert alert-danger'>%%</div>")?>
             </div>
             <div class="form-group">
                 <label for="inputPassword">Senha</label>
