@@ -19,4 +19,12 @@ abstract class ModelLoader
      * @return void
      */
     public abstract function load(Model $model, Request $request);
+
+    /**
+     * Convert the model to an array
+     * @param Model $obj
+     * @param bool $plainMode
+     * @return array
+     */
+    public abstract function toArray($obj, $plainMode = false) : array ;
 }

@@ -1,21 +1,18 @@
 <?php
 use lore\mvc\Controller;
-use lore\web\Session;
-
-require_once __DIR__ .  "/../models/User.php";
 
 class IndexController extends Controller
 {
-    /**
-     * @var User
-     */
-    private $model;
+    public function createNewModelInstance()
+    {
+
+    }
 
     /**
      * @uri /
-     * @method get
      */
-    public function openHome(){
+    public function index(){
         $this->render("index.php");
     }
+
 }

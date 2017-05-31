@@ -1,37 +1,33 @@
 <?php
 use lore\mvc\Model;
-use lore\mvc\ValidatorMessageProvider;
+
+require_once "Address.php";
 
 class User extends Model
 {
     /**
-     * @var int
-     * @number
+     * @var integer
      */
     private $id;
+
     /**
      * @var string
-     * @max 20
+     * @max 80
      * @min 2
      */
     private $name;
+
     /**
      * @var string
-     * @max 60
-     * @min 2
+     * @regex /^[0-9]{10,11}$/
      */
-    private $lastName;
+    private $phone;
+
     /**
-     * @var string
-     * @regex /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/
+     * @var Address
+     * @notNull
      */
-    private $email;
-    /**
-     * @var string
-     * @min 6
-     * @max 30
-     */
-    private $password;
+    private $address;
 
     /**
      * @return int
@@ -68,52 +64,34 @@ class User extends Model
     /**
      * @return string
      */
-    public function getLastName()
+    public function getPhone()
     {
-        return $this->lastName;
+        return $this->phone;
     }
 
     /**
-     * @param string $lastName
+     * @param string $phone
      */
-    public function setLastName(string $lastName)
+    public function setPhone(string $phone)
     {
-        $this->lastName = $lastName;
+        $this->phone = $phone;
     }
 
     /**
-     * @return string
+     * @return Address
      */
-    public function getEmail()
+    public function getAddress()
     {
-        return $this->email;
+        return $this->address;
     }
 
     /**
-     * @param string $email
+     * @param Address $address
      */
-    public function setEmail(string $email)
+    public function setAddress(Address $address)
     {
-        $this->email = $email;
+        $this->address = $address;
     }
 
-    /**
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
 
-    /**
-     * @param string $password
-     */
-    public function setPassword(string $password)
-    {
-        $this->password = $password;
-    }
-
-    public function hashPassword(){
-        $this->setPassword(hash("sha256", $this->getPassword()));
-    }
 }

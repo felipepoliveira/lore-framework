@@ -22,13 +22,13 @@ class Response
      * The errors founded in the server request processing to be sent to client feedback
      * @var string[]
      */
-    private $errors;
+    private $errors = [];
 
     /**
      * The data that will be sent to the client
      * @var mixed
      */
-    private $data = null;
+    private $data = [];
 
     /**
      * The uri that store the resource that will be sent to the client
@@ -125,16 +125,24 @@ class Response
      * Return the data that will be sent to the client
      * @return mixed
      */
-    public function getData()
+    public function getData() : array
     {
         return $this->data;
     }
 
     /**
-     * Defines the data that will be sent to the client
-     * @param mixed $data
+     * Put an value into data map of the response
+     * @param $key
+     * @param $value
      */
-    public function setData($data)
+    public function put($key, $value){
+        $this->data[$key] = $value;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data)
     {
         $this->data = $data;
     }

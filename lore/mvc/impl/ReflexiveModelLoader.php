@@ -74,4 +74,76 @@ class ReflexiveModelLoader extends ModelLoader
             }
         }
     }
+
+    public function toArray($obj, $plainMode = false) : array
+    {
+        if($plainMode){
+            return $this->toArrayRecursive($obj);
+        }else{
+            $array = [];
+            return $this->toArrayPlain($obj, $array, "");
+        }
+    }
+
+    public function toArrayRecursive($obj) : array {
+        $array = [];
+
+        $reflectionClass = new \ReflectionClass(get_class($obj));
+
+        foreach ($reflectionClass->getProperties() as $prop) {
+            if(!$prop->isPublic()){
+                $prop->setAccessible(true);
+            }
+
+            $propVal = $prop->getValue($obj);
+
+            if(is_object($propVal)){
+                $array[$prop->getName()] = $this->toArrayRecursive($propVal);
+            }else{
+                $array[$prop->getName()] = $propVal;
+            }
+
+
+            if(!$prop->isPublic()){
+                $prop->setAccessible(false);
+            }
+
+        }
+        return $array;
+    }
+
+    public function toArrayPlain($obj, &$array, $prefix) : array {
+        $reflectionClass = new \ReflectionClass(get_class($obj));
+
+        foreach ($reflectionClass->getProperties() as $prop) {
+            if(!$prop->isPublic()){
+                $prop->setAccessible(true);
+            }
+
+            $propVal = $prop->getValue($obj);
+
+            if(is_object($propVal)){
+                //Put the prefix
+                $prefix = $prop->getName() . ".";
+
+                $this->toArrayPlain($propVal, $array, $prefix);
+            }else{
+                $array[$prefix .  $prop->getName()] = $propVal;
+            }
+
+
+            if(!$prop->isPublic()){
+                $prop->setAccessible(false);
+            }
+
+        }
+
+        //Remove the last prefix
+        $pos = strrpos($prefix, ".");
+        if($pos){
+            $prefix = substr($prefix, 0, $pos);
+        }
+
+        return $array;
+    }
 }

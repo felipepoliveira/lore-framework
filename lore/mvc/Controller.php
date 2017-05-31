@@ -21,6 +21,11 @@ abstract class Controller
     private $response;
 
     /**
+     * @var Model
+     */
+    private $model;
+
+    /**
      * Controller constructor.
      * @param $mvcRouter MvcRouter
      */
@@ -28,6 +33,7 @@ abstract class Controller
     {
         $this->mvcRouter = $mvcRouter;
         $this->response = new Response();
+        $this->model = $this->createNewModelInstance();
     }
 
     /**
@@ -47,10 +53,24 @@ abstract class Controller
     }
 
     /**
+     * @return Model
+     */
+    public function getModel(): Model
+    {
+        return $this->model;
+    }
+
+    /**
+     * Return the controller model
+     * @return Model|null
+     */
+    public abstract function createNewModelInstance();
+
+    /**
      * @param string $view
      * @param array $data
      */
-    public function render($view, $data = null){
+    public function render(string $view, array $data = []){
         //Get the full path to the view
         $viewPath = File::checkFileInDirectories($view, $this->mvcRouter->getViewsDirectories());
 
@@ -63,8 +83,12 @@ abstract class Controller
             error_reporting(E_ALL ^ E_NOTICE);
 
             $this->response->setCode(200);
-            $this->response->setData($data);
             $this->response->setUri($viewPath);
+
+            //Put data into response
+            foreach ($data as $key => $value){
+                $this->response->put($key, $value);
+            }
         }
         //Otherwise, send code 404
         else{
@@ -98,22 +122,46 @@ abstract class Controller
         $this->response->setData($data);
     }
 
+    public function putModelAsArrayInResponse(){
+        //Convert the model into an one-dimensional (plain) array an put the values into response
+        foreach ($this->getModel()->toArray() as $key => $value){
+            $this->getResponse()->put("model." .  $key, $value);
+        }
+    }
+
     /**
-     * Load the model data with request given data (GET and POST array), validates it if $validate is true
-     * and, in case of error, put the errors into response
-     * @param Model $model
+     * Load the model data with request given data (GET and POST array), validates it if $validate is true and,
+     * in case of error, put the errors into response
      * @param int $validationMode
      * @param array $validationExceptions
      * @return bool
      */
-    public function load(Model $model, $validationMode = null, $validationExceptions = null){
-        //Load the model data passing the request
-        $model->load(Lore::app()->getRequest());
+    public function loadAndValidateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
+        $this->loadModel();
+        return $this->validateModel($validationMode, $validationExceptions);
+    }
 
+    /**
+     * Load the model data with request given data (GET and POST array)
+     * @return void◘
+     */
+    public function loadModel(){
+        //Load the model data passing the request
+        $this->model->load(Lore::app()->getRequest());
+    }
+
+    /**
+     * validate the controller model
+     * and, in case of error, put the errors into response
+     * @param int $validationMode
+     * @param array $validationExceptions
+     * @return bool
+     */
+    public function validateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
         //Only validate if validation mode is inputed
         if(isset($validationMode)){
             //Validate the model and, if errors were founded, send it to the response
-            $validationResult = $model->validate($validationMode, $validationExceptions ?? []);
+            $validationResult = $this->model->validate($validationMode, $validationExceptions ?? []);
             if($validationResult !== true){
                 $this->response->setErrors($validationResult);
                 return false;

@@ -1,6 +1,8 @@
 <?php
 namespace lore\mvc;
 
+require_once "NoModelLoaderDefinedException.php";
+
 
 use lore\Configurations;
 use lore\util\ReflectionManager;
@@ -87,6 +89,21 @@ abstract class Model
     public function load(Request $request){
         if($this->isLoaderLoaded()){
             $this->loader->load($this, $request);
+        }
+    }
+
+    /**
+     * Serialize the model to an array. If an model loader is defined this method use it to do the serialization.
+     * Otherwise an exception will be thrown
+     * @param $args
+     * @return array
+     */
+    public function toArray(...$args) : array {
+        if($this->isLoaderLoaded()){
+            return $this->getLoader()->toArray($this);
+        }else{
+            throw new NoModelLoaderDefinedException("An model loader is needed to do the array serialization. Check
+            if an ModelLoader implementation is defined in config/mvc.php file");
         }
     }
 
