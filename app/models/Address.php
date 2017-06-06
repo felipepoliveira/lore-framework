@@ -1,8 +1,17 @@
 <?php
 use lore\mvc\Model;
 
+require_once "Test.php";
+
 class Address extends Model
 {
+
+    /**
+     * @var Test
+     * @notNull
+     */
+    private $test;
+
     /**
      * @var integer
      */
@@ -111,6 +120,22 @@ class Address extends Model
     public function setReferencePoint(string $referencePoint)
     {
         $this->referencePoint = $referencePoint;
+    }
+
+    /**
+     * @return Test
+     */
+    public function getTest()
+    {
+        return $this->test;
+    }
+
+    /**
+     * @param Test $test
+     */
+    public function setTest(Test $test)
+    {
+        $this->test = $test;
     }
 
 

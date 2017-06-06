@@ -45,11 +45,11 @@ abstract class Lore
             if(is_array($errors)){
                 $concatStr = "";
                 foreach ($errors as $error){
-                    $concatStr .= str_replace("%%", $error, $html);
+                    $concatStr .= str_replace("{value}", $error, $html);
                 }
                 return $concatStr;
             }else{
-                return str_replace("%%", $errors, $html);
+                return str_replace("{value}", $errors, $html);
             }
         }else{
             return "";

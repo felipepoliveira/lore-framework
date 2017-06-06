@@ -5,6 +5,13 @@ require_once "Address.php";
 
 class User extends Model
 {
+
+    /**
+     * @var Address
+     * @notNull
+     */
+    private $address;
+
     /**
      * @var integer
      */
@@ -23,11 +30,7 @@ class User extends Model
      */
     private $phone;
 
-    /**
-     * @var Address
-     * @notNull
-     */
-    private $address;
+
 
     /**
      * @return int

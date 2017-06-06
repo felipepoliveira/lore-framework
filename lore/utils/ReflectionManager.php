@@ -61,7 +61,7 @@ abstract class ReflectionManager
     }
 
     public static function propertyIsArray(\ReflectionProperty $prop, $model){
-        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        $var =  DocCommentUtil::readAnnotationValue($prop->getDocComment(), "var");
         if($var){
             return ($var === "array" || strpos($var, "[]") !== false);
         }else{
@@ -70,7 +70,7 @@ abstract class ReflectionManager
     }
 
     public static function propertyIsBoolean(\ReflectionProperty $prop, $model){
-        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        $var =  DocCommentUtil::readAnnotationValue($prop->getDocComment(), "var");
         if($var){
             return ($var === "bool" || $var === "boolean");
         }else{
@@ -79,7 +79,7 @@ abstract class ReflectionManager
     }
 
     public static function propertyIsNumber(\ReflectionProperty $prop, $model){
-        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        $var =  DocCommentUtil::readAnnotationValue($prop->getDocComment(), "var");
         if($var){
             return ($var === "double" || $var === "float" || $var === "int" || $var === "integer");
         }else{
@@ -88,7 +88,7 @@ abstract class ReflectionManager
     }
 
     public static function propertyIsObject(\ReflectionProperty $prop, $model){
-        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        $var =  DocCommentUtil::readAnnotationValue($prop->getDocComment(), "var");
         if($var){
             if (!self::propertyIsArray($prop, $model) && !self::propertyIsBoolean($prop, $model)&&
                 !self::propertyIsString($prop, $model) && !self::propertyIsNumber($prop, $model)){
@@ -102,7 +102,7 @@ abstract class ReflectionManager
     }
 
     public static function propertyIsString(\ReflectionProperty $prop, $model){
-        $var =  DocCommentUtil::readAnnotation($prop->getDocComment(), "var");
+        $var =  DocCommentUtil::readAnnotationValue($prop->getDocComment(), "var");
         if($var){
             return ($var === "string");
         }else{

@@ -23,8 +23,8 @@ class PrettyUrlMvcRouter extends ReflexiveMvcRouter
      * @return array|bool
      */
     protected function methodMatchActionName($method, $actionName){
-        $uri = DocCommentUtil::readAnnotation($method->getDocComment(), "uri");
-        $httpMethod = DocCommentUtil::readAnnotation($method->getDocComment(), "method");
+        $uri = DocCommentUtil::readAnnotationValue($method->getDocComment(), "uri");
+        $httpMethod = DocCommentUtil::readAnnotationValue($method->getDocComment(), "method");
 
         //Check if the http method of the controller method is compative with the method of the request
         if($httpMethod && ! Lore::app()->getRequest()->is($httpMethod)){

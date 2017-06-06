@@ -56,7 +56,7 @@ class ReflexiveModelValidator extends ModelValidator
         }
     }
 
-    public function validate(Model $model, $validationMode, $validationArgs)
+    public function validate(Model $model, $validationMode, $validationArgs, $prefix = "")
     {
         $errors = [];
         $this->className = get_class($model);
@@ -77,7 +77,7 @@ class ReflexiveModelValidator extends ModelValidator
             if(is_object($prop->getValue($model))){
                 //Validate recursively the models inside the current model. In validation args, just get the validations
                 //that is inside the prop validation array
-                $return = $prop->getValue($model)->validate($validationMode, $validationArgs[$prop->getName()] ?? []);
+                $return = $prop->getValue($model)->validate($validationMode, $validationArgs[$prop->getName()] ?? [], $prefix . $prop->getName() . ".");
 
                 //if validation contains errors add in pre recursive method call error array
                 if($return !== true){
@@ -108,10 +108,10 @@ class ReflexiveModelValidator extends ModelValidator
 
             //If validation is not ok, store the errors in array
             if($validationResult !== true){
-                $errors[$this->className . "." . $prop->getName()] = $validationResult;
+                $errors[$prefix . $prop->getName()] = $validationResult;
             }
 
-            //Disable acess to property
+            //Disable access to property
             if(!$canAccess){
                 $prop->setAccessible(false);
             }
@@ -129,14 +129,18 @@ class ReflexiveModelValidator extends ModelValidator
      * @param string $docComment
      * @param callable $callback
      * @param string $value
-     * @param bool $useValidationValue
      * @param \ReflectionProperty $prop
+     * @param bool $useValidationValue
      * @return string|true
      */
-    public function validateSpecific($docComment, $callback, $value, $useValidationValue = false, $prop){
-        $docCommentValue = DocCommentUtil::readAnnotation($prop->getDocComment(), $docComment);
+    public function makeSpecificValidation($docComment, $callback, $value, $prop, $useValidationValue = true){
+        if($useValidationValue){
+            $docCommentValue = DocCommentUtil::readAnnotationValue($prop->getDocComment(), $docComment);
+        }else{
+            $docCommentValue = DocCommentUtil::annotationExists($prop->getDocComment(), $docComment);
+        }
 
-        if(self::validateCallback(
+        if(self::triggerCallbackValidation(
             $docCommentValue,
             $callback,
             $value,
@@ -148,7 +152,7 @@ class ReflexiveModelValidator extends ModelValidator
         }
     }
 
-    public function validateCallback($docCommentValue, $callback, $value, $useValidationValue = false){
+    public function triggerCallbackValidation($docCommentValue, $callback, $value, $useValidationValue = false){
         if($docCommentValue){
             if(isset($useValidationValue)){
                 return $callback($value, $docCommentValue);
@@ -171,35 +175,32 @@ class ReflexiveModelValidator extends ModelValidator
         $errors = [];
 
         //Validating max
-        $errors["max"] = self::validateSpecific(
+        $errors["max"] = self::makeSpecificValidation(
             "max",
             function($v, $a){return ModelValidator::validateMax($v, $a);},
             $prop->getValue($model),
-            true,
             $prop);
 
         //Validating min
-        $errors["min"] = self::validateSpecific(
+        $errors["min"] = self::makeSpecificValidation(
             "min",
             function($v, $a){return ModelValidator::validateMin($v, $a);},
             $prop->getValue($model),
-            true,
             $prop);
 
         //Validate not null
-        $errors["notNull"] =  self::validateSpecific(
+        $errors["notNull"] =  self::makeSpecificValidation(
             "notNull",
             function($v){return ModelValidator::validateNotNull($v);},
             $prop->getValue($model),
-            false,
-            $prop);
+            $prop,
+            false);
 
         //Validate regex
-        $errors["regex"] =  self::validateSpecific(
+        $errors["regex"] =  self::makeSpecificValidation(
             "regex",
             function($v, $r){return preg_match($r, $v);},
             $prop->getValue($model),
-            true,
             $prop);
 
         //Filter where errors where not found

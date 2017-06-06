@@ -112,11 +112,12 @@ abstract class Model
      * return false automatically
      * @param int $validationMode
      * @param array $validationExceptions
+     * @param string $prefix The prefix that will applied
      * @return bool|array
      */
-    public function validate($validationMode = null, $validationExceptions = null){
+    public function validate($validationMode = null, $validationExceptions = null, $prefix = ""){
         if($this->isValidatorLoaded()){
-            return $this->getValidator()->validate($this, $validationMode, $validationExceptions);
+            return $this->getValidator()->validate($this, $validationMode, $validationExceptions, $prefix);
         }else{
             return true;
         }
