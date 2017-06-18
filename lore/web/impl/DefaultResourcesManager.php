@@ -30,7 +30,14 @@ class DefaultResourcesManager extends ResourcesManager
      */
     public function getContentType(): string
     {
-        return mime_content_type($this->filePath);
+        $mimeType = mime_content_type($this->filePath);
+
+        //If the file is a text file (like css, js, etc.) put the extension of the file as type like: text/<extension>
+        if(strpos($mimeType, "text/") !== false || strpos($mimeType, "inode/x-empty") !== false){
+            $mimeType = "text/" . $this->extension;
+        }
+
+        return $mimeType;
     }
 
     public function getResource(): string
