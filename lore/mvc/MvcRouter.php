@@ -129,6 +129,12 @@ abstract class MvcRouter extends Router
             }
         }
 
+        //If not action was inputted (like : /uri/) it will be considered that the controller is /index/uri/
+        if(strlen($action) === 0 && $explodedUri[0] !== "index"){
+            $action = $explodedUri[0];
+            $explodedUri[0] = "index";
+        }
+
         //Put the action in the exploded array and return it
         $explodedUri[] = $action;
 
