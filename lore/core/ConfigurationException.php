@@ -8,7 +8,7 @@ use Exception;
  * Class ConfigurationNotFoundException
  * @package lore
  */
-class ConfigurationNotFoundException extends \RuntimeException
+class ConfigurationException extends \RuntimeException
 {
     public function __construct($message = "", $code = 0, Exception $previous = null)
     {

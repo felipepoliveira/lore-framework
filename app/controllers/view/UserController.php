@@ -1,21 +1,14 @@
 <?php
 
-use lore\mvc\Controller;
+use lore\mvc\ViewController;
 
-require_once __DIR__ . "/../models/User.php";
+require_once __DIR__ . "/../../models/User.php";
 
-class UserController extends Controller
+class UserController extends ViewController
 {
     public function createNewModelInstance()
     {
         return new User();
-    }
-
-    /**
-     * @uri /
-     */
-    public function raiz(){
-        $this->redirect("user/form");
     }
 
     /**

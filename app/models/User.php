@@ -6,6 +6,14 @@ require_once "Address.php";
 class User extends Model
 {
 
+    function __construct($id = null, $name = null, $phone = null)
+    {
+        parent::__construct();
+        $this->id = $id;
+        $this->name = $name;
+        $this->phone = $phone;
+    }
+
     /**
      * @var Address
      * @notNull

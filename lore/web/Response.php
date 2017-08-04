@@ -12,6 +12,10 @@ use lore\Configurations;
  */
 class Response
 {
+    public const    CT_HTML = "text/html",
+                    CT_JSON = "application/json",
+                    CT_XML = "application/xml";
+
     /**
      * The http response code
      * @var integer
@@ -128,6 +132,14 @@ class Response
     public function getData() : array
     {
         return $this->data;
+    }
+
+    /**
+     * Add data to data array
+     * @param $data - The data that will be added into response
+     */
+    public function add($data){
+        $this->data[] = $data;
     }
 
     /**

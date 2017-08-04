@@ -18,7 +18,7 @@ return [
          * allowScriptProcessing: Flag that indicates if the resource manager will process php scripts
          * scriptExtensions: Define file php script file extensions
          */
-        "allowScriptProcessing" => false,
+        "allowScriptProcessing" => true,
         "scriptExtensions" => ["inc", "php"],
 
         /*
@@ -35,9 +35,13 @@ return [
         "file" => "lore/web/impl/DefaultResponseManager.php",
         "class" => "\\lore\\web\\DefaultResponseManager",
 
-        "service" => [
-            "defaultType" => "txt" //can be: html, json, txt or xml
-        ]
+        //The data formatter handler
+        "dataFormatter" => [
+            "file" => "lore/web/impl/DefaultDataFormatter.php",
+            "class" => "lore\\web\\DefaultDataFormatter",
+
+            "defaultFormatType" => "json" //can be: json, txt or xml
+        ],
     ],
 
     "stringProvider" => [

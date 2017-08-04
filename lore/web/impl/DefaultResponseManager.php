@@ -16,10 +16,9 @@ class DefaultResponseManager extends ResponseManager
     }
 
     protected function service(Response $response){
-        //Send the data if it was informed
-        if($response->getData() != null){
-            echo $response->getData();
-        }
+
+        echo $this->dataFormatter->format($response->getData());
+
     }
 
     protected function redirect(Response $response){

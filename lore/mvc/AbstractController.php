@@ -1,29 +1,26 @@
 <?php
 namespace lore\mvc;
 
-require_once __DIR__ . "/../utils/File.php";
-
 use lore\Lore;
-use lore\util\File;
 use lore\web\Response;
 
-abstract class Controller
+abstract class AbstractController
 {
 
     /**
      * @var MvcRouter
      */
-    private $mvcRouter;
+    protected $mvcRouter;
 
     /**
      * @var Response
      */
-    private $response;
+    protected $response;
 
     /**
      * @var Model
      */
-    private $model;
+    protected $model;
 
     /**
      * Controller constructor.
@@ -67,36 +64,6 @@ abstract class Controller
     public abstract function createNewModelInstance();
 
     /**
-     * @param string $view
-     * @param array $data
-     */
-    public function render(string $view, array $data = []){
-        //Get the full path to the view
-        $viewPath = File::checkFileInDirectories($view, $this->mvcRouter->getViewsDirectories());
-
-        //Tell that the response will not redirect
-        $this->response->setRedirect(false);
-
-        //If the view is found put data into the response
-        if($viewPath){
-            //Disable NOTICE reporting
-            error_reporting(E_ALL ^ E_NOTICE);
-
-            $this->response->setCode(200);
-            $this->response->setUri($viewPath);
-
-            //Put data into response
-            foreach ($data as $key => $value){
-                $this->response->put($key, $value);
-            }
-        }
-        //Otherwise, send code 404
-        else{
-            $this->response->setCode(404);
-        }
-    }
-
-    /**
      * Redirect the request to another controller method
      * @param string $uri
      */
@@ -109,17 +76,6 @@ abstract class Controller
             $this->response->setUri($uri);
         }
         $this->response->setRedirect(true);
-    }
-
-    /**
-     * Send data to the client. This method has to be used in api services
-     * @param mixed $data - The data that will be send
-     * @param int $code - The status code
-     */
-    public function send($data = null, $code = 200){
-        $this->response->setRedirect(false);
-        $this->response->setCode($code);
-        $this->response->setData($data);
     }
 
     public function putModelAsArrayInResponse(){
@@ -138,7 +94,7 @@ abstract class Controller
      */
     public function loadAndValidateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
         $this->loadModel();
-        return $this->validateModel($validationMode, $validationExceptions);
+        return $this->isModelValid($validationMode, $validationExceptions);
     }
 
     /**
@@ -157,7 +113,7 @@ abstract class Controller
      * @param array $validationExceptions
      * @return bool
      */
-    public function validateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
+    public function isModelValid($validationMode = ValidationModes::ALL, $validationExceptions = null){
         //Only validate if validation mode is inputed
         if(isset($validationMode)){
             //Validate the model and, if errors were founded, send it to the response

@@ -24,7 +24,7 @@ class ReflexiveModelLoader extends ModelLoader
         $this->viewsDirectories = Configurations::get("mvc", "models")["dirs"];
     }
 
-    public function load(Model $model, Request $request)
+    public function load($model, Request $request)
     {
         $this->loadRecursive($model, $request->requestDataAsRecursiveArray());
     }

@@ -1,6 +1,8 @@
 <?php
 namespace lore\mvc;
-require_once "Controller.php";
+require_once "AbstractController.php";
+require_once "ApiController.php"; //[FIX]
+require_once "ViewController.php"; //[FIX]
 require_once "Model.php";
 require_once __DIR__ . "/../web/Router.php";
 
@@ -27,7 +29,7 @@ abstract class MvcRouter extends Router
     private $modelsDirectories;
 
     /**
-     * @var Controller
+     * @var AbstractController
      */
     protected $controller;
 
@@ -66,9 +68,9 @@ abstract class MvcRouter extends Router
     }
 
     /**
-     * @return Controller
+     * @return AbstractController
      */
-    public function getController(): Controller
+    public function getController(): AbstractController
     {
         return $this->controller;
     }
@@ -129,12 +131,6 @@ abstract class MvcRouter extends Router
             }
         }
 
-        //If not action was inputted (like : /uri/) it will be considered that the controller is /index/uri/
-        if(strlen($action) === 0 && $explodedUri[0] !== "index"){
-            $action = $explodedUri[0];
-            $explodedUri[0] = "index";
-        }
-
         //Put the action in the exploded array and return it
         $explodedUri[] = $action;
 
@@ -169,7 +165,7 @@ abstract class MvcRouter extends Router
 
     /**
      * @param string $controllerName The name of the controller
-     * @return Controller
+     * @return AbstractController
      */
     public abstract function searchController($controllerName);
 }

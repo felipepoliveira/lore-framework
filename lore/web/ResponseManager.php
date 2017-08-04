@@ -2,10 +2,36 @@
 namespace lore\web;
 
 
+use lore\Configurations;
+use lore\util\ReflectionManager;
+
 abstract class ResponseManager
 {
+    /**
+     * @var DataFormatter
+     */
+    protected $dataFormatter;
+
     function __construct()
     {
+        $this->loadDataFormatter();
+    }
+
+    /**
+     * Get the data formatter object
+     * @see DataFormatter
+     * @return DataFormatter
+     */
+    public function getDataFormatter()
+    {
+        return $this->dataFormatter;
+    }
+
+    private function loadDataFormatter(){
+        $this->dataFormatter =
+            ReflectionManager::instanceFromFile(
+            Configurations::get("project", "responseManager")["dataFormatter"]["class"],
+            Configurations::get("project", "responseManager")["dataFormatter"]["file"]);
     }
 
     /**
