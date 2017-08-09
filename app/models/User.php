@@ -1,25 +1,9 @@
 <?php
-use lore\mvc\Model;
 
-require_once "Address.php";
+use lore\mvc\Model;
 
 class User extends Model
 {
-
-    function __construct($id = null, $name = null, $phone = null)
-    {
-        parent::__construct();
-        $this->id = $id;
-        $this->name = $name;
-        $this->phone = $phone;
-    }
-
-    /**
-     * @var Address
-     * @notNull
-     */
-    private $address;
-
     /**
      * @var integer
      */
@@ -27,18 +11,22 @@ class User extends Model
 
     /**
      * @var string
-     * @max 80
      * @min 2
+     * @max 30
      */
     private $name;
 
     /**
      * @var string
-     * @regex /^[0-9]{10,11}$/
+     * @max 120
+     * @regex /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/
      */
-    private $phone;
+    private $email;
 
-
+    /**
+     * @var string
+     */
+    private $password;
 
     /**
      * @return int
@@ -51,7 +39,7 @@ class User extends Model
     /**
      * @param int $id
      */
-    public function setId(int $id)
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -67,7 +55,7 @@ class User extends Model
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -75,34 +63,33 @@ class User extends Model
     /**
      * @return string
      */
-    public function getPhone()
+    public function getEmail()
     {
-        return $this->phone;
+        return $this->email;
     }
 
     /**
-     * @param string $phone
+     * @param string $email
      */
-    public function setPhone(string $phone)
+    public function setEmail($email)
     {
-        $this->phone = $phone;
+        $this->email = $email;
     }
 
     /**
-     * @return Address
+     * @return string
      */
-    public function getAddress()
+    public function getPassword()
     {
-        return $this->address;
+        return $this->password;
     }
 
     /**
-     * @param Address $address
+     * @param string $password
      */
-    public function setAddress(Address $address)
+    public function setPassword($password)
     {
-        $this->address = $address;
+        $this->password = $password;
     }
-
 
 }

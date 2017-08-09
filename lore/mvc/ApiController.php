@@ -50,7 +50,6 @@ abstract class ApiController extends AbstractController
         if(isset($data) && $data !== null){
             $this->formatToArray($data);
             $this->response->setData($data);
-            $this->response->add($data);
         }
     }
 

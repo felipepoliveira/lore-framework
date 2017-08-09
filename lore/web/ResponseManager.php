@@ -55,12 +55,19 @@ abstract class ResponseManager
         //Put headers
         $response->getCache()->putHeader();
 
+        //If the uri is carrying some data (view, redirection uri or a file, etc.)
         if(is_string($response->getUri())) {
+
+            //Check if the response is sending an resource (server file)
             if($response->isSendingResource()){
                 $this->sendResource($response);
+
+                //Check if the response is making an redirect
             }else if ($response->isRedirect()) {
                 $this->redirect($response);
             } else {
+
+                //Otherwise it will render the view
                 $this->render($response);
             }
         }else{

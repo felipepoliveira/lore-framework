@@ -283,6 +283,10 @@ class Response
         return $this->cache;
     }
 
+    public function hasData(){
+        return $this->data !== null && count($this->data) > 0;
+    }
+
     public function hasErrors(){
         return $this->errors !== null && count($this->errors) > 0;
     }

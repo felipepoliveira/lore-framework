@@ -141,14 +141,32 @@ abstract class MvcRouter extends Router
     {
         $explodedUri = $this->explodeUri($request->getRequestedUri());;
 
-        //Get and format the controller name
-        $this->controllerName = ucfirst($explodedUri[0]) . "Controller";
+        //Store the raw controller name into the property
+        $this->controllerName = $explodedUri[0];
+
+        //Format the controller name into a valid class name
+        $controllerName = ucfirst($this->controllerName)  . "Controller";
+
         //Get the action name
         $this->actionName = $explodedUri[1];
 
-        $this->controller = $this->searchController($this->controllerName);
+        //Try to find the controller...
+        $this->controller = $this->searchController($controllerName);
 
+        //If the controller fails to find assumes the controler as IndexController and the action as the given raw
+        // controller name
+        if($this->controller === null){
+            $this->controller = $this->searchController("IndexController");
+            $this->actionName = $this->controllerName;
+        }
+
+        //If the controller was found...
         if($this->controller !== null){
+
+            //Store the name of the controller into the variable
+            $this->controllerName = get_class($this->controller);
+
+            //Dispatch the method to controller to handle
             return $this->dispatchToController($this->controller, $this->actionName, $request);
         }else{
             return new Response(null, false, 404);

@@ -16,9 +16,19 @@ class DefaultResponseManager extends ResponseManager
     }
 
     protected function service(Response $response){
+        //Check if response contains errors
+        if($response->hasErrors()){
+            if($response->hasData()){
+                $response->put("errors", $response->getErrors());
+            }else{
+                $response->setData($response->getErrors());
+            }
+        }
 
-        echo $this->dataFormatter->format($response->getData());
-
+        //Only echo the data if it exists...
+        if($response->getData() !== null && (is_array($response->getData()) && count($response->getData()) > 0)){
+            echo $this->dataFormatter->format($response->getData());
+        }
     }
 
     protected function redirect(Response $response){

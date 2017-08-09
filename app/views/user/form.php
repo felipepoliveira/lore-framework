@@ -8,7 +8,7 @@ use lore\Lore;
     <title>Title</title>
 </head>
 <body>
-    <form action="<?=Lore::url("user/save")?>" method="post">
+    <form action="<?=Lore::url("users")?>" method="post">
         <fieldset id="fsUser">
             <h3>User info</h3>
             <div class="form-group">
@@ -17,38 +17,17 @@ use lore\Lore;
                 <?= Lore::error("model.name", "<div class='alert'>{value}</div>") ?>
             </div>
             <div class="form-group">
-                <label for="inputPhone">Phone</label>
-                <input type="tel" id="inputPhone" name="phone" value="<?=Lore::data("model.phone")?>">
-                <?= Lore::error("model.phone", "<div class='alert'>{value}</div>") ?>
+                <label for="inputEmail">Email</label>
+                <input type="email" id="inputPhone" name="email" value="<?=Lore::data("model.email")?>">
+                <?= Lore::error("model.email", "<div class='alert'>{value}</div>") ?>
             </div>
+            <div class="form-group">
+                <label for="inputPassword">Password</label>
+                <input type="password" id="inputPassword" name="password" value="<?=Lore::data("model.senha")?>">
+                <?= Lore::error("model.senha", "<div class='alert'>{value}</div>") ?>
+            </div>
+            <button type="submit">Save</button>
         </fieldset>
-        <fieldset id="fsUserAddress">
-            <h3>Address</h3>
-            <div class="form-group">
-                <label for="inputCity">City</label>
-                <input type="text" id="inputCity" name="address.city" value="<?=Lore::data("model.address.city")?>">
-                <?= Lore::error("model.address.city", "<div class='alert'>{value}</div>") ?>
-            </div>
-            <div class="form-group">
-                <label for="inputPublicPlace">Public place</label>
-                <input type="text" id="inputPublicPlace" name="address.publicPlace"
-                       value="<?=Lore::data("model.address.publicPlace")?>">
-                <?= Lore::error("model.address.publicPlace", "<div class='alert'>{value}</div>") ?>
-            </div>
-            <div class="form-group">
-                <label for="inputNumber">Number</label>
-                <input type="number" id="inputNumber" name="address.number"
-                       value="<?=Lore::data("model.address.number")?>">
-                <?= Lore::error("model.address.number", "<div class='alert'>{value}</div>") ?>
-            </div>
-            <div class="form-group">
-                <label for="a">Number</label>
-                <input type="number" id="a" name="address.test.a"
-                       value="<?=Lore::data("model.address.number")?>">
-                <?= Lore::error("model.address.test.a", "<div class='alert'>{value}</div>") ?>
-            </div>
-        </fieldset>
-        <button type="submit">Save</button>
     </form>
 </body>
 </html>

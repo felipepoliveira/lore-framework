@@ -1,11 +1,12 @@
 <?php
+
 use lore\mvc\ViewController;
 
 class IndexController extends ViewController
 {
     public function createNewModelInstance()
     {
-
+        return null;
     }
 
     /**
@@ -16,10 +17,10 @@ class IndexController extends ViewController
     }
 
     /**
-     * @uri /a
+     * @uri /register
      */
-    public function teste(){
-        $this->render("index.php");
+    public function userRegister(){
+        $this->render("user/form.php");
     }
 
 }
