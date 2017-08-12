@@ -94,12 +94,12 @@ abstract class AbstractController
      */
     public function loadAndValidateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
         $this->loadModel();
-        return $this->isModelValid($validationMode, $validationExceptions);
+        return $this->validateModel($validationMode, $validationExceptions);
     }
 
     /**
      * Load the model data with request given data (GET and POST array)
-     * @return void◘
+     * @return void
      */
     public function loadModel(){
         //Load the model data passing the request
@@ -113,10 +113,10 @@ abstract class AbstractController
      * @param array $validationExceptions
      * @return bool
      */
-    public function isModelValid($validationMode = ValidationModes::ALL, $validationExceptions = null){
+    public function validateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
         //Only validate if validation mode is inputed
         if(isset($validationMode)){
-            //Validate the model and, if errors were founded, send it to the response
+            //Validate the model and, if errors were found, send it to the response
             $validationResult = $this->model->validate($validationMode, $validationExceptions ?? [], "model.");
             if($validationResult !== true){
                 $this->response->setErrors($validationResult);
