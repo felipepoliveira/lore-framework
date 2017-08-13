@@ -18,7 +18,11 @@ class DefaultDataFormatter extends DataFormatter
 
     public function formatToXml($data)
     {
-        return xmlrpc_encode($data);
+        if(is_array($data)){
+
+        }else{
+            throw new \InvalidArgumentException("The \$data parameter must be  an array map");
+        }
     }
 
     public function formatAsContentType(): string

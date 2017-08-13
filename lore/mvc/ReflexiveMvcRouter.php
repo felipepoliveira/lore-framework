@@ -44,7 +44,7 @@ abstract class ReflexiveMvcRouter extends MvcRouter
     }
 
     /**
-     * @param  AbstractController$controller - The controller object that will invoke the method
+     * @param  Controller$controller - The controller object that will invoke the method
      * @param string $actionName - The name of the action (used to identify the method to be invoked
      * @param Request $request
      * @return \ReflectionMethod

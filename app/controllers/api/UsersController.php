@@ -13,6 +13,19 @@ class UsersController extends ApiController
 
     /**
      * @uri /
+     * @method get
+     */
+    public function teste(){
+        if($this->loadAndValidateModel()){
+            $this->send(null, 200);
+        }else{
+            $this->putErrorsInResponse();
+            $this->send(null, 400);
+        }
+    }
+
+    /**
+     * @uri /
      * @method post
      */
     public function register(){

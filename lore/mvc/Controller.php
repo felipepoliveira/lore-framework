@@ -4,7 +4,7 @@ namespace lore\mvc;
 use lore\Lore;
 use lore\web\Response;
 
-abstract class AbstractController
+abstract class Controller
 {
 
     /**
