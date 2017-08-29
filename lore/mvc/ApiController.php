@@ -3,8 +3,6 @@ namespace lore\mvc;
 
 
 use lore\Lore;
-use lore\web\DataFormatter;
-use lore\web\Response;
 
 abstract class ApiController extends Controller
 {

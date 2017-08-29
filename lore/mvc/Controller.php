@@ -69,7 +69,7 @@ abstract class Controller
      */
     public function redirect($uri){
         //Check if the redirect uri is relative of the project root
-        if($uri[0] !== "/"){
+        if(strlen($uri) > 0 && $uri[0] !== "/"){
             $this->response->setUri(Lore::app()->getContext()->getRelativePath() . "/$uri" );
         }else{
             //otherwise put the absolute path over the host domain
@@ -78,7 +78,7 @@ abstract class Controller
         $this->response->setRedirect(true);
     }
 
-    public function putModelAsArrayInResponse(){
+    public function putModelInResponse(){
         //Convert the model into an one-dimensional (plain) array an put the values into response
         foreach ($this->getModel()->toArray() as $key => $value){
             $this->getResponse()->put("model." .  $key, $value);

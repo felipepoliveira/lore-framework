@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . "/../../models/User.php";
 
 use lore\mvc\ApiController;
