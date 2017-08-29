@@ -1,7 +1,8 @@
 <?php
 namespace lore\web;
 
-require_once "ResponseCache.php";
+require_once "CacheHeader.php";
+require_once "RefreshHeader.php";
 
 use lore\Configurations;
 
@@ -64,9 +65,19 @@ class Response
     private $sendResource;
 
     /**
-     * @var ResponseCache
+     * @var HeaderEntity[] of HeaderEntity
      */
-    private $cache;
+    private $headerEntities = [];
+
+    /**
+     * @var CacheHeader
+     */
+    private $cacheHeader;
+
+    /**
+     * @var RefreshHeader
+     */
+    private $refreshHeader;
 
     /**
      * The http response code
@@ -95,7 +106,15 @@ class Response
         $this->headers["Content-Type"] = $contentType;
         $this->charset = $charset ?? Configurations::get("project", "response")["defaultCharset"];
         $this->sendResource = $sendResource;
-        $this->cache = new ResponseCache();
+        $this->loadHeaderEntities();
+    }
+
+    private function loadHeaderEntities(){
+        $this->cacheHeader = new CacheHeader();
+        $this->headerEntities[] = $this->cacheHeader;
+
+        $this->refreshHeader = new RefreshHeader();
+        $this->headerEntities[] = $this->refreshHeader;
     }
 
     /**
@@ -276,11 +295,28 @@ class Response
     }
 
     /**
-     * @return ResponseCache
+     * @return HeaderEntity[] with all HeaderEntity mapped objects
      */
-    public function getCache(): ResponseCache
+    public function getHeaderEntities()
     {
-        return $this->cache;
+        return $this->headerEntities;
+    }
+
+    /**
+     * @return CacheHeader
+     */
+    public function getCacheHeader(): CacheHeader
+    {
+        return $this->cacheHeader;
+    }
+
+    /**
+     * Get the refresh header entity of the response
+     * @return RefreshHeader
+     */
+    public function getRefreshHeader()
+    {
+        return $this->refreshHeader;
     }
 
     public function hasData(){

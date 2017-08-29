@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Felipe
+ * Usuario: Felipe
  * Date: 16/05/2017
  * Time: 09:28
  */
@@ -17,11 +17,8 @@ abstract class Session
      * @return bool
      */
     public static function contains($key){
-        if(self::isOpen()) {
-            return isset($_SESSION[$key]);
-        }else{
-            return false;
-        }
+        Session::open();
+        return isset($_SESSION[$key]);
     }
 
 
@@ -29,7 +26,9 @@ abstract class Session
      * Destroy and closes the session
      */
     public static function destroy(){
+        self::open();
         session_destroy();
+        $_SESSION = null;
     }
 
     /**
@@ -38,10 +37,8 @@ abstract class Session
      * @return mixed|null
      */
     public static function get($key){
-        if(Session::isOpen()){
-            return $_SESSION[$key];
-        }
-        return null;
+        Session::open();
+        return $_SESSION[$key];
     }
 
     /**

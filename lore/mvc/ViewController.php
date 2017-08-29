@@ -2,11 +2,11 @@
 namespace lore\mvc;
 
 require_once __DIR__ . "/../utils/File.php";
-require_once "AbstractController.php";
+require_once "Controller.php";
 
 use lore\util\File;
 
-abstract class ViewController extends AbstractController
+abstract class ViewController extends Controller
 {
     /**
      * @param string $view

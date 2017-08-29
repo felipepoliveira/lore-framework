@@ -2,6 +2,7 @@
 namespace lore;
 
 require_once "Application.php";
+require_once "DataStorage.php";
 
 abstract class Lore
 {
@@ -11,15 +12,29 @@ abstract class Lore
     private static $app;
 
     /**
+     * @var DataStorage
+     */
+    private static $serverData;
+
+    /**
      * The application singleton
      * @return Application
      */
     public static function app(){
         if(!isset(Lore::$app)){
+            Lore::$serverData = new DataStorage();
             Lore::$app = new Application();
         }
 
         return Lore::$app;
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function serverData() : DataStorage
+    {
+        return self::$serverData;
     }
 
     /**
@@ -37,22 +52,25 @@ abstract class Lore
         }
     }
 
-    public static function error($errorCode, $html){
-        if( Lore::app()->getResponse()->hasErrors() &&
-            isset(Lore::app()->getResponse()->getErrors()[$errorCode])) {
-            $errors = Lore::app()->getResponse()->getErrors()[$errorCode];
+    public static function error($errorCode, $html, $condition = true){
 
-            if(is_array($errors)){
-                $concatStr = "";
-                foreach ($errors as $error){
-                    $concatStr .= str_replace("{value}", $error, $html);
+        if($condition){
+            if( Lore::app()->getResponse()->hasErrors() &&
+                isset(Lore::app()->getResponse()->getErrors()[$errorCode])) {
+                $errors = Lore::app()->getResponse()->getErrors()[$errorCode];
+
+                if(is_array($errors)){
+                    $concatStr = "";
+                    foreach ($errors as $error){
+                        $concatStr .= str_replace("{value}", $error, $html);
+                    }
+                    return $concatStr;
+                }else{
+                    return str_replace("{value}", $errors, $html);
                 }
-                return $concatStr;
             }else{
-                return str_replace("{value}", $errors, $html);
+                return "";
             }
-        }else{
-            return "";
         }
     }
 
@@ -61,7 +79,7 @@ abstract class Lore
      * @param $path
      * @return string
      */
-    public static function res($path) : string {
+    public static function path($path) : string {
         return Lore::app()->getContext()->getRelativePath() . "/app/" . $path;
     }
 

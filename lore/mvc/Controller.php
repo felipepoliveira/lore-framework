@@ -4,7 +4,7 @@ namespace lore\mvc;
 use lore\Lore;
 use lore\web\Response;
 
-abstract class AbstractController
+abstract class Controller
 {
 
     /**
@@ -69,7 +69,7 @@ abstract class AbstractController
      */
     public function redirect($uri){
         //Check if the redirect uri is relative of the project root
-        if(strlen($uri) > 0 && $uri[0] !== "/"){
+        if($uri[0] !== "/"){
             $this->response->setUri(Lore::app()->getContext()->getRelativePath() . "/$uri" );
         }else{
             //otherwise put the absolute path over the host domain
@@ -78,7 +78,7 @@ abstract class AbstractController
         $this->response->setRedirect(true);
     }
 
-    public function putModelInResponse(){
+    public function putModelAsArrayInResponse(){
         //Convert the model into an one-dimensional (plain) array an put the values into response
         foreach ($this->getModel()->toArray() as $key => $value){
             $this->getResponse()->put("model." .  $key, $value);
@@ -94,12 +94,12 @@ abstract class AbstractController
      */
     public function loadAndValidateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
         $this->loadModel();
-        return $this->isModelValid($validationMode, $validationExceptions);
+        return $this->validateModel($validationMode, $validationExceptions);
     }
 
     /**
      * Load the model data with request given data (GET and POST array)
-     * @return void◘
+     * @return void
      */
     public function loadModel(){
         //Load the model data passing the request
@@ -113,10 +113,10 @@ abstract class AbstractController
      * @param array $validationExceptions
      * @return bool
      */
-    public function isModelValid($validationMode = ValidationModes::ALL, $validationExceptions = null){
+    public function validateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
         //Only validate if validation mode is inputed
         if(isset($validationMode)){
-            //Validate the model and, if errors were founded, send it to the response
+            //Validate the model and, if errors were found, send it to the response
             $validationResult = $this->model->validate($validationMode, $validationExceptions ?? [], "model.");
             if($validationResult !== true){
                 $this->response->setErrors($validationResult);

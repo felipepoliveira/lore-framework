@@ -1,9 +1,10 @@
 <?php
 namespace lore\mvc;
-require_once "AbstractController.php";
-require_once "ApiController.php"; //[FIX]
-require_once "ViewController.php"; //[FIX]
+require_once "Controller.php";
+require_once "ApiController.php";
+require_once "ViewController.php";
 require_once "Model.php";
+require_once "View.php";
 require_once __DIR__ . "/../web/Router.php";
 
 use lore\Configurations;
@@ -29,7 +30,7 @@ abstract class MvcRouter extends Router
     private $modelsDirectories;
 
     /**
-     * @var AbstractController
+     * @var Controller
      */
     protected $controller;
 
@@ -68,9 +69,9 @@ abstract class MvcRouter extends Router
     }
 
     /**
-     * @return AbstractController
+     * @return Controller
      */
-    public function getController(): AbstractController
+    public function getController(): Controller
     {
         return $this->controller;
     }
@@ -183,7 +184,7 @@ abstract class MvcRouter extends Router
 
     /**
      * @param string $controllerName The name of the controller
-     * @return AbstractController
+     * @return Controller
      */
     public abstract function searchController($controllerName);
 }

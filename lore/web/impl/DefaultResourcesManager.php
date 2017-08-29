@@ -57,7 +57,8 @@ class DefaultResourcesManager extends ResourcesManager
 
     public function isAResource(Request $request): bool
     {
-        return $this->extension !== "";
+        //Is considered a resource if it is a file and not a directory
+        return file_exists($this->filePath) && !is_dir($this->filePath);
     }
 
     public  function isAScript(Request $request): bool

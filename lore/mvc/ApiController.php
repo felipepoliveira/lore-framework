@@ -3,9 +3,10 @@ namespace lore\mvc;
 
 
 use lore\Lore;
+use lore\web\DataFormatter;
 use lore\web\Response;
 
-abstract class ApiController extends AbstractController
+abstract class ApiController extends Controller
 {
     /**
      * This method is not required in ApiController implementations, but is required
@@ -38,13 +39,34 @@ abstract class ApiController extends AbstractController
     }
 
     /**
+     * Put the identified errors in response. This method must be called after the AbstractController->validateModel
+     * or AbstractController->loadAndValidateModel. and before the ApiController->send method
+     * @see Controller
+     */
+    public function putErrorsInResponse(){
+        //Check if the response contains e'rrors
+        if($this->response->hasErrors()){
+            $this->response->put("errors", $this->response->getErrors());
+        }
+    }
+
+    /**
      * Send data to the client. This method has to be used in api services
      * @param mixed $data - The data that will be send
      * @param int $code - The status code
+     * @param  int $responseType - The response type. Use the DataFormatter constants (JSON, XML, TXT)
      */
-    public function send($data = null, $code = 200){
+    public function send($data = null, $code = 200, $responseType = null){
         $this->response->setRedirect(false);
         $this->response->setCode($code);
+
+        //If the response was not defined, set it as the default format type
+        if(!isset($responseType)){
+            $responseType = Lore::app()->getResponseManager()->getDataFormatter()->getDefaultFormatType();
+        }
+
+        //Define the format type and put the content type on response
+        Lore::app()->getResponseManager()->getDataFormatter()->setFormatType($responseType);
         $this->response->setContentType(Lore::app()->getResponseManager()->getDataFormatter()->formatAsContentType());
 
         if(isset($data) && $data !== null){

@@ -53,7 +53,10 @@ abstract class ResponseManager
         http_response_code($response->getCode());
 
         //Put headers
-        $response->getCache()->putHeader();
+        //$response->getCacheHeader()->putHeader();
+        foreach ($response->getHeaderEntities() as $headerEntity){
+            $headerEntity->putHeader();
+        }
 
         //If the uri is carrying some data (view, redirection uri or a file, etc.)
         if(is_string($response->getUri())) {
