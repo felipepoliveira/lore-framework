@@ -11,20 +11,19 @@ class IndexController extends ViewController
 
     /**
      * @uri /
+     * @method get
      */
     public function index(){
-        $teste['teste'] = "oi";
         $this->render("index.php",[
-            'teste'=>'testando suave',
-            'var'=>$teste
+            'teste'=>'oi',
         ]);
     }
 
     /**
      * @uri /register
+     * @method get
      */
-    public function userRegister(){
+    public function register(){
         $this->render("user/form.php");
     }
-
 }

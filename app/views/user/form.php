@@ -1,34 +1,46 @@
 <?php
-use lore\Lore;
 use lore\mvc\View;
 ?>
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Lore</title>
 </head>
 <body>
-    <form action="<?=Lore::url("users/")?>" method="post">
-        <fieldset id="fsUser">
-            <h3>User info</h3>
-            <div class="form-group">
-                <label for="inputName">Name</label>
-                <?= View::input("name", "type='text' id='inputName'") ?>
-                <?= Lore::error("model.name", "<div class='alert'>{value}</div>") ?>
+    <main>
+        <?=View::html("<h1>Errors was detected!</h1>", View::hasErrors())?>
+        <form action="<?=View::url("user/save")?>" method="post">
+            <div>
+                <label>
+                    <?=View::input("name")?>
+                </label>
+                <?=View::error("model.name", "<div class='alert'>{{value}}</div>")?>
             </div>
-            <div class="form-group">
-                <label for="inputEmail">Email</label>
-                <input type="email" id="inputPhone" name="email" value="<?=Lore::data("model.email")?>">
-                <?= Lore::error("model.email", "<div class='alert'>{value}</div>") ?>
+            <div>
+                <label>
+                    <?=View::input("email")?>
+                </label>
+                <?=View::error("model.email", "<div class='alert'>{{value}}</div>")?>
             </div>
-            <div class="form-group">
-                <label for="inputPassword">Password</label>
-                <input type="password" id="inputPassword" name="password" value="<?=Lore::data("model.senha")?>">
-                <?= Lore::error("model.senha", "<div class='alert'>{value}</div>") ?>
+            <div>
+                <label>
+                    <?=View::input("password")?>
+                </label>
+                <?=View::error("model.password", "<div class='alert'>{{value}}</div>")?>
             </div>
-            <button type="submit">Save</button>
-        </fieldset>
-    </form>
+            <div>
+                <label>
+                    <input type="text" placeholder="Confirm password">
+                </label>
+            </div>
+            <div>
+                <button type="submit">Save</button>
+            </div>
+        </form>
+    </main>
 </body>
 </html>

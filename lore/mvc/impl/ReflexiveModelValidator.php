@@ -31,7 +31,7 @@ class ReflexiveModelValidator extends ModelValidator
      */
     protected function getMessageFromStringProvider($msgCode, $value){
         $return = Lore::app()->getStringProvider()->getString($msgCode);
-        $return = str_replace("{value}", $value, $return); //Replace {value} tag
+        $return = str_replace("{{value}}", $value, $return); //Replace {{value}} tag
 
         return $return;
     }

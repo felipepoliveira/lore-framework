@@ -38,43 +38,6 @@ abstract class Lore
     }
 
     /**
-     * Return an response data stored in Response object.
-     * @param $code
-     * @return string|null
-     */
-    public static function data($code){
-        $data = Lore::app()->getResponse()->getData() ?? [];
-
-        if(isset($data[$code])){
-            return $data[$code];
-        }else{
-            return "";
-        }
-    }
-
-    public static function error($errorCode, $html, $condition = true){
-
-        if($condition){
-            if( Lore::app()->getResponse()->hasErrors() &&
-                isset(Lore::app()->getResponse()->getErrors()[$errorCode])) {
-                $errors = Lore::app()->getResponse()->getErrors()[$errorCode];
-
-                if(is_array($errors)){
-                    $concatStr = "";
-                    foreach ($errors as $error){
-                        $concatStr .= str_replace("{value}", $error, $html);
-                    }
-                    return $concatStr;
-                }else{
-                    return str_replace("{value}", $errors, $html);
-                }
-            }else{
-                return "";
-            }
-        }
-    }
-
-    /**
      * Return an relative path to application app root
      * @param $path
      * @return string
