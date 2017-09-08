@@ -135,6 +135,15 @@ class Application
     }
 
     /**
+     * Return the response manager object of the application
+     * @return ResponseManager
+     */
+    public function getResponseManager()
+    {
+        return $this->responseManager;
+    }
+
+    /**
      * Return the default string provider of the application. This object can be null if the string provider module
      * is not enabled in project
      * @return StringProvider
@@ -146,7 +155,7 @@ class Application
 
     /**
      * Load the application processing the request and creating the response object. This method can be only called once.
-     * The script responsible to do so is the bootstrap.php, that is called in any request that the server receives.
+     * The script responsible to call this method is the bootstrap.php, that is called in any request that the server receives.
      */
     public function load(){
         if(!$this->loaded){

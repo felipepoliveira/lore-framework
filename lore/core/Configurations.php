@@ -1,7 +1,7 @@
 <?php
 namespace lore;
 
-require_once "ConfigurationNotFoundException.php";
+require_once "ConfigurationException.php";
 
 /**
  * Stores and return the data inside the configuration files
@@ -43,7 +43,7 @@ abstract class Configurations
         if(file_exists($file)){
             Configurations::$configurations[$key] = require "$file";
         }else{
-            throw new ConfigurationNotFoundException("The file $file was not found while trying to load the
+            throw new ConfigurationException("The file $file was not found while trying to load the
             configurations.");
         }
     }
@@ -53,15 +53,15 @@ abstract class Configurations
      * @param $key - The configuration file key name
      * @param $configKey - The configuration key that will be returned
      * @return string
-     * @throws ConfigurationNotFoundException - If the configuration file or configuration is not found
+     * @throws ConfigurationException - If the configuration file or configuration is not found
      */
     public static function get($key, $configKey){
         $configs = Configurations::$configurations;
 
         if(!isset($configs[$key])){
-            throw new ConfigurationNotFoundException("The file \"$key\" was not already loaded.");
+            throw new ConfigurationException("The file \"$key\" was not already loaded.");
         }else if(!isset($configs[$key][$configKey])){
-            throw new ConfigurationNotFoundException("The configuration \"$configKey\" was not found inside the file
+            throw new ConfigurationException("The configuration \"$configKey\" was not found inside the file
             \"$key\". Please, create the configuration or check if it is commented");
         }else{
             return $configs[$key][$configKey];

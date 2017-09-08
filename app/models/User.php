@@ -1,35 +1,30 @@
 <?php
+
 use lore\mvc\Model;
-use lore\mvc\ValidatorMessageProvider;
 
 class User extends Model
 {
     /**
-     * @var int
-     * @number
+     * @var integer
      */
     private $id;
+
     /**
      * @var string
-     * @max 20
      * @min 2
+     * @max 30
      */
     private $name;
+
     /**
      * @var string
-     * @max 60
-     * @min 2
-     */
-    private $lastName;
-    /**
-     * @var string
-     * @regex /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/
+     * @max 120
+     * @regex /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/
      */
     private $email;
+
     /**
      * @var string
-     * @min 6
-     * @max 30
      */
     private $password;
 
@@ -44,7 +39,7 @@ class User extends Model
     /**
      * @param int $id
      */
-    public function setId(int $id)
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -60,25 +55,9 @@ class User extends Model
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName($name)
     {
         $this->name = $name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLastName()
-    {
-        return $this->lastName;
-    }
-
-    /**
-     * @param string $lastName
-     */
-    public function setLastName(string $lastName)
-    {
-        $this->lastName = $lastName;
     }
 
     /**
@@ -92,7 +71,7 @@ class User extends Model
     /**
      * @param string $email
      */
-    public function setEmail(string $email)
+    public function setEmail($email)
     {
         $this->email = $email;
     }
@@ -108,12 +87,9 @@ class User extends Model
     /**
      * @param string $password
      */
-    public function setPassword(string $password)
+    public function setPassword($password)
     {
         $this->password = $password;
     }
 
-    public function hashPassword(){
-        $this->setPassword(hash("sha256", $this->getPassword()));
-    }
 }

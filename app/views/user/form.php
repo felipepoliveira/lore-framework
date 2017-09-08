@@ -1,42 +1,34 @@
 <?php
 use lore\Lore;
+use lore\mvc\View;
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Loretask</title>
+    <title>Title</title>
 </head>
 <body>
-    <main>
-        <form action="<?=Lore::url("user/save");?>" method="post">
+    <form action="<?=Lore::url("users/")?>" method="post">
+        <fieldset id="fsUser">
+            <h3>User info</h3>
             <div class="form-group">
                 <label for="inputName">Name</label>
-                <input type="text" id="inputName" name="name" value="">
-                <?=Lore::error("User.name", "<div class='alert alert-danger'>%%</div>")?>
-            </div>
-            <div class="form-group">
-                <label for="inputLastName">Last name</label>
-                <input type="text" id="inputLastName" name="lastName" >
-                <?=Lore::error("User.lastName", "<div class='alert alert-danger'>%%</div>")?>
+                <?= View::input("name", "type='text' id='inputName'") ?>
+                <?= Lore::error("model.name", "<div class='alert'>{value}</div>") ?>
             </div>
             <div class="form-group">
                 <label for="inputEmail">Email</label>
-                <input type="text" id="inputEmail" name="email">
-                <?=Lore::error("User.email", "<div class='alert alert-danger'>%%</div>")?>
+                <input type="email" id="inputPhone" name="email" value="<?=Lore::data("model.email")?>">
+                <?= Lore::error("model.email", "<div class='alert'>{value}</div>") ?>
             </div>
             <div class="form-group">
-                <label for="inputPassword">Senha</label>
-                <input type="password" id="inputPassword" name="password" >
-                <?=Lore::error("User.password", "<div class='alert alert-danger'>%%</div>")?>
+                <label for="inputPassword">Password</label>
+                <input type="password" id="inputPassword" name="password" value="<?=Lore::data("model.senha")?>">
+                <?= Lore::error("model.senha", "<div class='alert'>{value}</div>") ?>
             </div>
-            <div class="form-group">
-                <label for="inputConfirmPassword">Confirm password</label>
-                <input type="password" id="inputConfirmPassword" name="password">
-            </div>
-            <button type="submit">Sign up</button>
-        </form>
-    </main>
+            <button type="submit">Save</button>
+        </fieldset>
+    </form>
 </body>
 </html>

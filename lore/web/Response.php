@@ -1,7 +1,8 @@
 <?php
 namespace lore\web;
 
-require_once "ResponseCache.php";
+require_once "CacheHeader.php";
+require_once "RefreshHeader.php";
 
 use lore\Configurations;
 
@@ -12,6 +13,10 @@ use lore\Configurations;
  */
 class Response
 {
+    public const    CT_HTML = "text/html",
+                    CT_JSON = "application/json",
+                    CT_XML = "application/xml";
+
     /**
      * The http response code
      * @var integer
@@ -22,13 +27,13 @@ class Response
      * The errors founded in the server request processing to be sent to client feedback
      * @var string[]
      */
-    private $errors;
+    private $errors = [];
 
     /**
      * The data that will be sent to the client
      * @var mixed
      */
-    private $data = null;
+    private $data = [];
 
     /**
      * The uri that store the resource that will be sent to the client
@@ -60,9 +65,19 @@ class Response
     private $sendResource;
 
     /**
-     * @var ResponseCache
+     * @var HeaderEntity[] of HeaderEntity
      */
-    private $cache;
+    private $headerEntities = [];
+
+    /**
+     * @var CacheHeader
+     */
+    private $cacheHeader;
+
+    /**
+     * @var RefreshHeader
+     */
+    private $refreshHeader;
 
     /**
      * The http response code
@@ -91,7 +106,15 @@ class Response
         $this->headers["Content-Type"] = $contentType;
         $this->charset = $charset ?? Configurations::get("project", "response")["defaultCharset"];
         $this->sendResource = $sendResource;
-        $this->cache = new ResponseCache();
+        $this->loadHeaderEntities();
+    }
+
+    private function loadHeaderEntities(){
+        $this->cacheHeader = new CacheHeader();
+        $this->headerEntities[] = $this->cacheHeader;
+
+        $this->refreshHeader = new RefreshHeader();
+        $this->headerEntities[] = $this->refreshHeader;
     }
 
     /**
@@ -125,16 +148,32 @@ class Response
      * Return the data that will be sent to the client
      * @return mixed
      */
-    public function getData()
+    public function getData() : array
     {
         return $this->data;
     }
 
     /**
-     * Defines the data that will be sent to the client
-     * @param mixed $data
+     * Add data to data array
+     * @param $data - The data that will be added into response
      */
-    public function setData($data)
+    public function add($data){
+        $this->data[] = $data;
+    }
+
+    /**
+     * Put an value into data map of the response
+     * @param $key
+     * @param $value
+     */
+    public function put($key, $value){
+        $this->data[$key] = $value;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data)
     {
         $this->data = $data;
     }
@@ -256,11 +295,32 @@ class Response
     }
 
     /**
-     * @return ResponseCache
+     * @return HeaderEntity[] with all HeaderEntity mapped objects
      */
-    public function getCache(): ResponseCache
+    public function getHeaderEntities()
     {
-        return $this->cache;
+        return $this->headerEntities;
+    }
+
+    /**
+     * @return CacheHeader
+     */
+    public function getCacheHeader(): CacheHeader
+    {
+        return $this->cacheHeader;
+    }
+
+    /**
+     * Get the refresh header entity of the response
+     * @return RefreshHeader
+     */
+    public function getRefreshHeader()
+    {
+        return $this->refreshHeader;
+    }
+
+    public function hasData(){
+        return $this->data !== null && count($this->data) > 0;
     }
 
     public function hasErrors(){

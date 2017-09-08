@@ -1,10 +1,7 @@
 <?php
 namespace lore\mvc;
 
-require_once __DIR__ . "/../utils/File.php";
-
 use lore\Lore;
-use lore\util\File;
 use lore\web\Response;
 
 abstract class Controller
@@ -13,12 +10,17 @@ abstract class Controller
     /**
      * @var MvcRouter
      */
-    private $mvcRouter;
+    protected $mvcRouter;
 
     /**
      * @var Response
      */
-    private $response;
+    protected $response;
+
+    /**
+     * @var Model
+     */
+    protected $model;
 
     /**
      * Controller constructor.
@@ -28,6 +30,7 @@ abstract class Controller
     {
         $this->mvcRouter = $mvcRouter;
         $this->response = new Response();
+        $this->model = $this->createNewModelInstance();
     }
 
     /**
@@ -47,30 +50,18 @@ abstract class Controller
     }
 
     /**
-     * @param string $view
-     * @param array $data
+     * @return Model
      */
-    public function render($view, $data = null){
-        //Get the full path to the view
-        $viewPath = File::checkFileInDirectories($view, $this->mvcRouter->getViewsDirectories());
-
-        //Tell that the response will not redirect
-        $this->response->setRedirect(false);
-
-        //If the view is found put data into the response
-        if($viewPath){
-            //Disable NOTICE reporting
-            error_reporting(E_ALL ^ E_NOTICE);
-
-            $this->response->setCode(200);
-            $this->response->setData($data);
-            $this->response->setUri($viewPath);
-        }
-        //Otherwise, send code 404
-        else{
-            $this->response->setCode(404);
-        }
+    public function getModel(): Model
+    {
+        return $this->model;
     }
+
+    /**
+     * Return the controller model
+     * @return Model|null
+     */
+    public abstract function createNewModelInstance();
 
     /**
      * Redirect the request to another controller method
@@ -87,33 +78,46 @@ abstract class Controller
         $this->response->setRedirect(true);
     }
 
-    /**
-     * Send data to the client. This method has to be used in api services
-     * @param mixed $data - The data that will be send
-     * @param int $code - The status code
-     */
-    public function send($data = null, $code = 200){
-        $this->response->setRedirect(false);
-        $this->response->setCode($code);
-        $this->response->setData($data);
+    public function putModelInResponse(){
+        //Convert the model into an one-dimensional (plain) array an put the values into response
+        foreach ($this->getModel()->toArray() as $key => $value){
+            $this->getResponse()->put("model." .  $key, $value);
+        }
     }
 
     /**
-     * Load the model data with request given data (GET and POST array), validates it if $validate is true
-     * and, in case of error, put the errors into response
-     * @param Model $model
+     * Load the model data with request given data (GET and POST array), validates it if $validate is true and,
+     * in case of error, put the errors into response
      * @param int $validationMode
      * @param array $validationExceptions
      * @return bool
      */
-    public function load(Model $model, $validationMode = null, $validationExceptions = null){
-        //Load the model data passing the request
-        $model->load(Lore::app()->getRequest());
+    public function loadAndValidateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
+        $this->loadModel();
+        return $this->validateModel($validationMode, $validationExceptions);
+    }
 
+    /**
+     * Load the model data with request given data (GET and POST array)
+     * @return void
+     */
+    public function loadModel(){
+        //Load the model data passing the request
+        $this->model->load(Lore::app()->getRequest());
+    }
+
+    /**
+     * validate the controller model
+     * and, in case of error, put the errors into response
+     * @param int $validationMode
+     * @param array $validationExceptions
+     * @return bool
+     */
+    public function validateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
         //Only validate if validation mode is inputed
         if(isset($validationMode)){
-            //Validate the model and, if errors were founded, send it to the response
-            $validationResult = $model->validate($validationMode, $validationExceptions ?? []);
+            //Validate the model and, if errors were found, send it to the response
+            $validationResult = $this->model->validate($validationMode, $validationExceptions ?? [], "model.");
             if($validationResult !== true){
                 $this->response->setErrors($validationResult);
                 return false;

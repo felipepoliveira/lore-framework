@@ -5,6 +5,7 @@ require_once "MvcRouter.php";
 require_once __DIR__ .  "/../utils/File.php";
 require_once __DIR__ .  "/../utils/ReflectionManager.php";
 
+use lore\Lore;
 use lore\util\File;
 use lore\util\ReflectionManager;
 use lore\web\Request;
@@ -14,9 +15,14 @@ abstract class ReflexiveMvcRouter extends MvcRouter
 {
     public  function dispatchToController($controller, $actionName, $request): Response
     {
+
         $method = $this->searchMethod($this->controller, $this->getActionName(), $request);
 
         if($method != null){
+
+            //Store the request action name in server metadata
+            Lore::serverData()->store("action", $actionName);
+
             $args = $this->getControllerMethodArguments();
             $method->invokeArgs($this->controller, $args);
             return $this->controller->getResponse();

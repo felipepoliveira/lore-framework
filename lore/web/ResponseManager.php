@@ -2,10 +2,36 @@
 namespace lore\web;
 
 
+use lore\Configurations;
+use lore\util\ReflectionManager;
+
 abstract class ResponseManager
 {
+    /**
+     * @var DataFormatter
+     */
+    protected $dataFormatter;
+
     function __construct()
     {
+        $this->loadDataFormatter();
+    }
+
+    /**
+     * Get the data formatter object
+     * @see DataFormatter
+     * @return DataFormatter
+     */
+    public function getDataFormatter()
+    {
+        return $this->dataFormatter;
+    }
+
+    private function loadDataFormatter(){
+        $this->dataFormatter =
+            ReflectionManager::instanceFromFile(
+            Configurations::get("project", "responseManager")["dataFormatter"]["class"],
+            Configurations::get("project", "responseManager")["dataFormatter"]["file"]);
     }
 
     /**
@@ -27,14 +53,24 @@ abstract class ResponseManager
         http_response_code($response->getCode());
 
         //Put headers
-        $response->getCache()->putHeader();
+        //$response->getCacheHeader()->putHeader();
+        foreach ($response->getHeaderEntities() as $headerEntity){
+            $headerEntity->putHeader();
+        }
 
+        //If the uri is carrying some data (view, redirection uri or a file, etc.)
         if(is_string($response->getUri())) {
+
+            //Check if the response is sending an resource (server file)
             if($response->isSendingResource()){
                 $this->sendResource($response);
+
+                //Check if the response is making an redirect
             }else if ($response->isRedirect()) {
                 $this->redirect($response);
             } else {
+
+                //Otherwise it will render the view
                 $this->render($response);
             }
         }else{

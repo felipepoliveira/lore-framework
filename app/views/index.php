@@ -1,3 +1,6 @@
+<?php
+use lore\Lore;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +8,6 @@
     <title>Title</title>
 </head>
 <body>
-    <h1>Index</h1>
+    <a href="{{L:url('user/form')}}">Vai</a>
 </body>
 </html>

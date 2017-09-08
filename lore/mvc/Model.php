@@ -1,6 +1,8 @@
 <?php
 namespace lore\mvc;
 
+require_once "NoModelLoaderDefinedException.php";
+
 
 use lore\Configurations;
 use lore\util\ReflectionManager;
@@ -91,15 +93,31 @@ abstract class Model
     }
 
     /**
+     * Serialize the model to an array. If an model loader is defined this method use it to do the serialization.
+     * Otherwise an exception will be thrown
+     * @param $args
+     * @return array
+     */
+    public function toArray(...$args) : array {
+        if($this->isLoaderLoaded()){
+            return $this->getLoader()->toArray($this);
+        }else{
+            throw new NoModelLoaderDefinedException("An model loader is needed to do the array serialization. Check
+            if an ModelLoader implementation is defined in config/mvc.php file");
+        }
+    }
+
+    /**
      * Call Model::validator to validated the model. If the validator is not loaded (Model::isValidatorLoaded used)
      * return false automatically
      * @param int $validationMode
      * @param array $validationExceptions
+     * @param string $prefix The prefix that will applied
      * @return bool|array
      */
-    public function validate($validationMode = null, $validationExceptions = null){
+    public function validate($validationMode = null, $validationExceptions = null, $prefix = ""){
         if($this->isValidatorLoaded()){
-            return $this->getValidator()->validate($this, $validationMode, $validationExceptions);
+            return $this->getValidator()->validate($this, $validationMode, $validationExceptions, $prefix);
         }else{
             return true;
         }
