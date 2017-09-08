@@ -92,4 +92,9 @@ class User extends Model
         $this->password = $password;
     }
 
+    public function serializeToSession(){
+        return [
+            "id" => $this->getId()
+        ];
+    }
 }

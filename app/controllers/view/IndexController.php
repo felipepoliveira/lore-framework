@@ -11,6 +11,7 @@ class IndexController extends ViewController
 
     /**
      * @uri /
+     * @method get
      */
     public function index(){
         $this->render("index.php");
@@ -18,9 +19,9 @@ class IndexController extends ViewController
 
     /**
      * @uri /register
+     * @method get
      */
-    public function userRegister(){
+    public function register(){
         $this->render("user/form.php");
     }
-
 }

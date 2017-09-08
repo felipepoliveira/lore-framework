@@ -1,13 +1,17 @@
 <?php
-use lore\Lore;
+use lore\mvc\View;
 ?>
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Loretitle</title>
 </head>
 <body>
-    <a href="<?=Lore::url("user/form")?>">Vai</a>
+    <a href="<?=View::url("register")?>">Register</a>
+    <a href="<?=View::url("login")?>">Sign in</a>
 </body>
 </html>

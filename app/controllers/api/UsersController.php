@@ -11,12 +11,14 @@ class UsersController extends ApiController
     }
 
     /**
-     * @uri /
+     * @uri /$id
+     * @method get
      */
-    public function teste(){
-        $this->loadModel();
-        $this->send([
-            "model" => $this->getModel()
-        ]);
+    public function save($id){
+        if(isset($id)){
+
+        }else{
+
+        }
     }
 }
