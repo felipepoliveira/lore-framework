@@ -30,9 +30,15 @@ class ViewPreProcessor
 
     private function processPage(){
         $htmlContent = file_get_contents($this->view);
-        preg_match_all("{{[A-z0-9\"'!@#$%¨&*()_+'`/´[\]^:;::\-<>]*}}",$htmlContent,$matches);
-        var_dump($matches[0]);
-        die();
+        preg_match_all("{{{[A-z0-9\"'!@#$%¨&*()_+'`/´[\]^:;\-<>]*}}}",$htmlContent,$matches);
+        extract($this->data);
+        foreach ($matches[0] as $expression){
+            $start = strrpos($expression,"{");
+            $end = strrpos($expression, "}")-2;
+            $expression = substr($expression,2,($end-$start));
+            eval('$value = '.$expression.';');
+            $htmlContent = str_replace("{{".$expression."}}",$value,$htmlContent);
+        }
         $this->page = $htmlContent;
     }
 

@@ -1,6 +1,3 @@
-<?php
-use lore\Lore;
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +5,7 @@ use lore\Lore;
     <title>Title</title>
 </head>
 <body>
-    <a href="{{L:url('user/form')}}">Vai</a>
+    {{$teste}}
+    {{$var['teste']}}
 </body>
 </html>

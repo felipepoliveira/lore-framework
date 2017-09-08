@@ -13,7 +13,11 @@ class IndexController extends ViewController
      * @uri /
      */
     public function index(){
-        $this->render("index.php");
+        $teste['teste'] = "oi";
+        $this->render("index.php",[
+            'teste'=>'testando suave',
+            'var'=>$teste
+        ]);
     }
 
     /**
