@@ -46,6 +46,8 @@ abstract class MvcRouter extends Router
 
     function __construct()
     {
+        parent::__construct();
+
         Configurations::load("mvc", __DIR__ . "/../../app/config/mvc.php");
         $this->controllersDirectories = Configurations::get("mvc", "controllers")["dirs"];
         $this->modelsDirectories = Configurations::get("mvc", "models")["dirs"];

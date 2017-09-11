@@ -14,7 +14,7 @@ return [
 
         "filter" => [
             "file" => "lore/web/impl/DefaultFilterRouter.php",
-            "file" => "\\lore\\web\\impl\\DefaultFilterRouter",
+            "class" => "\\lore\\web\\impl\\DefaultFilterRouter",
 
             "*" => "app/filters/DefaultFilter.php", //Any URI will be filtered by the "DefaultFilter.php"
             "app/*" => "app/filters/AppFilter.php", //Any URI that starts with "app/*" will be handled by the "AppFilter.php"

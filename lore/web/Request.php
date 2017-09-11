@@ -67,6 +67,14 @@ class Request
     }
 
     /**
+     * @param string $requestedUri
+     */
+    function setRequestedUri(string $requestedUri)
+    {
+        $this->requestedUri = $requestedUri;
+    }
+
+    /**
      * Return the requested data depending on resquest method. If the request method is post or put the request data
      * is returned ver the $_POST array, otherwise is returned from $_GET array
      * @return array
