@@ -75,11 +75,22 @@ class Application
     {
         $this->loadConfigurations();
         $this->context = new ApplicationContext();
-        $this->request = new Request($this->context);
         $this->stringProvider = $this->loadStringProvider(); //Can be null
+    }
+
+    /**
+     * Instantiate all request objects used in application.
+     */
+    protected function createRequestEntities(){
+        $this->request = new Request($this->context);
         $this->router = $this->loadRouter();
-        $this->responseManager = $this->loadResponseManager();
         $this->resourcesManager = $this->loadResourcesManager();
+    }
+
+    /**
+     */
+    protected function createResponseEntities(){
+        $this->responseManager = $this->loadResponseManager();
     }
 
     /**
@@ -224,6 +235,8 @@ class Application
      * return an Response object that will be stored in Application::response.
      */
     protected function handleRequest(){
+        $this->createRequestEntities();
+
         //If the request do not request an resource route the request
         if(!$this->resourcesManager->isAResource($this->request)){
             $this->response = $this->router->route($this->request);
@@ -238,6 +251,8 @@ class Application
      * send the response stored in this class to the client
      */
     protected function handleResponse(){
+        $this->createResponseEntities();
+
         $this->responseManager->handle($this->response);
     }
 }

@@ -8,8 +8,8 @@ return [
         "file" => "lore/mvc/impl/PrettyUrlMvcRouter.php",
         "class" => "\\lore\\mvc\\PrettyUrlMvcRouter",
         "rules" => [
-            "rest/v1/*" => "app/controllers/api/rest/v1/*", //Any URI the starts with "rest/v1/" will be handled by files inside "app/controllers/api/rest/v1/"
-            "aUniqueURI" => "app/controllers/view/ASpecialController.php", // //The URI "aUniqueURI" will be handled by ASpecialController.php
+            "/rest/v1/*" => ["app/controllers/rest/v1"], //Any URI the starts with "rest/v1/" will be handled by files inside "app/controllers/api/rest/v1/"
+            "/aUniqueURI" => "app/controllers/view/ASpecialController.php", // //The URI "aUniqueURI" will be handled by ASpecialController.php
         ],
 
         "filter" => [

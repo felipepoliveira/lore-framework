@@ -8,6 +8,7 @@ require_once "View.php";
 require_once __DIR__ . "/../web/Router.php";
 
 use lore\Configurations;
+use lore\web\Request;
 use lore\web\Response;
 use lore\web\Router;
 
@@ -140,8 +141,21 @@ abstract class MvcRouter extends Router
         return $explodedUri;
     }
 
+    protected function handleRouteRules(Request $request){
+        if(($routeRule = $this->matchRouteRule($request))){
+            //Put the produced uri into the request requested uri
+            $request->setRequestedUri($routeRule->produceUri($request));
+
+            //Define the scripts that can handle the request
+            $this->controllersDirectories = $routeRule->getScripts();
+        }
+    }
+
     public  function route($request): Response
     {
+        //Handle the route rules before process the action
+        $this->handleRouteRules($request);
+
         $explodedUri = $this->explodeUri($request->getRequestedUri());;
 
         //Store the raw controller name into the property

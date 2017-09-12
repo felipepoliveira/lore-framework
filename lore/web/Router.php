@@ -14,7 +14,7 @@ abstract class Router
     }
 
     /**
-     * @var RouteRule
+     * @var RouteRule[]
      */
     protected $routeRules = [];
 
@@ -27,9 +27,26 @@ abstract class Router
     }
 
     /**
+     * Return the RouteRule that match with the requested sent by the client. If any route rule match the
+     * request it returns false
+     * @param $request
+     * @return bool|RouteRule
+     */
+    public function matchRouteRule($request){
+        foreach ($this->routeRules as $routeRule) {
+            if($routeRule->match($request)) {
+                return $routeRule;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Route the request to an entity that handles the request
      * @param Request $request - The request object
      * @return Response - The response given by the router
      */
     public abstract function route($request) : Response;
+
 }

@@ -32,17 +32,13 @@ class RouteRule
      */
     protected const PREFIX_TAG = "/*";
 
+    protected const TYPE_SPECIFIC = 0, TYPE_PREFIXED = 1;
+
     /**
      * The raw uri requested by the client
      * @var string
      */
-    private $rawUri;
-
-    /**
-     * The processed uri by the rule
-     * @var string
-     */
-    private $producedUri;
+    private $routeRule;
 
     /**
      * Scripts that will handle the request
@@ -51,38 +47,134 @@ class RouteRule
     private $scripts = [];
 
     /**
-     * The request made by the client
-     * @var Request
+     * Enum (check RouteRule::TYPE_* constants) of types of route rules.
+     * The supported types of route rules is:
+     * SPECIFIC = 0
+     * PREFIXED = 1
+     * @var int
      */
-    private $request;
+    private $type;
 
 
+    /**
+     * Create an instance of a RouteRule object.
+     * When an object of this class is instantiated the uri is interpreted to validated and identify the given
+     * rule.
+     * @param Request $request
+     * @param $uri
+     * @param $scripts
+     */
     function __construct(Request $request, $uri, $scripts)
     {
-        $this->digestUri($request, $uri, $scripts);
+        $this->digestUri($uri, $scripts);
     }
 
-    protected function digestUri(Request $request, $uri, $scripts){
+    /**
+     * @return string
+     */
+    public function getRouteRule(): string
+    {
+        return $this->routeRule;
+    }
+
+    /**
+     * @return array
+     */
+    public function getScripts(): array
+    {
+        return $this->scripts;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType(): int
+    {
+        return $this->type;
+    }
+
+    /**
+     * Remove the PREFIX_TAG from the route rule uri
+     */
+    protected function digestPrefixedUri(){
+        $this->routeRule = substr($this->routeRule, 0 , strlen($this->routeRule) - strlen(self::PREFIX_TAG));
+    }
+
+    /**
+     * Digest the uri to identify witch type of route rule it is
+     * @param $uri
+     * @param $scripts
+     * @throws \Exception
+     */
+    protected function digestUri($uri, $scripts){
         if(self::isValidUri($uri)){
             //Store the request of the client
-            $this->request = $request;
             $this->scripts = $scripts;
+            $this->routeRule = $uri;
 
-            //Check special cases
+            //Check type of rule and digest it
             if(self::isPrefixed($uri)){
-                echo "Is prefixed";
+                $this->digestPrefixedUri();
+                $this->type = self::TYPE_PREFIXED;
+            }else{
+                $this->type = self::TYPE_SPECIFIC;
             }
         }else{
             throw new \Exception("The uri $uri is not a valid URI");
         }
     }
 
+
     public static function isPrefixed($uri){
         return strrpos($uri, self::PREFIX_TAG) === (strlen($uri) - strlen(self::PREFIX_TAG));
     }
 
-    public static function producePrefixedUri($uri){
+    /**
+     * @param Request $request
+     * @return bool - Flag indicating if the request of the client match this rule
+     */
+    public function match(Request $request){
+        switch ($this->type){
+            case self::TYPE_PREFIXED:
+                return $this->matchPrefixed($request);
+            case self::TYPE_SPECIFIC:
+                return $this->matchSpecific($request);
+            default:
+                return false;
+        }
+    }
 
+    protected function matchPrefixed(Request $request){
+        $routeRuleLength = strlen($this->routeRule);
+        return substr($request->getRequestedUri(), 0, $routeRuleLength) == $this->routeRule;
+    }
+
+    /**
+     * @param Request $request
+     * @return bool - Flag indicating if the request match the rule as 'specific type'
+     */
+    protected function matchSpecific(Request $request){
+        return $request->getRequestedUri() === $this->routeRule;
+    }
+
+    /**
+     * Produce the uri from the request formatting it to be handled
+     * @param Request $request
+     * @return bool|string
+     */
+    public function produceUri(Request $request){
+        switch ($this->type){
+            case self::TYPE_PREFIXED:
+                return $this->producePrefixedUri($request);
+            case self::TYPE_SPECIFIC:
+                return $request->getRequestedUri();
+            default:
+                return false;
+        }
+    }
+
+    protected function producePrefixedUri(Request $request) : string {
+        return substr($request->getRequestedUri(), strlen($this->routeRule), strlen($request->getRequestedUri()));
     }
 
     public static function isValidUri($uri){
