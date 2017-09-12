@@ -17,6 +17,7 @@ class IndexController extends ViewController
         $this->render("index.php",[
             'teste'=>'oi',
         ]);
+
     }
 
     /**

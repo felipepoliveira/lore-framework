@@ -11,6 +11,11 @@ use lore\mvc\View;
     <title>Loretitle</title>
 </head>
 <body>
+<<<<<<< HEAD
     {{$teste}}
+=======
+    <a href="<?=View::url("register")?>">Register</a>
+    <a href="<?=View::url("login")?>">Sign in</a>
+>>>>>>> 638e602edf14a4c922798fd94f317d12ee9849a6
 </body>
 </html>
