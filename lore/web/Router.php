@@ -18,11 +18,15 @@ abstract class Router
      */
     protected $routeRules = [];
 
+    /**
+     * Load all route rules from the project => router => rules configuration file
+     */
     protected function loadRouteRules(){
         $routeRules = Configurations::get("project", "router")["rules"] ?? [];
 
+        //Add each route rule from the configuration file into the route rules list
         foreach ($routeRules as $uri => $script) {
-            $this->routeRules[] = new RouteRule(Lore::app()->getRequest(), $uri, $script);
+            $this->routeRules[] = new RouteRule($uri, $script);
         }
     }
 

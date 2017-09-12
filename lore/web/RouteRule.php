@@ -60,11 +60,10 @@ class RouteRule
      * Create an instance of a RouteRule object.
      * When an object of this class is instantiated the uri is interpreted to validated and identify the given
      * rule.
-     * @param Request $request
      * @param $uri
      * @param $scripts
      */
-    function __construct(Request $request, $uri, $scripts)
+    function __construct($uri, $scripts)
     {
         $this->digestUri($uri, $scripts);
     }
