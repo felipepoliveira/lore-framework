@@ -106,31 +106,33 @@ class RouteRule
      * @throws \Exception
      */
     protected function digestUri($uri, $scripts){
-        if(self::isValidUri($uri)){
-            //Store the request of the client
-            $this->scripts = $scripts;
-            $this->routeRule = $uri;
+        //Store the request of the client
+        $this->scripts = $scripts;
+        $this->routeRule = $uri;
 
-            //Check type of rule and digest it
-            if(self::isPrefixed($uri)){
-                $this->digestPrefixedUri();
-                $this->type = self::TYPE_PREFIXED;
-            }else{
-                $this->type = self::TYPE_SPECIFIC;
-            }
+        //Check type of rule and digest it
+        if(self::isPrefixed($uri)){
+            $this->digestPrefixedUri();
+            $this->type = self::TYPE_PREFIXED;
         }else{
-            throw new \Exception("The uri $uri is not a valid URI");
+            $this->type = self::TYPE_SPECIFIC;
         }
     }
 
-
+    /**
+     * Return flag indicating if the given uri is an prefixed type.
+     * Example of valid prefixed uri: "/uri/*"
+     * @param $uri
+     * @return bool
+     */
     public static function isPrefixed($uri){
         return strrpos($uri, self::PREFIX_TAG) === (strlen($uri) - strlen(self::PREFIX_TAG));
     }
 
     /**
+     * Flag indicating if the request of the client match this rule
      * @param Request $request
-     * @return bool - Flag indicating if the request of the client match this rule
+     * @return bool
      */
     public function match(Request $request){
         switch ($this->type){
@@ -142,7 +144,11 @@ class RouteRule
                 return false;
         }
     }
-
+    /**
+     * Return an flag indicating if the rule match in prefixed uri type
+     * @param Request $request
+     * @return bool
+     */
     protected function matchPrefixed(Request $request){
         $routeRuleLength = strlen($this->routeRule);
         return substr($request->getRequestedUri(), 0, $routeRuleLength) == $this->routeRule;
@@ -172,11 +178,14 @@ class RouteRule
         }
     }
 
+    /**
+     * Produce an prefixed uri removing the prefix of the requested uri from Request.
+     * Example: if the Request::getRequestedUri is "/rest/test" and the route rule is "/rest/*" it
+     * produces the uri: "/test" removing the prefix
+     * @param Request $request
+     * @return string
+     */
     protected function producePrefixedUri(Request $request) : string {
         return substr($request->getRequestedUri(), strlen($this->routeRule), strlen($request->getRequestedUri()));
-    }
-
-    public static function isValidUri($uri){
-        return true;
     }
 }
