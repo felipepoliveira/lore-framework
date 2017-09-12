@@ -76,6 +76,7 @@ class Application
         $this->loadConfigurations();
         $this->context = new ApplicationContext();
         $this->stringProvider = $this->loadStringProvider(); //Can be null
+        $this->responseManager = $this->loadResponseManager();
     }
 
     /**
@@ -90,7 +91,7 @@ class Application
     /**
      */
     protected function createResponseEntities(){
-        $this->responseManager = $this->loadResponseManager();
+
     }
 
     /**

@@ -32,6 +32,13 @@ class UserController extends ViewController
     }
 
     /**
+     * @uri /form
+     */
+    public function form(){
+        $this->render("user/form.php");
+    }
+
+    /**
      * @uri /save
      * @method post
      */
