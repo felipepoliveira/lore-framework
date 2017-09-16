@@ -194,6 +194,10 @@ class Application
             Configurations::get("project", "responseManager")["file"]);
     }
 
+    /**
+     * Load the ResourcesManager defined in the project.php config file in: "resourceManager" property
+     * @return ResourcesManager
+     */
     private function loadResourcesManager(){
         return ReflectionManager::instanceFromFile( Configurations::get("project", "resourcesManager")["class"],
             Configurations::get("project", "resourcesManager")["file"], $this->request);

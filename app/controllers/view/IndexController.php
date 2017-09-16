@@ -10,18 +10,11 @@ class IndexController extends ViewController
     }
 
     /**
+     * Render the index.php view
      * @uri /
      * @method get
      */
     public function index(){
         $this->render("index.php");
-    }
-
-    /**
-     * @uri /register
-     * @method get
-     */
-    public function register(){
-        $this->render("user/form.php");
     }
 }

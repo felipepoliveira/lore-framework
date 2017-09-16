@@ -11,7 +11,7 @@ use lore\mvc\View;
     <title>Loretitle</title>
 </head>
 <body>
-    <a href="<?=View::url("register")?>">Register</a>
-    <a href="<?=View::url("login")?>">Sign in</a>
+    <a href="<?=View::url("user/form1")?>">Form 1</a>
+    <a href="<?=View::url("user/form2")?>">Form 2</a>
 </body>
 </html>

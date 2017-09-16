@@ -5,7 +5,7 @@ namespace lore\web;
  * Represent an route rule that is defined in the configuration file: project => router => rules.
  * The rules can be:
  * ------------------------------------------------
- * Prefixed: An valid uri that ends with '*'
+ * Prefixed: An valid uri that ends with '/*'
  * uri: api/*
  * use: "rest/*" => "app/controllers/rest/*"
  * ===
@@ -14,7 +14,6 @@ namespace lore\web;
  * any script in "app/controllers/rest/v1" folder
  * requested uri: "rest/v1/user"
  * produces the uri: user/
- * to be handles by
  *===
  * Example 2
  * configured uri: "adm/*" => "app/controllers/view/AdminController.php" (all uri that starts with "adm/*" will be

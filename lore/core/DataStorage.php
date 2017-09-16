@@ -1,14 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Felipe Oliveira
- * Date: 13/08/2017
- * Time: 18:15
- */
-
 namespace lore;
 
-
+/**
+ * Class DataStorage - Class that represents an data storage map.
+ * @package lore
+ */
 class DataStorage
 {
     /**
@@ -25,15 +21,30 @@ class DataStorage
         $this->data[$key] = $value;
     }
 
-
+    /**
+     * Return an value stored associated with the given $key
+     * @param $key mixed
+     * @return mixed|null
+     */
     public function get($key){
         return $this->data[$key] ?? null;
     }
 
+    /**
+     * Check if the data storage contains an given $key
+     * @param $key mixed
+     * @return bool
+     */
     public function contains($key){
         return  $this->data[$key] !== null;
     }
 
+    /**
+     * Compare the value of the associated $key with an given $value
+     * @param $key mixed
+     * @param $value mixed
+     * @return bool
+     */
     public function valueIs($key, $value){
         if($this->contains($key)){
             return $this->get($key) === $value;

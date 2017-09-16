@@ -2,11 +2,18 @@
 namespace lore;
 
 /**
- * Class ApplicationContext - Class that store data about the application runtime environment
+ * Class ApplicationContext - Class that store data about the application runtime environment.
+ * An object of this class should be accessed in the singleton in Lore::app()->getContext()
  * @package lore
  */
 class ApplicationContext
 {
+    /**
+     * Store the absolute path (to server document root)
+     * @var string
+     */
+    private $absolutePath;
+
     /**
      * Store the relative path (to server document root)
      * @var string
@@ -15,8 +22,8 @@ class ApplicationContext
 
     function __construct()
     {
-        $absolutePath = $this->getAbsolutePath();
-        $this->relativePath = substr($absolutePath, strlen($_SERVER["DOCUMENT_ROOT"]), strlen($absolutePath));
+        $this->absolutePath = dirname(dirname(__DIR__));
+        $this->relativePath = substr($this->absolutePath, strlen($_SERVER["DOCUMENT_ROOT"]), strlen($this->absolutePath));
         $this->relativePath = str_replace(DIRECTORY_SEPARATOR, "/", $this->relativePath);
     }
 
@@ -35,6 +42,6 @@ class ApplicationContext
      * @return string
      */
     public function getAbsolutePath() : string {
-        return dirname(dirname(__DIR__));
+        return $this->absolutePath;
     }
 }

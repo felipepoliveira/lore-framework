@@ -1,5 +1,8 @@
 <?php
 use lore\mvc\View;
+
+//die(var_dump(\lore\Lore::app()->getResponse()->getData()));
+
 ?>
 <!doctype html>
 <html lang="pt">
@@ -14,12 +17,6 @@ use lore\mvc\View;
     <main>
         <?=View::html("<h1>Errors was detected!</h1>", View::hasErrors())?>
         <form action="<?=View::url("user/save")?>" method="post">
-            <div>
-                <label>
-                    <?=View::input("name")?>
-                </label>
-                <?=View::error("model.name", "<div class='alert'>{{value}}</div>")?>
-            </div>
             <div>
                 <label>
                     <?=View::input("email")?>

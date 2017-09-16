@@ -2,15 +2,26 @@
 
 use lore\mvc\Model;
 
+require_once "Produto.php";
+
 class Usuario extends Model
 {
     private $id;
 
+    /**
+     * @var string
+     * @min 6
+     */
     private $email;
 
     private $senha;
 
     private $token;
+
+    /**
+     * @var Produto[]
+     */
+    private $produtos = [];
 
     /**
      * @return mixed
@@ -72,5 +83,20 @@ class Usuario extends Model
         $this->token = hash('sha256',$this->getEmail() . $this->getSenha());
     }
 
+    /**
+     * @return Produto[]
+     */
+    public function getProdutos(): array
+    {
+        return $this->produtos;
+    }
+
+    /**
+     * @param Produto[] $produtos
+     */
+    public function setProdutos(array $produtos)
+    {
+        $this->produtos = $produtos;
+    }
 
 }

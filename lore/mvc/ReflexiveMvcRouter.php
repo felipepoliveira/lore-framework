@@ -42,7 +42,9 @@ abstract class ReflexiveMvcRouter extends MvcRouter
                 //Pass this object as parameter to the controller
                 $controller = ReflectionManager::instanceFromFile($controllerName, $controllerFile, $this, false);
                 return $controller;
-            }catch(\Exception $e){}
+            }catch(\Exception $e){
+                throw $e;
+            }
         }
 
         //Return null if the controller was not found

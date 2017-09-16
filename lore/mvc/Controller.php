@@ -78,6 +78,18 @@ abstract class Controller
         $this->response->setRedirect(true);
     }
 
+    /**
+     * Put the identified errors in response. This method must be called after the AbstractController->validateModel
+     * or AbstractController->loadAndValidateModel. and before the ApiController->send method
+     * @see Controller
+     */
+    public function putErrorsInResponse(){
+        //Check if the response contains e'rrors
+        if($this->response->hasErrors()){
+            $this->response->put("errors", $this->response->getErrors());
+        }
+    }
+
     public function putModelInResponse(){
         //Convert the model into an one-dimensional (plain) array an put the values into response
         foreach ($this->getModel()->toArray() as $key => $value){

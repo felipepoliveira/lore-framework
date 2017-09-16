@@ -3,6 +3,7 @@ namespace lore\mvc;
 
 
 use lore\Lore;
+use lore\web\DataFormatter;
 
 abstract class ApiController extends Controller
 {
@@ -37,24 +38,13 @@ abstract class ApiController extends Controller
     }
 
     /**
-     * Put the identified errors in response. This method must be called after the AbstractController->validateModel
-     * or AbstractController->loadAndValidateModel. and before the ApiController->send method
-     * @see Controller
-     */
-    public function putErrorsInResponse(){
-        //Check if the response contains e'rrors
-        if($this->response->hasErrors()){
-            $this->response->put("errors", $this->response->getErrors());
-        }
-    }
-
-    /**
      * Send data to the client. This method has to be used in api services
      * @param mixed $data - The data that will be send
      * @param int $code - The status code
      * @param  int $responseType - The response type. Use the DataFormatter constants (JSON, XML, TXT)
+     * default: (DataFormatter::JSON)
      */
-    public function send($data = null, $code = 200, $responseType = null){
+    public function send($data = null, $code = 200, $responseType = DataFormatter::JSON){
         $this->response->setRedirect(false);
         $this->response->setCode($code);
 
@@ -73,13 +63,12 @@ abstract class ApiController extends Controller
         }
     }
 
-    public function sendModel($code = 200){
-        $this->response->setData($this->model->toArray());
-        $this->send(null, $code);
-    }
-
-    public function putModelAsArrayInResponse()
-    {
-        $this->response->add($this->model->toArray());
+    /**
+     * Call ApiController::send() method sending the ApiController::$model into response in array format
+     * @param int $code - The response http code
+     * @param int $responseType - The response type
+     */
+    public function sendModel($code = 200, $responseType = DataFormatter::JSON){
+        $this->send($this->model->toArray(), $code);
     }
 }
