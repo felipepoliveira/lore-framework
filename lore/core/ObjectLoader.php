@@ -1,12 +1,12 @@
 <?php
-namespace lore\mvc;
+namespace lore;
 use lore\web\Request;
 
 /**
- * Class ModelLoader
+ * Class ObjectLoader
  * @package lore\mvc
  */
-abstract class ModelLoader
+abstract class ObjectLoader
 {
     function __construct()
     {

@@ -3,6 +3,7 @@ namespace lore\mvc;
 
 use lore\Lore;
 use lore\web\Response;
+use lore\ValidationModes;
 
 abstract class Controller
 {

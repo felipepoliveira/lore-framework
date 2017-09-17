@@ -1,5 +1,5 @@
 <?php
-namespace lore\mvc;
+namespace lore;
 
 use lore\Lore;
 use lore\util\DocCommentUtil;
@@ -56,7 +56,7 @@ class ReflexiveObjectValidator extends ObjectValidator
         }
     }
 
-    public function validate(Model $model, $validationMode, $validationArgs, $prefix = "")
+    public function validate($model, $validationMode, $validationArgs, $prefix = "")
     {
         $errors = [];
         $this->className = get_class($model);
@@ -167,10 +167,10 @@ class ReflexiveObjectValidator extends ObjectValidator
     /**
      * Validate an property  of an object
      * @param \ReflectionProperty $prop
-     * @param Model $model
+     * @param object $model
      * @return array|true
      */
-    public function validateProperty(\ReflectionProperty $prop, Model $model){
+    public function validateProperty(\ReflectionProperty $prop, $model){
         //Store errors
         $errors = [];
 

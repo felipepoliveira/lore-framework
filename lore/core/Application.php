@@ -10,6 +10,7 @@ use lore\web\Router;
 
 require_once "ApplicationContext.php";
 require_once "Configurations.php";
+require_once "ModuleException.php";
 require_once __DIR__ . "/../utils/ReflectionManager.php";
 require_once __DIR__ . "/../web/ResourcesManager.php";
 require_once __DIR__ . "/../web/Request.php";
@@ -29,6 +30,16 @@ class Application
      * @var ApplicationContext
      */
     private $context;
+
+    /**
+     * @var ObjectLoader
+     */
+    private $objectLoader;
+
+    /**
+     * @var ObjectValidator
+     */
+    private $objectValidator;
 
     /**
      * @var Request
@@ -84,14 +95,26 @@ class Application
      */
     protected function createRequestEntities(){
         $this->request = new Request($this->context);
+        $this->objectLoader = $this->loadObjectLoader();
+        $this->objectValidator = $this->loadObjectValidator();
         $this->router = $this->loadRouter();
         $this->resourcesManager = $this->loadResourcesManager();
     }
 
     /**
+     * @return ObjectLoader
      */
-    protected function createResponseEntities(){
+    public function getObjectLoader(): ObjectLoader
+    {
+        return $this->objectLoader;
+    }
 
+    /**
+     * @return ObjectValidator
+     */
+    public function getObjectValidator(): ObjectValidator
+    {
+        return $this->objectValidator;
     }
 
     /**
@@ -166,6 +189,30 @@ class Application
     }
 
     /**
+     * Check if StringProvider module is implemented in Application
+     * @return bool
+     */
+    public function isStringProviderEnabled() : bool {
+        return $this->stringProvider !== null;
+    }
+
+    /**
+     * return flag indicating if the object loader module is implemented in application
+     * @return bool
+     */
+    public function isObjectLoaderEnabled() : bool {
+        return $this->objectLoader != null;
+    }
+
+    /**
+     * return flag indicating if the object validator module is implemented in application
+     * @return bool
+     */
+    public function isObjectValidatorEnabled() : bool {
+        return $this->objectValidator != null;
+    }
+
+    /**
      * Load the application processing the request and creating the response object. This method can be only called once.
      * The script responsible to call this method is the bootstrap.php, that is called in any request that the server receives.
      */
@@ -183,6 +230,35 @@ class Application
      */
     private function loadConfigurations(){
         Configurations::load("project", __DIR__ . "/../../app/config/project.php");
+    }
+
+    /**
+     * Load the ObjectLoader defined in the configuration file project.php in "object" => "loader" configuration]
+     * THIS MODULE CAN BE NULL
+     */
+    private function loadObjectLoader(){
+
+        if(Configurations::contains("project", "object") && Configurations::get("project", "object")["loader"]){
+            return ReflectionManager::instanceFromFile(
+                Configurations::get("project", "object")["loader"]["class"],
+                Configurations::get("project", "object")["loader"]["file"]);
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * Load the ObjectValidator defined in the configuration file project.php in "object" => "validator" configuration
+     * THIS MODULE CAN BE NULL
+     */
+    private function loadObjectValidator(){
+        if(Configurations::contains("project", "object") && Configurations::get("project", "object")["loader"]) {
+            return ReflectionManager::instanceFromFile(
+                Configurations::get("project", "object")["validator"]["class"],
+                Configurations::get("project", "object")["validator"]["file"]);
+        }else{
+            return null;
+        }
     }
 
     /**
@@ -228,14 +304,6 @@ class Application
     }
 
     /**
-     * Check if StringProvider module is implemented in Application
-     * @return bool
-     */
-    public function isStringProviderEnabled() : bool {
-        return $this->stringProvider !== null;
-    }
-
-    /**
      * Call the Router::route method and pass the Application::request as parameter to it. The method will always
      * return an Response object that will be stored in Application::response.
      */
@@ -256,8 +324,6 @@ class Application
      * send the response stored in this class to the client
      */
     protected function handleResponse(){
-        $this->createResponseEntities();
-
         $this->responseManager->handle($this->response);
     }
 }

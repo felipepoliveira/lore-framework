@@ -1,5 +1,18 @@
 <?php
 return [
+
+    "object" => [
+        "loader" => [
+            "file" => "lore/core/impl/ReflexiveObjectLoader.php",
+            "class" => "\\lore\\ReflexiveObjectLoader",
+        ],
+
+        "validator" => [
+            "file" => "lore/core/impl/ReflexiveObjectValidator.php",
+            "class" => "\\lore\\ReflexiveObjectValidator"
+        ],
+    ],
+
     "response" => [
       "defaultCharset" => "utf-8"
     ],

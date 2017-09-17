@@ -1,10 +1,10 @@
 <?php
-namespace lore\mvc;
+namespace lore;
 
 require_once "ValidationModes.php";
 
 
-abstract class ModelValidator
+abstract class ObjectValidator
 {
     function __construct()
     {
@@ -12,13 +12,13 @@ abstract class ModelValidator
 
     /**
      * Validate the model. Return true is validation is OK or an array with the errors if it is not.
-     * @param Model $model
+     * @param object $model
      * @param int $validationMode
      * @param array $validationArgs
      * @return true|array
      * @see ValidationModes
      */
-    public abstract function validate(Model $model, $validationMode, $validationArgs);
+    public abstract function validate($model, $validationMode, $validationArgs);
 
     /**
      * Use filter_var function to check if the $value match the given $filter.

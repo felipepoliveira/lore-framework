@@ -1,5 +1,5 @@
 <?php
-namespace lore\mvc;
+namespace lore;
 
 use lore\Configurations;
 use lore\Lore;
@@ -13,17 +13,6 @@ require_once __DIR__ . "/../../core/ObjectLoader.php";
 
 class ReflexiveObjectLoader extends ObjectLoader
 {
-
-    /**
-     * @var array
-     */
-    private $viewsDirectories;
-
-    function __construct()
-    {
-        $this->viewsDirectories = Configurations::get("mvc", "models")["dirs"];
-    }
-
     public function load($model, Request $request)
     {
         $this->loadRecursive($model, $request->requestDataAsRecursiveArray());
@@ -31,10 +20,10 @@ class ReflexiveObjectLoader extends ObjectLoader
 
     /**
      * Load the object recursively interacting over the encapsulated objects
-     * @param Model $model
+     * @param object $model
      * @param array $array
      */
-    protected function loadRecursive(Model $model, array $array){
+    protected function loadRecursive($model, array $array){
         //Store the name of the class
         $className = get_class($model);
 
