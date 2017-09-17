@@ -4,11 +4,11 @@ namespace lore\mvc;
 use lore\Lore;
 use lore\util\DocCommentUtil;
 
-require_once __DIR__ . "/../ModelValidator.php";
+require_once __DIR__ . "/../ObjectValidator.php";
 require_once __DIR__ . "/../../utils/DocCommentUtil.php";
 
 
-class ReflexiveModelValidator extends ModelValidator
+class ReflexiveObjectValidator extends ObjectValidator
 {
     /**
      * Store the class name of the current validation class
@@ -177,21 +177,21 @@ class ReflexiveModelValidator extends ModelValidator
         //Validating max
         $errors["max"] = self::makeSpecificValidation(
             "max",
-            function($v, $a){return ModelValidator::validateMax($v, $a);},
+            function($v, $a){return ObjectValidator::validateMax($v, $a);},
             $prop->getValue($model),
             $prop);
 
         //Validating min
         $errors["min"] = self::makeSpecificValidation(
             "min",
-            function($v, $a){return ModelValidator::validateMin($v, $a);},
+            function($v, $a){return ObjectValidator::validateMin($v, $a);},
             $prop->getValue($model),
             $prop);
 
         //Validate not null
         $errors["notNull"] =  self::makeSpecificValidation(
             "notNull",
-            function($v){return ModelValidator::validateNotNull($v);},
+            function($v){return ObjectValidator::validateNotNull($v);},
             $prop->getValue($model),
             $prop,
             false);
@@ -206,7 +206,7 @@ class ReflexiveModelValidator extends ModelValidator
         //Validate filter var
         $errors["filterVar"] =  self::makeSpecificValidation(
             "filterVar",
-            function($v, $f){return ModelValidator::filterVariable($v, $f);},
+            function($v, $f){return ObjectValidator::filterVariable($v, $f);},
             $prop->getValue($model),
             $prop);
 

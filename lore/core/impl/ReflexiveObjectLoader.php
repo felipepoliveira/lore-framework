@@ -8,10 +8,10 @@ use lore\util\File;
 use lore\util\ReflectionManager;
 use lore\web\Request;
 
-require_once __DIR__ . "/../ModelLoader.php";
+require_once __DIR__ . "/../../core/ObjectLoader.php";
 
 
-class ReflexiveModelLoader extends ModelLoader
+class ReflexiveObjectLoader extends ObjectLoader
 {
 
     /**
