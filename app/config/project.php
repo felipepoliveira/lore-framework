@@ -10,7 +10,6 @@ return [
 
         "rules" => [
             "/rest/v1/*" => ["app/controllers/rest/v1"], //Any URI the starts with "rest/v1/" will be handled by files inside "app/controllers/api/rest/v1/"
-            "/rest/v2/*" => ["app/controllers/rest/v2"], //Any URI the starts with "rest/v1/" will be handled by files inside "app/controllers/api/rest/v1/"
             "/aUniqueURI" => "app/controllers/view/ASpecialController.php", // //The URI "aUniqueURI" will be handled by ASpecialController.php
         ],
 

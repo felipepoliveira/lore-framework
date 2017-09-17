@@ -10,12 +10,20 @@ class Usuario extends Model
 
     /**
      * @var string
-     * @min 6
+     * @filterVar email
      */
     private $email;
 
+    /**
+     * @var string
+     * @min 6
+     * @max 30
+     */
     private $senha;
 
+    /**
+     * @var string
+     */
     private $token;
 
     /**

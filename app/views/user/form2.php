@@ -15,19 +15,16 @@ use lore\mvc\View;
 </head>
 <body>
 <main>
-    <?=View::html("<h1>Errors was detected!</h1>", View::hasErrors())?>
-    <form action="<?=View::url("user/save")?>" method="post">
+    <form action="<?=View::url("rest/v1/user")?>" method="post">
         <div>
             <label>
-                <?=View::input("email")?>
+                <?=View::input("email", "type='text' id='inputEmail'")?>
             </label>
-            <?=View::error("model.email", "<div class='alert'>{{value}}</div>")?>
         </div>
         <div>
             <label>
-                <?=View::input("password")?>
+                <?=View::input("senha", 'type="password"')?>
             </label>
-            <?=View::error("model.password", "<div class='alert'>{{value}}</div>")?>
         </div>
         <div>
             <label>

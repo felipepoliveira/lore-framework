@@ -203,6 +203,13 @@ class ReflexiveModelValidator extends ModelValidator
             $prop->getValue($model),
             $prop);
 
+        //Validate filter var
+        $errors["filterVar"] =  self::makeSpecificValidation(
+            "filterVar",
+            function($v, $f){return ModelValidator::filterVariable($v, $f);},
+            $prop->getValue($model),
+            $prop);
+
         //Filter where errors where not found
         $errors = array_filter($errors, function($e){
             return $e !== true;

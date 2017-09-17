@@ -19,10 +19,15 @@ class UserController extends ApiController
 
 
     /**
-     * @uri /teste
+     * @uri /
+     * @method post
      */
-   public function teste(){
-       $this->loadModel();
-       $this->sendModel();
+   public function register(){
+        if($this->loadAndValidateModel()){
+            $this->sendModel();
+        }else{
+            $this->putErrorsInResponse();
+        }
    }
+
 }
