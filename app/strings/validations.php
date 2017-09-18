@@ -4,6 +4,7 @@ return [
     "Address.city.min" => "O campo cidade do endereço precisa conter {value} caracteres",
 
     "Usuario.email.regex" => "Insira um email válido",
+    "Usuario.senha.min" => "O mínimo da senha é {{value}}",
     "User.lastName.min" => "O campo sobrenome precisa de no mínimo {{value}} caracteres",
     "User.name.max" => "O campo nome deve conter no máximo {{value}} caracteres",
     "User.name.min" => "O campo nome deve conter no mínimo {{value}} caracteres",

@@ -51,12 +51,14 @@ return [
      * It also stores and handles: web filters; URI rules and etc.
      */
     "router" => [
+
         "file" => "lore/mvc/impl/PrettyUrlMvcRouter.php",
         "class" => "\\lore\\mvc\\PrettyUrlMvcRouter",
-        /*
+    /*
         "file" => "lore/web/impl/ScriptBasedRouter.php",
         "class" => "lore\\web\\ScriptBasedRouter",
-        */
+    */
+
 
         /*
          * CONFIGURATION: URI Rules
@@ -130,7 +132,7 @@ return [
          * allowScriptProcessing: Flag that indicates if the resource manager will allow PHP script execution
          * scriptExtensions: Define PHP Script file extensions
          */
-        "allowScriptProcessing" => false,
+        "allowScriptProcessing" => true,
         "scriptExtensions" => ["inc", "php"],
 
         /*

@@ -45,8 +45,6 @@ class UserController extends ViewController
         if($this->loadAndValidateModel()){
             $this->redirect("/lore");
         }else{
-            $this->putErrorsInResponse();
-            $this->putModelInResponse();
             $this->render("user/form1.php");
         }
     }

@@ -311,7 +311,7 @@ class Response
     }
 
     /**
-     * Get the refresh header entity of the response
+     * Get the refresh header persistence of the response
      * @return RefreshHeader
      */
     public function getRefreshHeader()

@@ -17,9 +17,6 @@ class ScriptBasedRouter extends Router
 
         //Check if some rule matches the request
         if($rule){
-
-            die($rule->produceUri($request));
-
             //Produce the URI from the Rule and put it into the request
             Lore::app()->getRequest()->setRequestedUri($rule->produceUri($request));
 

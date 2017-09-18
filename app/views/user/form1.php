@@ -25,9 +25,9 @@ use lore\mvc\View;
             </div>
             <div>
                 <label>
-                    <?=View::input("password")?>
+                    <?=View::input("senha")?>
                 </label>
-                <?=View::error("model.password", "<div class='alert'>{{value}}</div>")?>
+                <?=View::error("model.senha", "<div class='alert'>{{value}}</div>")?>
             </div>
             <div>
                 <label>
