@@ -1,6 +1,7 @@
 <?php
 namespace lore;
 
+use lore\persistence\Repository;
 use lore\util\ReflectionManager;
 use lore\web\ResourcesManager;
 use lore\web\Request;
@@ -40,6 +41,11 @@ class Application
      * @var ObjectValidator
      */
     private $objectValidator;
+
+    /**
+     * @var Repository
+     */
+    private $repository;
 
     /**
      * @var Request

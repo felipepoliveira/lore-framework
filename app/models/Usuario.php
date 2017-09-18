@@ -4,6 +4,10 @@ use lore\mvc\Model;
 
 require_once "Produto.php";
 
+/**
+ * Class Usuario
+ * @entity usuario
+ */
 class Usuario extends Model
 {
     private $id;
