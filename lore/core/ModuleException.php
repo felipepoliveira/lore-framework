@@ -4,7 +4,7 @@ namespace lore;
 use Throwable;
 
 /**
- * Class ModuleEception - Used when an certain module of the application has some problem (like not loaded yet,
+ * Class ModuleException - Used when an certain module of the application has some problem (like not loaded yet,
  * not implemented, etc.).
  * @package lore
  */

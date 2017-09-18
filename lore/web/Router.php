@@ -14,6 +14,14 @@ abstract class Router
     }
 
     /**
+     * @return RouteRule[]
+     */
+    public function getRouteRules(): array
+    {
+        return $this->routeRules;
+    }
+
+    /**
      * @var RouteRule[]
      */
     protected $routeRules = [];

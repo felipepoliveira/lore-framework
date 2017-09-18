@@ -175,7 +175,7 @@ abstract class ResourcesManager
                     $response->setCode(403);
                 }
             }
-            //If is not a script check if can process it
+            //If is a script check if it can be executed
             else if($this->isScriptingProcessingAllowed()){
                 $response->setCode(200);
                 $response->setUri($this->getResource());
