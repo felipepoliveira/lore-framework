@@ -27,7 +27,11 @@ abstract class ReflectionManager
 
         if(file_exists($file)){
             require_once "$file";
-            return ReflectionManager::reflectionClass($class)->newInstance($args);
+            if(isset($args) && is_array($args)){
+                return ReflectionManager::reflectionClass($class)->newInstanceArgs($args);
+            }else{
+                return ReflectionManager::reflectionClass($class)->newInstance($args);
+            }
         }else{
             throw new \ReflectionException("The file containing the class \"$class\" was not found in path: $file");
         }

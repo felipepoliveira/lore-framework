@@ -7,18 +7,29 @@ require_once "Produto.php";
 /**
  * Class Usuario
  * @entity usuario
+ * @repository lore/mysql
  */
 class Usuario extends Model
 {
+    use \lore\persistence\Entity;
+
+    /**
+     *
+     * @id
+     * @field
+     * @var
+     */
     private $id;
 
     /**
+     * @field
      * @var string
      * @filterVar email
      */
     private $email;
 
     /**
+     * @field
      * @var string
      * @min 6
      * @max 30
@@ -27,6 +38,7 @@ class Usuario extends Model
 
     /**
      * @var string
+     * @transactional
      */
     private $token;
 
@@ -110,5 +122,11 @@ class Usuario extends Model
     {
         $this->produtos = $produtos;
     }
+
+    public  function getIdentifier()
+    {
+        return $this->getId();
+    }
+
 
 }

@@ -1,6 +1,7 @@
 <?php
 namespace lore;
 
+use lore\persistence\Persistence;
 use lore\persistence\Repository;
 use lore\util\ReflectionManager;
 use lore\web\ResourcesManager;
@@ -12,6 +13,7 @@ use lore\web\Router;
 require_once "ApplicationContext.php";
 require_once "Configurations.php";
 require_once "ModuleException.php";
+require_once  __DIR__ . "/../persistence/Persistence.php";
 require_once __DIR__ . "/../utils/ReflectionManager.php";
 require_once __DIR__ . "/../web/ResourcesManager.php";
 require_once __DIR__ . "/../web/Request.php";
@@ -43,9 +45,9 @@ class Application
     private $objectValidator;
 
     /**
-     * @var Repository
+     * @var Persistence
      */
-    private $repository;
+    private $persistence;
 
     /**
      * @var Request
@@ -90,21 +92,27 @@ class Application
      */
     function __construct()
     {
-        $this->loadConfigurations();
         $this->context = new ApplicationContext();
-        $this->stringProvider = $this->loadStringProvider(); //Can be null
-        $this->responseManager = $this->loadResponseManager();
     }
 
     /**
-     * Instantiate all request objects used in application.
+     * Load application's components
      */
-    protected function createRequestEntities(){
+    protected function loadComponents(){
+        $this->responseManager = $this->loadResponseManager();
         $this->request = new Request($this->context);
-        $this->objectLoader = $this->loadObjectLoader();
-        $this->objectValidator = $this->loadObjectValidator();
         $this->router = $this->loadRouter();
         $this->resourcesManager = $this->loadResourcesManager();
+    }
+
+    /**
+     * Load application's modules
+     */
+    protected function loadModules(){
+        $this->persistence = $this->loadPersistence();
+        $this->objectLoader = $this->loadObjectLoader();
+        $this->objectValidator = $this->loadObjectValidator();
+        $this->stringProvider = $this->loadStringProvider();
     }
 
     /**
@@ -131,6 +139,23 @@ class Application
     public function getContext(): ApplicationContext
     {
         return $this->context;
+    }
+
+    /**
+     * Get the persistence module object
+     * @return Persistence
+     */
+    public function getPersistence(): Persistence
+    {
+        return $this->persistence;
+    }
+
+    /**
+     * Return an flag indicating if the persistence module is enabled
+     * @return bool
+     */
+    public function isPersistenceEnabled() : bool {
+        return $this->persistence !== null;
     }
 
     /**
@@ -224,6 +249,11 @@ class Application
      */
     public function load(){
         if(!$this->loaded){
+
+            $this->loadConfigurations();
+            $this->loadModules();
+            $this->loadComponents();
+
             $this->loaded = true;
             $this->handleRequest();
             $this->handleResponse();
@@ -262,6 +292,16 @@ class Application
             return ReflectionManager::instanceFromFile(
                 Configurations::get("project", "object")["validator"]["class"],
                 Configurations::get("project", "object")["validator"]["file"]);
+        }else{
+            return null;
+        }
+    }
+
+    private function loadPersistence(){
+        if(Configurations::contains("project", "persistence")) {
+            return ReflectionManager::instanceFromFile(
+                Configurations::get("project", "persistence")["class"],
+                Configurations::get("project", "persistence")["file"]);
         }else{
             return null;
         }
@@ -314,8 +354,6 @@ class Application
      * return an Response object that will be stored in Application::response.
      */
     protected function handleRequest(){
-        $this->createRequestEntities();
-
         //If the request do not request an resource route the request
         if(!$this->resourcesManager->isAResource($this->request)){
             $this->response = $this->router->route($this->request);

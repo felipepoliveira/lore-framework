@@ -6,12 +6,50 @@ require_once "PersistenceException.php";
 
 abstract class Repository
 {
+
+    /**
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Repository constructor.
+     * Load an repository with the given name (an unique name) and the
+     * configuration data
+     * @param $name string - The name of the repository
+     * @param $data mixed - The data for repository load
+     */
+    function __construct($name, $data)
+    {
+        $this->name = $name;
+        $this->loadData($data);
+    }
+
+    /**
+     * The repository name
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public abstract function loadData($data);
+
+    /**
+     * Delete an entity from the repository
+     * @param $entity
+     * @return bool Flag indicating if the deletion was succeeded
+     * @throws PersistenceException
+     */
+    public abstract function delete($entity) : bool ;
+
     /**
      * Return an flag indicating if the given $entity already exists in the repository
      * @param $entity Entity
      * @return bool
      */
-    public abstract function exists(Entity $entity) : bool ;
+    public abstract function exists($entity) : bool ;
 
     /**
      * Insert an entity into repository
@@ -19,14 +57,7 @@ abstract class Repository
      * @return
      * @throws PersistenceException - If an errors occurs in the repository while inserting the new entity
      */
-    public abstract function insert(Entity $entity);
-
-    /**
-     * Return an Entity by the $identifier. Return false if the entity does no exsts
-     * @param $identifier
-     * @return Entity|false
-     */
-    public abstract function queryByIdentifier($identifier);
+    public abstract function insert($entity);
 
     /**
      * Create an query syntax object with the methods to build queries
@@ -47,11 +78,11 @@ abstract class Repository
      * @param Entity $entity
      * @return mixed
      */
-    public function save(Entity $entity){
-        if(self::exists($entity)){
-            self::update($entity);
+    public function save($entity){
+        if($this->exists($entity)){
+            $this->update($entity);
         }else{
-            self::insert($entity);
+            $this->insert($entity);
         }
     }
 }
