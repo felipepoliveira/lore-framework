@@ -138,7 +138,7 @@ return [
          * allowScriptProcessing: Flag that indicates if the resource manager will allow PHP script execution
          * scriptExtensions: Define PHP Script file extensions
          */
-        "allowScriptProcessing" => true,
+        "allowScriptProcessing" => false,
         "scriptExtensions" => ["inc", "php"],
 
         /*
