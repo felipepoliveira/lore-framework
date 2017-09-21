@@ -6,7 +6,7 @@ require_once "Produto.php";
 
 /**
  * Class Usuario
- * @entity usuario
+ * @entity tabela_usuario
  * @repository lore/mysql
  */
 class Usuario extends Model
@@ -14,8 +14,8 @@ class Usuario extends Model
     use \lore\persistence\Entity;
 
     /**
-     *
      * @id
+     * @auto
      * @field
      * @var
      */
@@ -38,6 +38,7 @@ class Usuario extends Model
 
     /**
      * @var string
+     * @field
      * @transactional
      */
     private $token;

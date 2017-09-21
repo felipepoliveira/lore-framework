@@ -11,4 +11,6 @@ abstract class Persistence
     protected abstract function loadRepositories();
 
     public abstract function getRepository($repName = null) : Repository;
+
+
 }

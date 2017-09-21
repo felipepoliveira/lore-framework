@@ -12,6 +12,11 @@ class Field
     /**
      * @var string
      */
+    private $propertyName;
+
+    /**
+     * @var string
+     */
     private $type;
 
     /**
@@ -23,6 +28,11 @@ class Field
      * @var bool
      */
     private $identifier = false;
+
+    /**
+     * @var bool
+     */
+    private $auto = false;
 
     /**
      * @return string
@@ -88,5 +98,36 @@ class Field
         $this->identifier = $identifier;
     }
 
+    /**
+     * @return bool
+     */
+    public function isAuto(): bool
+    {
+        return $this->auto;
+    }
+
+    /**
+     * @param bool $auto
+     */
+    public function setAuto(bool $auto)
+    {
+        $this->auto = $auto;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPropertyName()
+    {
+        return $this->propertyName;
+    }
+
+    /**
+     * @param mixed $propertyName
+     */
+    public function setPropertyName($propertyName)
+    {
+        $this->propertyName = $propertyName;
+    }
 
 }

@@ -7,7 +7,3 @@ $u = new Usuario();
 $u->setSenha("123");
 $u->setEmail("usuario@email.com");
 $u->save();
-
-$usuarioRepository = new \lore\persistence\RelationalRepository();
-
-$usuarioRepository->query()->where("id")->equalTo("1");

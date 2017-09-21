@@ -43,6 +43,7 @@ class UserController extends ViewController
      */
     public function save(){
         if($this->loadAndValidateModel()){
+            $this->getModel()->save();
             $this->redirect("/lore");
         }else{
             $this->render("user/form1.php");

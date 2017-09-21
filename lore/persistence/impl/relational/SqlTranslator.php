@@ -9,7 +9,7 @@
 namespace lore\persistence;
 
 
-abstract class ISqlTranslator
+abstract class SqlTranslator
 {
     /**
      * @var RelationalRepository
@@ -36,5 +36,5 @@ abstract class ISqlTranslator
      * @param $entity Entity
      * @return string
      */
-    public abstract function insert($entity) : string;
+    public abstract function insert($entity) : \PDOStatement;
 }

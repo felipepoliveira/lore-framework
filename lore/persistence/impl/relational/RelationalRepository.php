@@ -36,7 +36,7 @@ class RelationalRepository extends Repository
     private $pdo;
 
     /**
-     * @var ISqlTranslator
+     * @var SqlTranslator
      */
     private $translator;
 
@@ -44,6 +44,54 @@ class RelationalRepository extends Repository
     {
         parent::__construct($name, $data);
         $this->loadPdo();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDatabase(): string
+    {
+        return $this->database;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return $this->host;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @return \PDO
+     */
+    public function getPdo(): \PDO
+    {
+        return $this->pdo;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRdbms(): string
+    {
+        return $this->rdbms;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUser(): string
+    {
+        return $this->user;
     }
 
     public function loadData($data)
@@ -95,7 +143,7 @@ class RelationalRepository extends Repository
         switch ($this->rdbms){
             case "mysql":
                 require_once "MySqlTranslator.php";
-                $this->translator = new MySqlTranslator();
+                $this->translator = new MySqlTranslator($this);
                 break;
             default:
                 throw new PersistenceException("The rdbms: \"" . $this->rdbms . "\" is not implemented 
@@ -109,6 +157,8 @@ class RelationalRepository extends Repository
                                     "host=" . $this->host . ";" .
                                     "dbname=" . $this->database . ";",
                                     $this->user,  $this->password);
+
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
     public function delete($entity): bool
@@ -123,7 +173,8 @@ class RelationalRepository extends Repository
 
     public function insert($entity)
     {
-        $sql = $this->translator->insert($entity);
+        $stmt = $this->translator->insert($entity);
+        $stmt->execute();
     }
 
     public function query(): QuerySyntax
