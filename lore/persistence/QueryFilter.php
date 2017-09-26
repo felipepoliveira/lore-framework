@@ -65,10 +65,18 @@ class QueryFilter
      */
     private $filterType;
 
-    function __construct(QuerySyntax $querySyntax, $field)
+    function __construct(Query $querySyntax, $propName)
     {
         $this->querySyntax = $querySyntax;
-        $this->field = $field;
+
+        //Search fot the field passing the property name and check if it exists...
+        $field = $this->querySyntax->getMetadata()->findFieldByPropertyName($propName);
+        if($field === false){
+            throw new PersistenceException("The property: \"" . $this->querySyntax->getMetadata()->getEntityClassName() .
+                        "::$propName\" was not found in query");
+        }
+        //Put the field name in the query filter
+        $this->field = $field->getName();
     }
 
     /**
@@ -91,6 +99,51 @@ class QueryFilter
         return $this->nextFilter;
     }
 
+    /**
+     * @return int
+     */
+    public function getFilterType()
+    {
+        return $this->filterType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getBindType()
+    {
+        return $this->bindType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getField()
+    {
+        return $this->field;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function isMatchFilterType(){
+        return  $this->filterType == self::FILTER_STARTS_WITH ||
+                $this->filterType == self::FILTER_ENDS_WITH ||
+                $this->filterType == self::FILTER_CONTAINS;
+    }
+    /**
+     * Return an flag indicating if the filter has another filter
+     * @return bool
+     */
+    public function hasNextFilter() : bool {
+        return $this->nextFilter !== null;
+    }
+
     public function and($field){
         $this->bindType = self::BIND_AND;
         $this->setNextFilter($field);
@@ -108,6 +161,9 @@ class QueryFilter
 
     public function differentThan($value){
         $this->filterType = self::FILTER_DIFFERENT;
+        $this->value = $value;
+
+        return $this;
     }
 
     public function equalTo($value){
@@ -118,14 +174,14 @@ class QueryFilter
     }
 
     public function greaterThan($value){
-        $this->filterType = self::FILTER_LESS_THAN;
+        $this->filterType = self::FILTER_GREATER_THAN;
         $this->value = $value;
 
         return $this;
     }
 
     public function greaterOrEqualsThan($value){
-        $this->filterType = self::FILTER_LESS_OR_EQUALS_THAN;
+        $this->filterType = self::FILTER_GREATER_OR_EQUALS_THAN;
         $this->value = $value;
 
         return $this;

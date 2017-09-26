@@ -6,7 +6,7 @@ require_once "Produto.php";
 
 /**
  * Class Usuario
- * @entity tabela_usuario
+ * @entity usuario
  * @repository lore/mysql
  */
 class Usuario extends Model
@@ -16,20 +16,20 @@ class Usuario extends Model
     /**
      * @id
      * @auto
-     * @field
+     * @field campo_id
      * @var
      */
     private $id;
 
     /**
-     * @field
+     * @field campo_email
      * @var string
      * @filterVar email
      */
     private $email;
 
     /**
-     * @field
+     * @field campo_senha
      * @var string
      * @min 6
      * @max 30
@@ -38,8 +38,6 @@ class Usuario extends Model
 
     /**
      * @var string
-     * @field
-     * @transactional
      */
     private $token;
 
@@ -61,6 +59,7 @@ class Usuario extends Model
      */
     public function setId($id)
     {
+
         $this->id = $id;
     }
 

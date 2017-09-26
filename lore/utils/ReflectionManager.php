@@ -37,6 +37,14 @@ abstract class ReflectionManager
         }
     }
 
+    public static function newInstance($className, $args = null){
+        if(isset($args) && is_array($args)){
+            return ReflectionManager::reflectionClass($className)->newInstanceArgs($args);
+        }else{
+            return ReflectionManager::reflectionClass($className)->newInstance($args);
+        }
+    }
+
     protected static function reflectionClass($className){
         if(ReflectionManager::$reflectionClass === null || ReflectionManager::$reflectionClass->getName() !== $className){
             ReflectionManager::$reflectionClass = new \ReflectionClass($className);

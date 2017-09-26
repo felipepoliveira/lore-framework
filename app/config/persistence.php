@@ -11,8 +11,4 @@ return [
         "user" => "root",
         "password" => "root"
     ],
-
-    "lore/sqlite" => [
-
-    ]
 ];

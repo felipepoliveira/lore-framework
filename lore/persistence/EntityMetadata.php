@@ -14,6 +14,11 @@ class EntityMetadata
     private $fields = [];
 
     /**
+     * @var Field[]
+     */
+    private $identificationFields = [];
+
+    /**
      * @var string
      */
     private $repositoryName;
@@ -22,6 +27,11 @@ class EntityMetadata
      * @var string
      */
     private $entityName;
+
+    /**
+     * @var string
+     */
+    private $entityClassName;
 
     /**
      * @var \ReflectionClass
@@ -35,7 +45,8 @@ class EntityMetadata
     function __construct($entity)
     {
         //Create the reflection class used internally
-        $this->reflectionClass = new \ReflectionClass(get_class($entity));
+        $this->entityClassName = get_class($entity);
+        $this->reflectionClass = new \ReflectionClass($this->entityClassName);
 
         $this->loadRepositoryData();
         $this->loadEntityData();
@@ -59,11 +70,16 @@ class EntityMetadata
                 //Set the field name
                 $field->setName($this->formatFieldName($fieldAnnot, $property->getName()));
                 $field->setPropertyName($property->getName());
-                $field->setIdentifier($this->isIdentifierAnnotated($property));
                 $field->setAuto($this->isAutoAnnotated($property));
 
+                //Check if the field has a identifier and add the field in the identification fields
+                $field->setIdentifier($this->isIdentifierAnnotated($property));
+                if($field->isIdentifier()){
+                    $this->identificationFields[] = $field;
+                }
+
                 //Put the field in field list
-                $this->fields[] = $field;
+                $this->fields[$field->getName()] = $field;
             }
         }
     }
@@ -124,6 +140,49 @@ class EntityMetadata
     }
 
     /**
+     * Set the value of an $entity property invoking its set method
+     * @param $prop string
+     * @param $value mixed
+     * @param $entity Entity
+     */
+    public function setPropertyValue($prop, $value, $entity){
+        try{
+
+            $method = $this->reflectionClass->getMethod('set' . ucfirst($prop));
+            $method->invoke($entity, $value);
+
+        }catch (\Exception $e){
+            throw new PersistenceException("The entity " . $this->getEntityName() . " is trying to write in an 
+            property that does not have its set method. Create the set" . ucfirst($prop) , " method in the " .
+                get_class($entity) . " to change it");
+        }
+    }
+
+    /**
+     * Find an specific field by the given $fieldName
+     * @param $fieldName
+     * @return bool|Field
+     */
+    public function findFieldByName($fieldName){
+        return $this->fields[$fieldName] ?? false;
+    }
+
+    /**
+     * Find an specific field by the given $fieldName
+     * @param $propName
+     * @return bool|Field
+     */
+    public function findFieldByPropertyName($propName){
+        foreach ($this->fields as $field) {
+            if($field->getPropertyName() === $propName){
+                return $field;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Load the repository data to be used in persistence methods
      */
     private function loadRepositoryData(){
@@ -145,6 +204,14 @@ class EntityMetadata
     }
 
     /**
+     * @return array
+     */
+    public function getIdentificationFields()
+    {
+        return $this->identificationFields;
+    }
+
+    /**
      * @return string
      */
     public function getEntityName(): string
@@ -158,5 +225,13 @@ class EntityMetadata
     public function getRepositoryName(): string
     {
         return $this->repositoryName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityClassName()
+    {
+        return $this->entityClassName;
     }
 }

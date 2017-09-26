@@ -33,8 +33,15 @@ abstract class SqlTranslator
     }
 
     /**
-     * @param $entity Entity
-     * @return string
+     * @param Entity $entity
+     * @return \PDOStatement
      */
-    public abstract function insert($entity) : \PDOStatement;
+    public abstract function insert($entity) : string;
+
+    /**
+     * Create the query Sql
+     * @param Query $query
+     * @return mixed
+     */
+    public abstract function query(Query $query) : string;
 }

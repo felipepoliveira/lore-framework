@@ -2,6 +2,9 @@
 namespace lore\persistence;
 
 require_once __DIR__ . "/../../Repository.php";
+require_once "RelationalQuery.php";
+
+use lore\persistence\Query;
 
 class RelationalRepository extends Repository
 {
@@ -94,6 +97,14 @@ class RelationalRepository extends Repository
         return $this->user;
     }
 
+    /**
+     * @return SqlTranslator
+     */
+    public function getTranslator()
+    {
+        return $this->translator;
+    }
+
     public function loadData($data)
     {
         //RDBMS
@@ -139,7 +150,7 @@ class RelationalRepository extends Repository
 
     }
 
-    public function loadTranslator(){
+    private function loadTranslator(){
         switch ($this->rdbms){
             case "mysql":
                 require_once "MySqlTranslator.php";
@@ -173,13 +184,16 @@ class RelationalRepository extends Repository
 
     public function insert($entity)
     {
-        $stmt = $this->translator->insert($entity);
-        $stmt->execute();
+        $sql = $this->translator->insert($entity);
+
+        //Create the stmt
+        $stmt = $this->pdo->exec($sql);
     }
 
-    public function query(): QuerySyntax
+    public function query($class = null): Query
     {
-        // TODO: Implement query() method.
+        $metadata = Entity::metadataOf($class);
+        return new RelationalQuery($metadata, $this);
     }
 
     public function update($entity)
