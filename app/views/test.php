@@ -1,2 +1,0 @@
-<?php
-echo "Thayto bolado!";

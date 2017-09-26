@@ -65,6 +65,22 @@ abstract class Query
     }
 
     /**
+     * Return the number of occurrences of a query produced by the Query::all() method
+     * @return int
+     */
+    public function count() : int{
+        return count($this->all());
+    }
+
+    /**
+     * Return an flag indicating if the query bring any result
+     * @return bool
+     */
+    public function exists(){
+        return $this->count() > 0;
+    }
+
+    /**
      * Return an single result from the query
      * @return Entity
      */
@@ -74,7 +90,7 @@ abstract class Query
      * Return all results from the query
      * @return Entity[]
      */
-    public abstract function all();
+    public abstract function all() : array;
 
     /**
      * Add a filter in the query
@@ -108,10 +124,13 @@ abstract class Query
      * Set the fetch mode and fetch fields
      * @param $fetchMode
      * @param $fetchFields
+     * @return $this
      */
-    public function setFetchedFields($fetchMode, $fetchFields = []){
+    public function fields($fetchMode, $fetchFields = []){
         $this->fetchMode = $fetchMode;
         $this->fetchFields = $fetchFields;
+
+        return $this;
     }
 
     /**

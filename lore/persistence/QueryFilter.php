@@ -48,9 +48,9 @@ class QueryFilter
 
     /**
      * The query syntax that of this filter
-     * @var Repository
+     * @var Query
      */
-    private $querySyntax = null;
+    private $query = null;
 
     /**
      * The compared value
@@ -67,12 +67,12 @@ class QueryFilter
 
     function __construct(Query $querySyntax, $propName)
     {
-        $this->querySyntax = $querySyntax;
+        $this->query = $querySyntax;
 
         //Search fot the field passing the property name and check if it exists...
-        $field = $this->querySyntax->getMetadata()->findFieldByPropertyName($propName);
+        $field = $this->query->getMetadata()->findFieldByPropertyName($propName);
         if($field === false){
-            throw new PersistenceException("The property: \"" . $this->querySyntax->getMetadata()->getEntityClassName() .
+            throw new PersistenceException("The property: \"" . $this->query->getMetadata()->getEntityClassName() .
                         "::$propName\" was not found in query");
         }
         //Put the field name in the query filter
@@ -85,8 +85,8 @@ class QueryFilter
      * @param $field mixed
      */
     protected function setNextFilter($field){
-        $newFilter = new QueryFilter($this->querySyntax, $field);
-        $this->querySyntax->addFilter($newFilter);
+        $newFilter = new QueryFilter($this->query, $field);
+        $this->query->addFilter($newFilter);
         $this->nextFilter = $newFilter;
     }
 
@@ -166,7 +166,7 @@ class QueryFilter
         return $this;
     }
 
-    public function equalTo($value){
+    public function equals($value){
         $this->filterType = self::FILTER_EQUALS;
         $this->value = $value;
 
@@ -223,10 +223,18 @@ class QueryFilter
     }
 
     public function one(){
-        return $this->querySyntax->one();
+        return $this->query->one();
     }
 
     public function all(){
-        return $this->querySyntax->all();
+        return $this->query->all();
+    }
+
+    public function count(){
+        return $this->query->count();
+    }
+
+    public function exists(){
+        return $this->query->exists();
     }
 }

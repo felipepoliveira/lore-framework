@@ -33,8 +33,15 @@ abstract class SqlTranslator
     }
 
     /**
+     * Delete the entity from the repository
      * @param Entity $entity
-     * @return \PDOStatement
+     * @return string
+     */
+    public abstract function delete($entity) : string;
+
+    /**
+     * @param Entity $entity
+     * @return string
      */
     public abstract function insert($entity) : string;
 
@@ -44,4 +51,11 @@ abstract class SqlTranslator
      * @return mixed
      */
     public abstract function query(Query $query) : string;
+
+    /**
+     * Create an UPDATE sql script
+     * @param Entity $entity
+     * @return string
+     */
+    public abstract function update($entity) : string;
 }

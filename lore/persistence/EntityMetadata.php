@@ -204,7 +204,7 @@ class EntityMetadata
     }
 
     /**
-     * @return array
+     * @return Field[]
      */
     public function getIdentificationFields()
     {

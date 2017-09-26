@@ -40,7 +40,7 @@ class RelationalQuery extends Query
         }
     }
 
-    public function all()
+    public function all() : array
     {
         $stmt = $this->createAndTriggerQuery();
         $resultAll = $stmt->fetchAll(\PDO::FETCH_ASSOC);

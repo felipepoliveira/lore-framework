@@ -9,6 +9,16 @@ require_once "SqlTranslator.php";
 class MySqlTranslator extends SqlTranslator
 {
 
+    public  function delete($entity): string
+    {
+        $metadata = $entity->metadata();
+
+        //Translate the fields
+        $sql = "DELETE FROM " . $this->entityFullName($metadata) . " " .
+            " WHERE " . $this->identifierFieldsInQuery($metadata, $entity);
+
+        return $sql;
+    }
 
     public function insert($entity): string
     {
@@ -25,6 +35,24 @@ class MySqlTranslator extends SqlTranslator
     {
         $sql = "SELECT " . $this->fieldsInList($query) . " FROM " . $this->entityFullName($query->getMetadata()) .
             $this->filters($query);
+
+        return $sql;
+    }
+
+    public  function update($entity): string
+    {
+        $metadata = $entity->metadata();
+
+        //If the entity does not have any identification fields it can't update
+        if(count($metadata->getIdentificationFields()) == 0){
+            throw new PersistenceException("The " . $metadata->getEntityClassName() . " does not have any 
+            identification field. Use the @id annotation in the identification property of the Entity to 
+            determine the identification field");
+        }
+
+        //Create the UPDATE script
+        $sql = "UPDATE " . $this->entityFullName($metadata) . " SET " . $this->fieldsSettingValues($metadata, $entity) .
+        " WHERE " . $this->identifierFieldsInQuery($metadata, $entity);
 
         return $sql;
     }
@@ -130,6 +158,55 @@ class MySqlTranslator extends SqlTranslator
 
             if($counter <= $lastIndex){
                 $return .= ", ";
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * Translate the fields of the entity
+     * @param EntityMetadata $metadata
+     * @param Entity $entity
+     * @return string
+     */
+    protected function fieldsSettingValues(EntityMetadata $metadata,$entity){
+        $return = "";
+        $lastIndex = count($metadata->getFields()) - 1;
+        $counter = 0;
+
+        foreach ($metadata->getFields() as $field){
+            $counter++;
+
+            $return .= $this->entityName($metadata) . "." . $this->fieldName($field);
+            $return .= " = " .  $this->value($metadata->getPropertyValue($field->getPropertyName(), $entity));
+
+            if($counter <= $lastIndex){
+                $return .= ", ";
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * @param EntityMetadata $metadata
+     * @param Entity $entity
+     * @return string
+     */
+    protected function identifierFieldsInQuery(EntityMetadata $metadata, $entity){
+        $return = "";
+        $lastIndex = count($metadata->getIdentificationFields()) - 1;
+        $counter = 0;
+
+        foreach ($metadata->getIdentificationFields() as $field){
+            $counter++;
+
+            $return .= $this->entityName($metadata) . "." . $this->fieldName($field);
+            $return .= " = " .  $this->value($metadata->getPropertyValue($field->getPropertyName(), $entity));
+
+            if($counter <= $lastIndex){
+                $return .= "AND ";
             }
         }
 

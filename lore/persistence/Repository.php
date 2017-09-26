@@ -45,10 +45,10 @@ abstract class Repository
     /**
      * Delete an entity from the repository
      * @param $entity Entity|Entity[]
-     * @return bool Flag indicating if the deletion was succeeded
+     * @return int - The number of affected rows
      * @throws PersistenceException
      */
-    public abstract function delete($entity) : bool ;
+    public abstract function delete($entity) : int ;
 
     /**
      * Return an flag indicating if the given $entity already exists in the repository
@@ -76,8 +76,9 @@ abstract class Repository
     /**
      * Update an existing entity into repository
      * @param $entity Entity|Entity[]
+     * @return int - Number of affected registers
      */
-    public abstract function update($entity);
+    public abstract function update($entity) : int;
 
     /**
      * Save the entity in the repository. If the entity already exists it makes an Repository::update, otherwise

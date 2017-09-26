@@ -172,9 +172,14 @@ class RelationalRepository extends Repository
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
-    public function delete($entity): bool
+    public function delete($entity): int
     {
-        // TODO: Implement delete() method.
+        $sql = $this->translator->delete($entity);
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->rowCount();
     }
 
     public function exists($entity): bool
@@ -186,8 +191,7 @@ class RelationalRepository extends Repository
     {
         $sql = $this->translator->insert($entity);
 
-        //Create the stmt
-        $stmt = $this->pdo->exec($sql);
+        $this->pdo->exec($sql);
     }
 
     public function query($class = null): Query
@@ -196,9 +200,14 @@ class RelationalRepository extends Repository
         return new RelationalQuery($metadata, $this);
     }
 
-    public function update($entity)
+    public function update($entity) : int
     {
-        // TODO: Implement update() method.
+        $sql = $this->translator->update($entity);
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->rowCount();
     }
 
 }
