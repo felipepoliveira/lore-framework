@@ -1,6 +1,15 @@
 <?php
 return [
 
+    "application" => [
+        /*
+         * The states of the application.
+         * Used internally for debug resources
+         * values => ['development', 'production']
+         */
+        "state" => "development"
+    ],
+
     /*
      * PACKAGE: Object
      * FROM: core

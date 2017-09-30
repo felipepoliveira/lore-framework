@@ -4,6 +4,7 @@ namespace lore\persistence;
 require_once __DIR__ . "/../../Repository.php";
 require_once "RelationalQuery.php";
 
+use lore\Lore;
 use lore\persistence\Query;
 
 class RelationalRepository extends Repository
@@ -172,12 +173,23 @@ class RelationalRepository extends Repository
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
+    protected function executeSql(\PDOStatement $stmt, $sql){
+        try{
+            $stmt->execute();
+        }catch (\Exception $e){
+            if(Lore::app()->getContext()->onDevelopment()){
+                throw new PersistenceException("Error while trying to execute $sql\n" . $e->getMessage());
+            }else{
+                throw $e;
+            }
+        }
+    }
+
     public function delete($entity): int
     {
         $sql = $this->translator->delete($entity);
-
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
+        $this->executeSql($stmt, $sql);
 
         return $stmt->rowCount();
     }
@@ -190,8 +202,8 @@ class RelationalRepository extends Repository
     public function insert($entity)
     {
         $sql = $this->translator->insert($entity);
-
-        $this->pdo->exec($sql);
+        $stmt = $this->pdo->prepare($sql);
+        $this->executeSql($stmt, $sql);
     }
 
     public function query($class = null): Query
@@ -205,7 +217,7 @@ class RelationalRepository extends Repository
         $sql = $this->translator->update($entity);
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
+        $this->executeSql($stmt, $sql);
 
         return $stmt->rowCount();
     }

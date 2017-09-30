@@ -53,6 +53,34 @@ abstract class ReflectionManager
         return ReflectionManager::$reflectionClass;
     }
 
+    public static function invokeGetOf(string $property, $object, \ReflectionClass $refClass = null){
+        if(!isset($refClass)){
+            $refClass = ReflectionManager::reflectionClass(get_class($object));
+        }
+
+        try{
+            $method = $refClass->getMethod("get" .  ucfirst($property));
+            return $method->invoke($object);
+        }catch (\Exception $e){
+            throw new \ReflectionException("The property \"$property\" of class " . $refClass->getName() . " does not have
+            an get method");
+        }
+    }
+
+    public static function invokeSetOf(string $property, $value, $object, \ReflectionClass $refClass = null){
+        if(!isset($refClass)){
+            $refClass = ReflectionManager::reflectionClass(get_class($object));
+        }
+
+        try{
+            $method = $refClass->getMethod("set" .  ucfirst($property));
+            return $method->invokeArgs($object, [$value]);
+        }catch (\Exception $e){
+            throw new \ReflectionException("The property \"$property\" of class " . $refClass->getName() . " does not have
+            an get method");
+        }
+    }
+
     /**
      * Invoke an method of an given object
      * @param object $object The object

@@ -249,7 +249,6 @@ class Application
      */
     public function load(){
         if(!$this->loaded){
-
             $this->loadConfigurations();
             $this->loadModules();
             $this->loadComponents();
@@ -266,6 +265,7 @@ class Application
      */
     private function loadConfigurations(){
         Configurations::load("project", __DIR__ . "/../../app/config/project.php");
+        $this->context->loadApplicationState();
     }
 
     /**

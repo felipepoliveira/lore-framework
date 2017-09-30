@@ -52,15 +52,35 @@ class EntityMetadata
         $this->loadEntityData();
     }
 
+    /**
+     * Load data of the entity:
+     * The entity name
+     * The entity fields
+     */
     private function loadEntityData(){
         $this->loadEntityName();
         $this->loadFields();
     }
 
+    /**
+     * Load the name of the entity from '@'entity annotation in the class. If the entity name in annotation is
+     * empty, the name of the entity will be the name of the class
+     */
     private function loadEntityName(){
-        $this->entityName = DocCommentUtil::readAnnotationValue($this->reflectionClass->getDocComment(), "entity") ?? get_class($this);
+        $entityName = DocCommentUtil::readAnnotationValue($this->reflectionClass->getDocComment(), "entity");
+        if(strlen($entityName) == 0){
+            $entityName = strtolower($this->reflectionClass->getName());
+        }
+
+        $this->entityName = $entityName;
     }
 
+    /**
+     * * Fields
+     *  -Name of the field;
+     *  -Name of the property
+     *  -The field type
+     */
     private function loadFields(){
         foreach ($this->reflectionClass->getProperties() as $property){
             //Check if the property has the field annotation...

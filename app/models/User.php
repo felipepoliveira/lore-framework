@@ -1,17 +1,17 @@
 <?php
+
+use lore\persistence\Entity;
 use lore\mvc\Model;
 
 /**
  * Class User
- * @entity user
- * @repository todo/mysql
  */
 class User extends Model
 {
-    use \lore\persistence\Entity;
+    use Entity;
 
     /**
-     * @id
+     * @auto
      * @field
      * @var int
      */
@@ -27,16 +27,15 @@ class User extends Model
 
     /**
      * @field
+     * @filterVar email
      * @max 120
-     * @varFilter email
      * @var string
      */
     private $email;
 
     /**
      * @field
-     * @max 30
-     * @min 6
+     * @min 8
      * @var string
      */
     private $password;
@@ -44,7 +43,7 @@ class User extends Model
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -52,7 +51,7 @@ class User extends Model
     /**
      * @param int $id
      */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
@@ -60,7 +59,7 @@ class User extends Model
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -68,7 +67,7 @@ class User extends Model
     /**
      * @param string $name
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }
@@ -76,7 +75,7 @@ class User extends Model
     /**
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -84,7 +83,7 @@ class User extends Model
     /**
      * @param string $email
      */
-    public function setEmail($email)
+    public function setEmail(string $email)
     {
         $this->email = $email;
     }
@@ -92,7 +91,7 @@ class User extends Model
     /**
      * @return string
      */
-    public function getPassword()
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -100,12 +99,8 @@ class User extends Model
     /**
      * @param string $password
      */
-    public function setPassword($password)
+    public function setPassword(string $password)
     {
-        $this->password = $password;
-    }
-
-    public function hashPassword(){
-        $this->password = hash("sha256", $this->getPassword());
+        $this->password = hash("sha256", $password);
     }
 }

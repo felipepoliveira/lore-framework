@@ -3,7 +3,13 @@ namespace lore\persistence;
 
 require_once "QueryFilter.php";
 
-
+/**
+ * Linked based class to make queries in repository.
+ * This is a abstraction and must be implemented in the Repository implementation works
+ * Class Query
+ * @see Repository
+ * @package lore\persistence
+ */
 abstract class Query
 {
     //The fetch modes
@@ -82,7 +88,7 @@ abstract class Query
 
     /**
      * Return an single result from the query
-     * @return Entity
+     * @return Entity|false
      */
     public abstract function one();
 
