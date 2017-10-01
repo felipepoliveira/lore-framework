@@ -41,7 +41,7 @@ use lore\Lore;
 trait Entity
 {
     /**
-     * @var EntityMetadata
+     * @var EntityMetadata[]
      */
     private static $entitiesMetadata = [];
 
@@ -125,5 +125,21 @@ trait Entity
      */
     public function update(){
         Lore::app()->getPersistence()->getRepository($this->metadata()->getRepositoryName())->update($this);
+    }
+
+    /**
+     * @return EntityMetadata[]
+     */
+    public static function getEntitiesMetadata(): array
+    {
+        return self::$entitiesMetadata;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityName()
+    {
+        return $this->entityName;
     }
 }

@@ -21,6 +21,7 @@ require_once __DIR__ . "/../web/Response.php";
 
 //AUTOLOAD
 require_once __DIR__ . "/../web/Session.php";
+require_once __DIR__ . "/../utils/Arrays.php";
 
 /**
  * Class Application - Store data to be used in all scope of the system. An singleton instance of this class can be found

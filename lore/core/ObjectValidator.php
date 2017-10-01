@@ -1,6 +1,8 @@
 <?php
 namespace lore;
 
+use lore\persistence\Entity;
+
 require_once "ValidationModes.php";
 
 

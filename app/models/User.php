@@ -3,8 +3,9 @@
 use lore\persistence\Entity;
 use lore\mvc\Model;
 
+require_once "Address.php";
+
 /**
- * Class User
  */
 class User extends Model
 {
@@ -29,6 +30,7 @@ class User extends Model
      * @field
      * @filterVar email
      * @max 120
+     * @min 3
      * @var string
      */
     private $email;
@@ -41,9 +43,14 @@ class User extends Model
     private $password;
 
     /**
+     * @var Address
+     */
+    private $address;
+
+    /**
      * @return int
      */
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
@@ -59,7 +66,7 @@ class User extends Model
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -75,7 +82,7 @@ class User extends Model
     /**
      * @return string
      */
-    public function getEmail(): string
+    public function getEmail()
     {
         return $this->email;
     }
@@ -91,7 +98,7 @@ class User extends Model
     /**
      * @return string
      */
-    public function getPassword(): string
+    public function getPassword()
     {
         return $this->password;
     }
@@ -101,6 +108,26 @@ class User extends Model
      */
     public function setPassword(string $password)
     {
-        $this->password = hash("sha256", $password);
+        $this->password = $password;
+    }
+
+    /**
+     * @return Address
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param Address $address
+     */
+    public function setAddress(Address $address)
+    {
+        $this->address = $address;
+    }
+
+    public function hashPassword(){
+        $this->password = hash("sha256", $this->password);
     }
 }

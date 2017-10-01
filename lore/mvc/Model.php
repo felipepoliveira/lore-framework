@@ -8,12 +8,12 @@ use lore\web\Request;
 abstract class Model
 {
     /**
-     * @param Request $request
+     * @param array $data
      */
-    public function load(Request $request){
+    public function load(array $data){
 
         if(Lore::app()->isObjectLoaderEnabled()){
-            Lore::app()->getObjectLoader()->load($this, $request);
+            Lore::app()->getObjectLoader()->load($this, $data);
         }else{
             throw new ModuleException("An object loader is needed to do the object loading. Check
             if an ObjectLoader implementation is defined in config/project.php file");
@@ -22,7 +22,7 @@ abstract class Model
 
     /**
      * Serialize the model to an array. If an model loader is defined this method use it to do the serialization.
-     * Otherwise an exception will be thrown
+     * Otherwise an exception wil   1l be thrown
      * @param $args
      * @return array
      */
@@ -45,7 +45,6 @@ abstract class Model
      * @return bool|array
      */
     public function validate($validationMode = null, $validationExceptions = null, $prefix = ""){
-
         if(Lore::app()->isObjectValidatorEnabled()){
             return Lore::app()->getObjectValidator()->validate($this, $validationMode, $validationExceptions, $prefix);
         }else {

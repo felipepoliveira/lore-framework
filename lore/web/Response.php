@@ -144,6 +144,18 @@ class Response
         $this->errors = $errors;
     }
 
+    public function putErrors(array  $errors){
+        $this->errors = array_merge($this->errors, $errors);
+    }
+
+    public function putErrorsOn($key, array $errors){
+        if(!isset($this->errors[$key])){
+            $this->errors[$key] = $errors;
+        }else{
+            $this->errors[$key] = array_merge($this->errors[$key], $errors);
+        }
+    }
+
     /**
      * Return the data that will be sent to the client
      * @return mixed

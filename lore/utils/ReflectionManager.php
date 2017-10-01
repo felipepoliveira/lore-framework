@@ -77,7 +77,7 @@ abstract class ReflectionManager
             return $method->invokeArgs($object, [$value]);
         }catch (\Exception $e){
             throw new \ReflectionException("The property \"$property\" of class " . $refClass->getName() . " does not have
-            an get method");
+            an set method");
         }
     }
 

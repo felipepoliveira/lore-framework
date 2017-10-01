@@ -35,12 +35,30 @@ class UserController extends ViewController
         $this->render("user/form.php");
     }
 
+    protected function validateEmailExists(){
+        $email = $this->getModel()->getEmail();
+        if($this->queryUser->where("email")->equals($email)->count() > 0){
+            $this->getResponse()->putErrorsOn(
+                "model.email", [
+                    "emailExists" => Lore::app()->getStringProvider()->getString(
+                        "User.email.emailExists",
+                        "The email is already in use")
+                ]
+            );
+
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     /**
      * @uri /register
      * @method post
      */
     public function register(){
-        if($this->loadAndValidateModel()){
+        if($this->loadAndValidateModel() && $this->validateEmailExists()){
+            $this->getModel()->hashPassword();
             $this->repository->insert($this->getModel());
             $this->redirect("");
         }else{
