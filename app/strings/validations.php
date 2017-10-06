@@ -1,4 +1,4 @@
 <?php
 return [
-    "User.name.max" => "O campo"
+    "User.email.emailExists" => "The email já sendo utilizado",
 ];

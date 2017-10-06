@@ -3,6 +3,7 @@ namespace lore;
 
 use lore\Configurations;
 use lore\Lore;
+use lore\util\Arrays;
 use lore\util\DocCommentUtil;
 use lore\util\File;
 use lore\util\ReflectionManager;
@@ -13,9 +14,9 @@ require_once __DIR__ . "/../../core/ObjectLoader.php";
 
 class ReflexiveObjectLoader extends ObjectLoader
 {
-    public function load($model, Request $request)
+    public function load($model, array $data)
     {
-        $this->loadRecursive($model, $request->requestDataAsRecursiveArray());
+        $this->loadRecursive($model, Arrays::toRecursiveArray($data));
     }
 
     /**
@@ -24,12 +25,8 @@ class ReflexiveObjectLoader extends ObjectLoader
      * @param array $array
      */
     protected function loadRecursive($model, array $array){
-        //Store the name of the class
-        $className = get_class($model);
-
         //Create reflection object
-        $reflectionClass = new \ReflectionClass($className);
-        $className = strtolower($className);
+        $reflectionClass = new \ReflectionClass(get_class($model));
 
         //Iterate over all object property
         foreach ($reflectionClass->getProperties() as $prop) {
@@ -49,11 +46,12 @@ class ReflexiveObjectLoader extends ObjectLoader
 
                 //If the data is an array, check if the property is a array...
                 if(is_array($arrayValue) && $propClassName = ReflectionManager::propertyIsObject($prop, $model)){
-                    $reflectionClass = new \ReflectionClass($propClassName);
-                    $prop->setValue($model, $reflectionClass->newInstance());
-                    $this->loadRecursive($prop->getValue($model), $arrayValue);
+                    $reflectionClassProp = new \ReflectionClass($propClassName);
+                    ReflectionManager::invokeSetOf($propName, $reflectionClassProp->newInstance(), $model, $reflectionClass);
+                    $this->loadRecursive(ReflectionManager::invokeGetOf($propName, $model, $reflectionClass),
+                                            $arrayValue);
                 }else{
-                    $prop->setValue($model, $arrayValue);
+                    ReflectionManager::invokeSetOf($propName, $arrayValue, $model, $reflectionClass);
                 }
             }
 

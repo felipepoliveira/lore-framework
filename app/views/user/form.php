@@ -25,8 +25,12 @@ use lore\mvc\View;
             <?=View::input("email", 'type="text" id="inputEmail" placeholder="john@email.com"')?>
             <?=View::error("model.email", "<div class='alert alert-danger'>{{value}}</div>")?>
         </label>
+        <label for="inputPublicPlace">
+            <?=View::textarea("address.publicPlace", 'id="inputPublicPlace" placeholder="Str. Avenue, 123"')?>
+            <?=View::error("model.address.publicPlace", "<div class='alert alert-danger'>{{value}}</div>")?>
+        </label>
         <label for="inputPassword">
-            <?=View::input("password", 'type="password" id="inputPassword" placeholder="Your secret password"')?>
+            <input type="password" type="password" id="inputPassword" placeholder="Your secret password" name="password">
             <?=View::error("model.password", "<div class='alert alert-danger'>{{value}}</div>")?>
         </label>
         <button type="submit">Enviar</button>

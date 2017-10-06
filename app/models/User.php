@@ -1,17 +1,18 @@
 <?php
+
+use lore\persistence\Entity;
 use lore\mvc\Model;
 
+require_once "Address.php";
+
 /**
- * Class User
- * @entity user
- * @repository todo/mysql
  */
 class User extends Model
 {
-    use \lore\persistence\Entity;
+    use Entity;
 
     /**
-     * @id
+     * @auto
      * @field
      * @var int
      */
@@ -27,19 +28,24 @@ class User extends Model
 
     /**
      * @field
+     * @filterVar email
      * @max 120
-     * @varFilter email
+     * @min 3
      * @var string
      */
     private $email;
 
     /**
      * @field
-     * @max 30
-     * @min 6
+     * @min 8
      * @var string
      */
     private $password;
+
+    /**
+     * @var Address
+     */
+    private $address;
 
     /**
      * @return int
@@ -52,7 +58,7 @@ class User extends Model
     /**
      * @param int $id
      */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
@@ -68,7 +74,7 @@ class User extends Model
     /**
      * @param string $name
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }
@@ -84,7 +90,7 @@ class User extends Model
     /**
      * @param string $email
      */
-    public function setEmail($email)
+    public function setEmail(string $email)
     {
         $this->email = $email;
     }
@@ -100,12 +106,28 @@ class User extends Model
     /**
      * @param string $password
      */
-    public function setPassword($password)
+    public function setPassword(string $password)
     {
         $this->password = $password;
     }
 
+    /**
+     * @return Address
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param Address $address
+     */
+    public function setAddress(Address $address)
+    {
+        $this->address = $address;
+    }
+
     public function hashPassword(){
-        $this->password = hash("sha256", $this->getPassword());
+        $this->password = hash("sha256", $this->password);
     }
 }

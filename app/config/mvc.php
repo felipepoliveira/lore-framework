@@ -7,6 +7,6 @@ return [
         "dirs" => ["app/models"],
     ],
     "views" => [
-        "dirs" => ["app/views", "app/views/2"],
+        "dirs" => ["app/views", "app/views/2"]
     ],
 ];

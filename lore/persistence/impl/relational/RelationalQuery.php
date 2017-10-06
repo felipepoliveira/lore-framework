@@ -1,6 +1,8 @@
 <?php
 namespace lore\persistence;
 
+use lore\Lore;
+
 require_once __DIR__ . "/../../../utils/ReflectionManager.php";
 
 
@@ -58,6 +60,7 @@ class RelationalQuery extends Query
     }
 
     /**
+     * @throws \Exception
      * @return \PDOStatement
      */
     protected function createAndTriggerQuery() : \PDOStatement{
@@ -66,7 +69,16 @@ class RelationalQuery extends Query
 
         //Create the stmt
         $stmt = $this->repository->getPdo()->prepare($sql);
-        $stmt->execute();
+
+        try{
+            $stmt->execute();
+        }catch (\Exception $e){
+            if(Lore::app()->getContext()->onDevelopment()){
+                throw new PersistenceException("Error while trying to execute $sql\n" . $e->getMessage());
+            }else{
+                throw $e;
+            }
+        }
 
         return $stmt;
     }
