@@ -2,6 +2,7 @@
 namespace lore\web;
 
 require_once __DIR__ . "/../Router.php";
+require_once "ScriptNotFoundException.php";
 
 use lore\ConfigurationException;
 use lore\Lore;
@@ -29,7 +30,7 @@ class ScriptBasedRouter extends Router
                 if(file_exists($pathToScript)){
                     $response->setUri($pathToScript);
                 }else{
-                    $response->setCode(404);
+                    throw new ScriptNotFoundException("The script \"$pathToScript\" was not found in server");
                 }
             }else{
                 throw new ConfigurationException("The rule " . $rule->getRouteRule() . " does not have 
