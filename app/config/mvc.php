@@ -1,7 +1,7 @@
 <?php
 return [
     "controllers" => [
-        "dirs" => ["app/controllers/api", "app/controllers/view"],
+        "dirs" => ["app/controllers/", "app/controllers/"],
     ],
     "models" => [
         "dirs" => ["app/models"],

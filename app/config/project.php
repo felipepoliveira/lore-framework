@@ -53,10 +53,9 @@ return [
     "router" => [
         "file" => "lore/mvc/impl/PrettyUrlMvcRouter.php",
         "class" => "\\lore\\mvc\\PrettyUrlMvcRouter",
-        /*
-        "file" => "lore/web/impl/ScriptBasedRouter.php",
-        "class" => "lore\\web\\ScriptBasedRouter",
-        */
+        //"file" => "lore/web/impl/ScriptBasedRouter.php",
+        //"class" => "lore\\web\\ScriptBasedRouter",
+
 
         /*
          * CONFIGURATION: URI Rules
@@ -72,6 +71,7 @@ return [
             "/prefix/*" => ["app/scripts/Script.php"],
             "*/key/value/*" => ["app/scripts/Script.php"],
             "/specific" => ["app/scripts/Script.php"],
+            "/test/*" => ["app/scripts/TestScript.php"],
 
             /*
              * Prefixed URI:
