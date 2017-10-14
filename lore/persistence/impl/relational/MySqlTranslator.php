@@ -9,7 +9,7 @@ require_once "SqlTranslator.php";
 class MySqlTranslator extends SqlTranslator
 {
 
-    public  function delete($entity): string
+    public  function delete($entity)
     {
         $metadata = $entity->metadata();
 
@@ -20,18 +20,43 @@ class MySqlTranslator extends SqlTranslator
         return $sql;
     }
 
-    public function insert($entity): string
+    public function insert($entity) : InsertTranslationResult
     {
+        $return = false;
+
         $metadata = $entity->metadata();
 
-        //Translate the fields
-        $sql = "INSERT INTO " . $this->entityFullName($metadata) . " " . $this->fieldsInParenthesis($metadata) .
-        " VALUES " . $this->valuesInParenthesis($metadata, $entity);
+        //Get the composed fields
+        foreach ($metadata->getEntityFields() as $composedField){
+            //Get the composed entity
+            $composedEntity = $metadata->getPropertyValue($composedField->getPropertyName(), $entity);
 
-        return $sql;
+            //If the entity is not persisted already it ignore the new insert
+            if(!$composedEntity || $this->isAlreadyPersisted($composedEntity->metadata(), $composedEntity)){
+                continue;
+            }
+
+            //Otherwise... Call this method recursively for the composed entity
+            $return = $this->insert($composedEntity);
+        }
+
+        //Get the transaction fields to make the insert script
+        $transactionFields = $this->transactionalFields($metadata, $entity);
+        $sql =  "INSERT INTO " . $this->entityFullName($metadata) . " " . $this->fieldsInParenthesis($transactionFields) .
+            " VALUES " . $this->valuesInParenthesis($transactionFields);
+
+        //If the result is not set already (does not have any composed entities) create an new instance of the
+        //object, otherwise add the next insertion result into the queue
+        if(!$return){
+            $return = new InsertTranslationResult($entity, $sql);
+        }else{
+            $return->setNextInsertion(new InsertTranslationResult($entity, $sql));
+        }
+
+        return $return;
     }
 
-    public function query(Query $query): string
+    public function query(Query $query)
     {
         $sql = "SELECT " . $this->fieldsInList($query) . " FROM " . $this->entityFullName($query->getMetadata()) .
             $this->filters($query);
@@ -39,7 +64,7 @@ class MySqlTranslator extends SqlTranslator
         return $sql;
     }
 
-    public  function update($entity): string
+    public  function update($entity)
     {
         $metadata = $entity->metadata();
 
@@ -58,23 +83,91 @@ class MySqlTranslator extends SqlTranslator
     }
 
     /**
+     * @param EntityMetadata $metadata
+     * @param Entity $entity
+     * @return bool
+     */
+    protected function isAlreadyPersisted($metadata, $entity){
+
+        $isAlreadyPersisted  = true;
+
+        foreach ($metadata->getIdentificationFields() as $identificationField){
+            if(! ($metadata->getPropertyValue($identificationField->getPropertyName(), $entity))){
+                $isAlreadyPersisted = false;
+                break;
+            }
+        }
+
+        return $isAlreadyPersisted;
+
+    }
+
+    /**
+     * @param EntityMetadata $metadata
+     * @param Entity $entity
+     * @return array
+     */
+    protected function transactionalFields($metadata, $entity){
+        $transactionalFields = [];
+        foreach ($metadata->getFields() as $field){
+
+            //*Auto fields is not considered transactional
+            if($field->isAuto()){
+                continue;
+            }
+
+            //If the entity is field is a composed entity, it get its id
+            if($field->isEntity()){
+                $composedEntity = $metadata->getPropertyValue($field->getPropertyName(), $entity);
+
+                //Check if the composed entity use Entity trait
+                if($composedEntity && method_exists($composedEntity, 'metadata')){
+
+                    $composedEntityMetadata = $composedEntity->metadata();
+
+                    foreach ($composedEntityMetadata->getIdentificationFields() as $identificationField){
+
+                        $propValue =
+                            $composedEntityMetadata->getPropertyValue($identificationField->getPropertyName(), $composedEntity) ?? "@auto";
+
+                        $transactionalFields[] = new TransactionField($field,
+                            $propValue);
+                    }
+
+                }else{
+                    throw new PersistenceException("The entity " . get_class($entity) . "::" . $field->getName() .
+                    " must implement the lore\\persistence\\Entity trait to make an transaction");
+                }
+
+            }else{
+                $transactionalFields[] = new TransactionField($field, $metadata->getPropertyValue($field->getPropertyName(), $entity));
+            }
+
+        }
+
+        return $transactionalFields;
+    }
+
+    /**
      * Translate the query filters (WHERE)
      * @param Query $query
      * @return string
      */
-    protected function filters(Query $query) : string {
-        //If the query does not have a filter
+    protected function filters(Query $query)  {
+        //If the query does not have a filter return an empty string
         if(!$query->hasFilter()) return "";
 
         //Get the first filter of the query
         $filter = $query->getFilter();
         $return = "WHERE";
+
+        //Iterate over all filters of the filter queue
         do{
             $return .= " " .
-                $this->entityName($query->getMetadata()) . ".`" . $filter->getField() . "` " .
-                $this->filterType($filter) . " " .
-                $this->value($filter->getValue(), $filter) . " " .
-                $this->bindType($filter);
+                $this->entityName($query->getMetadata()) . ".`" . $filter->getField() . "` " .  //entity.field
+                $this->filterType($filter) . " " .                                              // =
+                $this->value($filter->getValue(), $filter) . " " .                              //  'value'
+                $this->bindType($filter);                                                       //'AND', 'OR' or ''
 
         }while($filter->hasNextFilter() && ($filter = $filter->getNextFilter()));
 
@@ -213,26 +306,20 @@ class MySqlTranslator extends SqlTranslator
         return $return;
     }
 
-
     /**
-     * @param $metadata EntityMetadata
+     * @param TransactionField[] $transactionFields
      * @return string
      */
-    protected function fieldsInParenthesis($metadata, $prefix = "", $ignoreAuto = true){
+    protected function fieldsInParenthesis($transactionFields){
         $return = "(";
-        $lastIndex = count($metadata->getFields()) - 1;
+        $lastIndex = count($transactionFields) - 1;
         $counter = 0;
 
-        foreach ($metadata->getFields() as $field){
+        foreach ($transactionFields as $field){
 
             $counter++;
 
-            //Ig ignore automatic valued fields is true skip to the next field if the current is automatic
-            if($ignoreAuto && $field->isAuto()){
-                continue;
-            }
-
-            $return .= $prefix . $field->getName();
+            $return .= $field->getField()->getName();
 
             if($counter <= $lastIndex){
                 $return .= ", ";
@@ -290,7 +377,10 @@ class MySqlTranslator extends SqlTranslator
         }
 
 
-        if(is_string($value)){
+        if($value === null){
+            $value = 'NULL';
+        }
+        else if(is_string($value)){
             $value = $this->repository->getPdo()->quote($value, \PDO::PARAM_STR);
         }
 
@@ -298,29 +388,18 @@ class MySqlTranslator extends SqlTranslator
     }
 
     /**
-     * @param EntityMetadata $metadata
-     * @param Entity $entity
-     * @param bool $ignoreAuto
+     * @param TransactionField[] $transactionFields
      * @return string
      */
-    public function valuesInParenthesis($metadata, $entity, $ignoreAuto = true){
+    public function valuesInParenthesis($transactionFields){
         $return = "(";
-        $lastIndex = count($metadata->getFields()) - 1;
+        $lastIndex = count($transactionFields) - 1;
         $counter = 0;
 
-        foreach ($metadata->getFields() as $field){
-
+        foreach ($transactionFields as $field){
             $counter++;
 
-            //Ig ignore automatic valued fields is true skip to the next field if the current is automatic
-            if($ignoreAuto && $field->isAuto()){
-                continue;
-            }
-
-            //Get the value of the property
-            $propVal = $metadata->getPropertyValue($field->getPropertyName(), $entity);
-
-            $return .= $this->value($propVal);
+            $return .= $this->value($field->getValue());
 
             if($counter <= $lastIndex){
                 $return .= ", ";

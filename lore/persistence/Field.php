@@ -11,6 +11,9 @@ namespace lore\persistence;
  */
 class Field
 {
+    public const    COMPOSITION_ONE = 0,
+                    COMPOSITION_MANY = 1;
+
     /**
      * @var string
      */
@@ -35,6 +38,16 @@ class Field
      * @var bool
      */
     private $auto = false;
+
+    /**
+     * @var bool
+     */
+    private $isEntity = false;
+
+    /**
+     * @var int - ENUM
+     */
+    private $compositionType;
 
     /**
      * The name of the field in repository
@@ -125,6 +138,38 @@ class Field
     public function setPropertyName($propertyName)
     {
         $this->propertyName = $propertyName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEntity(): bool
+    {
+        return $this->isEntity;
+    }
+
+    /**
+     * @param bool $isEntity
+     */
+    public function setIsEntity(bool $isEntity)
+    {
+        $this->isEntity = $isEntity;
+    }
+
+    /**
+     * @param int $compositionType
+     */
+    public function setCompositionType(int $compositionType)
+    {
+        $this->compositionType = $compositionType;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCompositionType(): int
+    {
+        return $this->compositionType;
     }
 
 }

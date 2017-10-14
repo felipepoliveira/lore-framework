@@ -65,11 +65,11 @@ return [
      */
     "router" => [
 
-        "file" => "lore/mvc/impl/PrettyUrlMvcRouter.php",
-        "class" => "\\lore\\mvc\\PrettyUrlMvcRouter",
+        //"file" => "lore/mvc/impl/PrettyUrlMvcRouter.php",
+        //"class" => "\\lore\\mvc\\PrettyUrlMvcRouter",
 
-        //"file" => "lore/web/impl/ScriptBasedRouter.php",
-        //"class" => "lore\\web\\ScriptBasedRouter",
+        "file" => "lore/web/impl/ScriptBasedRouter.php",
+        "class" => "lore\\web\\ScriptBasedRouter",
 
 
         /*
@@ -110,7 +110,8 @@ return [
              * A Simple route configuration. When the URI is equals 'register' it will be handle by
              * the 'Script.php'
              */
-            "/register" => ["app/scripts/Script.php"],
+            "/insert" => ["app/scripts/Insert.php"],
+            "/select" => ["app/scripts/Select.php"],
         ],
 
         /*

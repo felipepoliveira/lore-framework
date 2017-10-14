@@ -6,13 +6,15 @@ use lore\mvc\Model;
 require_once "Address.php";
 
 /**
+ * @repository lore/mysql
  */
-class User extends Model
+class User
 {
     use Entity;
 
     /**
      * @auto
+     * @id
      * @field
      * @var int
      */
@@ -43,6 +45,8 @@ class User extends Model
     private $password;
 
     /**
+
+     * @one
      * @var Address
      */
     private $address;

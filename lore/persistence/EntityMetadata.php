@@ -19,6 +19,11 @@ class EntityMetadata
     private $identificationFields = [];
 
     /**
+     * @var Field[]
+     */
+    private $entityFields = [];
+
+    /**
      * @var string
      */
     private $repositoryName;
@@ -98,6 +103,13 @@ class EntityMetadata
                     $this->identificationFields[] = $field;
                 }
 
+                //Check if is a composition
+                $field->setIsEntity($this->isEntity($property));
+                if($field->isEntity()){
+                    $field->setCompositionType($this->readCompositionType($property));
+                    $this->entityFields[] = $field;
+                }
+
                 //Put the field in field list
                 $this->fields[$field->getName()] = $field;
             }
@@ -111,6 +123,30 @@ class EntityMetadata
      */
     private function isAutoAnnotated($refProp) : bool{
         return DocCommentUtil::annotationExists($refProp->getDocComment(), "auto");
+    }
+
+    /**
+     * @param \ReflectionProperty $refProp - The property
+     * @return bool
+     */
+    private function isEntity($refProp) : bool {
+        return  DocCommentUtil::annotationExists($refProp->getDocComment(), "one") ||
+                DocCommentUtil::annotationExists($refProp->getDocComment(), "many");
+    }
+
+    /**
+     * @param \ReflectionProperty $refProp
+     * @return int
+     */
+    private function readCompositionType($refProp) : int{
+        if(DocCommentUtil::annotationExists($refProp->getDocComment(), "one")){
+            return Field::COMPOSITION_ONE;
+        }else if(DocCommentUtil::annotationExists($refProp->getDocComment(), "many")){
+            return Field::COMPOSITION_MANY;
+        }else{
+            throw new PersistenceException("The composition type ['one', 'many'] was not defined in property " .
+                $this->entityName . "::" . $refProp->getName());
+        }
     }
 
     /**
@@ -253,5 +289,14 @@ class EntityMetadata
     public function getEntityClassName()
     {
         return $this->entityClassName;
+    }
+
+    /**
+     * Return all composed fields of the entity
+     * @return Field[]
+     */
+    public function getEntityFields(): array
+    {
+        return $this->entityFields;
     }
 }

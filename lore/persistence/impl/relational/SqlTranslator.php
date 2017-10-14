@@ -1,13 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Felipe Oliveira
- * Date: 18/09/2017
- * Time: 21:09
- */
-
 namespace lore\persistence;
 
+require_once "InsertTranslationResult.php";
 
 abstract class SqlTranslator
 {
@@ -37,25 +31,25 @@ abstract class SqlTranslator
      * @param Entity $entity
      * @return string
      */
-    public abstract function delete($entity) : string;
+    public abstract function delete($entity);
 
     /**
      * @param Entity $entity
      * @return string
      */
-    public abstract function insert($entity) : string;
+    public abstract function insert($entity) : InsertTranslationResult;
 
     /**
      * Create the query Sql
      * @param Query $query
      * @return mixed
      */
-    public abstract function query(Query $query) : string;
+    public abstract function query(Query $query);
 
     /**
      * Create an UPDATE sql script
      * @param Entity $entity
      * @return string
      */
-    public abstract function update($entity) : string;
+    public abstract function update($entity);
 }
