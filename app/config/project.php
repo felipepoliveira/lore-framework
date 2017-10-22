@@ -65,11 +65,11 @@ return [
      */
     "router" => [
 
-        //"file" => "lore/mvc/impl/PrettyUrlMvcRouter.php",
-        //"class" => "\\lore\\mvc\\PrettyUrlMvcRouter",
+        "file" => "lore/mvc/impl/PrettyUrlMvcRouter.php",
+        "class" => "\\lore\\mvc\\PrettyUrlMvcRouter",
 
-        "file" => "lore/web/impl/ScriptBasedRouter.php",
-        "class" => "lore\\web\\ScriptBasedRouter",
+        //"file" => "lore/web/impl/ScriptBasedRouter.php",
+        //"class" => "lore\\web\\ScriptBasedRouter",
 
 
         /*

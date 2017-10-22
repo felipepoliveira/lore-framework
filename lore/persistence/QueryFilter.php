@@ -67,14 +67,15 @@ class QueryFilter
     {
         $this->query = $querySyntax;
 
-        //Search fot the field passing the property name and check if it exists...
-        $field = $this->query->getMetadata()->findFieldByPropertyName($propName);
-        if($field === false){
-            throw new PersistenceException("The property: \"" . $this->query->getMetadata()->getEntityClassName() .
-                        "::$propName\" was not found in query");
-        }
+        //Search fot the field passing the property name and check if it exists...9
+//        $field = $this->query->getMetadata()->findFieldByPropertyName($propName);
+//        if($field === false){
+//            throw new PersistenceException("The property: \"" . $this->query->getMetadata()->getEntityClassName() .
+//                        "::$propName\" was not found in query");
+//        }
         //Put the field name in the query filter
-        $this->field = $field->getName();
+        //$this->field = $field->getName();
+        $this->field = $this->query->getMetadata()->getEntityName() . "." . $propName;
     }
 
     /**

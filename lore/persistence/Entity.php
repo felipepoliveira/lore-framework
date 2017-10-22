@@ -50,6 +50,10 @@ trait Entity
      */
     private $entityName;
 
+    /**
+     * @param $entityClass
+     * @return bool|EntityMetadata
+     */
     public static function metadataOf($entityClass){
 
         $metadata = self::$entitiesMetadata[$entityClass] ?? false;

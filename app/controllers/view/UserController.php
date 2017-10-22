@@ -26,6 +26,46 @@ class UserController extends ViewController
         return new User();
     }
 
+    /**
+     * @uri /select
+     * @method get
+     */
+    public function select(){
+        $result =  $this->queryUser
+            ->fields(Query::FETCH_ONLY, [
+                "id",
+                "name",
+                "email",
+                "address.publicPlace",
+                "address.country.name"
+            ])
+            ->where("id")->greaterThan(0)
+            ->and("address.publicPlace")->startsWith("")
+            ->all();
+
+        die(var_dump($result));
+    }
+
+    /**
+     * @uri /insert
+     */
+    public function insert(){
+        $country = new Country();
+        $country->setName("Brazil");
+
+        $address = new Address();
+        $address->setPublicPlace("My public place");
+        $address->setCountry($country);
+
+        $user = new User();
+        $user->setPassword("password123");
+        $user->setName("Felipe Olvieira");
+        $user->setAddress($address);
+        $user->setEmail("email@email.com");
+
+        $user->insert();
+    }
+
     //MVC
 
     /**
@@ -57,7 +97,7 @@ class UserController extends ViewController
      * @method post
      */
     public function register(){
-        if($this->loadAndValidateModel() && $this->validateEmailExists()){
+        if($this->loadAndValidateModel()/* && $this->validateEmailExists() */){
             $this->getModel()->hashPassword();
             $this->repository->insert($this->getModel());
             $this->redirect("");

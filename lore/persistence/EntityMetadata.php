@@ -96,6 +96,7 @@ class EntityMetadata
                 $field->setName($this->formatFieldName($fieldAnnot, $property->getName()));
                 $field->setPropertyName($property->getName());
                 $field->setAuto($this->isAutoAnnotated($property));
+                $field->setType($this->readType($property));
 
                 //Check if the field has a identifier and add the field in the identification fields
                 $field->setIdentifier($this->isIdentifierAnnotated($property));
@@ -147,6 +148,14 @@ class EntityMetadata
             throw new PersistenceException("The composition type ['one', 'many'] was not defined in property " .
                 $this->entityName . "::" . $refProp->getName());
         }
+    }
+
+    /**
+     * @param \ReflectionProperty $refProp
+     * @return int
+     */
+    private function readType($refProp){
+        return DocCommentUtil::readAnnotationValue($refProp->getDocComment(), "var");
     }
 
     /**

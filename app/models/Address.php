@@ -4,7 +4,7 @@ use lore\mvc\Model;
 
 require_once "Country.php";
 
-class Address
+class Address extends Model
 {
     use \lore\persistence\Entity;
 
@@ -25,6 +25,7 @@ class Address
     private $publicPlace;
 
     /**
+     * @field id_country
      * @one
      * @var Country
      */

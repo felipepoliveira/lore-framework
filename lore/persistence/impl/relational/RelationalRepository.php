@@ -154,8 +154,8 @@ class RelationalRepository extends Repository
     private function loadTranslator(){
         switch ($this->rdbms){
             case "mysql":
-                require_once "MySqlTranslator.php";
-                $this->translator = new MySqlTranslator($this);
+                require_once "GenericSqlTranslator.php";
+                $this->translator = new GenericSqlTranslator($this);
                 break;
             default:
                 throw new PersistenceException("The rdbms: \"" . $this->rdbms . "\" is not implemented 
@@ -201,16 +201,16 @@ class RelationalRepository extends Repository
 
     public function insert($entity)
     {
-        $insertTranslationResult = $this->translator->insert($entity);
+        $insertTranslationResult = $this->translator->insert($entity)->first();
+
 
         $this->pdo->beginTransaction();
         $insertData = $insertTranslationResult;
         $lastInsertId = false;
         do{
-
-
             //Get the id metadata
             $metadata =  $insertData->getEntity()->metadata();
+
 
             //Get only identification fields marked as @auto
             $autoIdentificationFields = array_filter($metadata->getIdentificationFields(), function($field){
@@ -227,18 +227,25 @@ class RelationalRepository extends Repository
             //Prepare the sql to be executed
             $insertData->setSql(str_replace("'@auto'", $lastInsertId, $insertData->getSql()));
             $stmt = $this->pdo->prepare($insertData->getSql());
-            $this->executeSql($stmt, $insertData->getSql());
+            try{
+                echo "Executing " . $insertData->getSql();
+                $this->executeSql($stmt, $insertData->getSql());
+                echo " everything OK!<br>";
+            }catch (\Exception $e){
+                //Rollback in case of transaction error
+                $this->pdo->rollBack();
+                throw $e;
+            }
 
-            //If the
+
             if($count === 1){
-                $lastInsertId = $this->pdo->lastInsertId();
+                $lastInsertId = $this->pdo->lastInsertId("country");
                 $metadata->setPropertyValue($autoIdentificationFields[0]->getPropertyName(), $lastInsertId, $insertData->getEntity());
             }
 
         }while($insertData = $insertData->getNextInsertion());
 
-        $this->pdo->commit();
-    }
+        $this->pdo->commit();}
 
     public function query($class = null): Query
     {

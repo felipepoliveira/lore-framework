@@ -6,25 +6,27 @@ use lore\util\DocCommentUtil;
 require_once "SqlTranslator.php";
 
 
-class MySqlTranslator extends SqlTranslator
+class GenericSqlTranslator extends SqlTranslator
 {
 
     public  function delete($entity)
     {
-        $metadata = $entity->metadata();
-
-        //Translate the fields
-        $sql = "DELETE FROM " . $this->entityFullName($metadata) . " " .
-            " WHERE " . $this->identifierFieldsInQuery($metadata, $entity);
-
-        return $sql;
+        throw new PersistenceException("Not implemented yet!");
     }
 
-    public function insert($entity) : InsertTranslationResult
+    public function insert($entity) : TransactionTranslateResult
     {
-        $return = false;
-
         $metadata = $entity->metadata();
+
+
+        //Get the transaction fields to make the insert script
+        $transactionFields = $this->transactionalFields($metadata, $entity);
+
+        //Generate the SQL
+        $sql =  "INSERT INTO " . $this->entityFullName($metadata) . " " . $this->fieldsInParenthesis($transactionFields) .
+            " VALUES " . $this->valuesInParenthesis($transactionFields);
+
+        $insertTranslationResult = new TransactionTranslateResult($entity, $sql);
 
         //Get the composed fields
         foreach ($metadata->getEntityFields() as $composedField){
@@ -36,32 +38,27 @@ class MySqlTranslator extends SqlTranslator
                 continue;
             }
 
-            //Otherwise... Call this method recursively for the composed entity
-            $return = $this->insert($composedEntity);
+            $insertTranslationResult->setPreviousInsertion($this->insert($composedEntity));
         }
 
-        //Get the transaction fields to make the insert script
-        $transactionFields = $this->transactionalFields($metadata, $entity);
-        $sql =  "INSERT INTO " . $this->entityFullName($metadata) . " " . $this->fieldsInParenthesis($transactionFields) .
-            " VALUES " . $this->valuesInParenthesis($transactionFields);
-
-        //If the result is not set already (does not have any composed entities) create an new instance of the
-        //object, otherwise add the next insertion result into the queue
-        if(!$return){
-            $return = new InsertTranslationResult($entity, $sql);
-        }else{
-            $return->setNextInsertion(new InsertTranslationResult($entity, $sql));
-        }
-
-        return $return;
+        return $insertTranslationResult;
     }
 
     public function query(Query $query)
     {
-        $sql = "SELECT " . $this->fieldsInList($query) . " FROM " . $this->entityFullName($query->getMetadata()) .
-            $this->filters($query);
+        $queryFields = $this->queryFields($query->getMetadata());
 
-        return $sql;
+        $sql = "SELECT\n" . $this->fieldsInList($query, $queryFields) . "\nFROM\n\t" .
+            $this->entityNameWithAlias($query->getMetadata()) . " " .
+            $this->joinTables($query, $query->getMetadata()) . " " .
+            $this->filters($query, $queryFields);
+
+        echo "<pre>";
+        //die(var_dump($queryFields));
+        //die(var_dump($query->getMetadata()));
+        die($sql);
+
+        throw new PersistenceException("Not implemented yet: query");
     }
 
     public  function update($entity)
@@ -69,7 +66,7 @@ class MySqlTranslator extends SqlTranslator
         $metadata = $entity->metadata();
 
         //If the entity does not have any identification fields it can't update
-        if(count($metadata->getIdentificationFields()) == 0){
+        if (count($metadata->getIdentificationFields()) == 0) {
             throw new PersistenceException("The " . $metadata->getEntityClassName() . " does not have any 
             identification field. Use the @id annotation in the identification property of the Entity to 
             determine the identification field");
@@ -77,12 +74,14 @@ class MySqlTranslator extends SqlTranslator
 
         //Create the UPDATE script
         $sql = "UPDATE " . $this->entityFullName($metadata) . " SET " . $this->fieldsSettingValues($metadata, $entity) .
-        " WHERE " . $this->identifierFieldsInQuery($metadata, $entity);
+            " WHERE " . $this->identifierFieldsInQuery($metadata, $entity);
 
         return $sql;
     }
 
     /**
+     * Return an flag indicating if the given $entity is already persisted. The flag returns true when
+     * the identification field of the $entity has an value
      * @param EntityMetadata $metadata
      * @param Entity $entity
      * @return bool
@@ -103,12 +102,78 @@ class MySqlTranslator extends SqlTranslator
     }
 
     /**
+     * Return the SQL syntax to make the JOIN in the queried tables. If the $query::$fetchMode is Query::FETCH_ALL
+     * this method will join ALL the composed entities of the Queried entity. If the $query::$fetchMode is Query::FETCH_ONLY
+     * or FETCH_EXCEPT it will only JOIN if the requested field is of a composed entity
+     * @param Query $query
+     * @param EntityMetadata $metadata
+     * @return string
+     */
+    protected function joinTables(Query $query, EntityMetadata $metadata, $prefix = ""){
+        $return = "";
+        $tableAlias = $prefix .  $metadata->getEntityName();
+
+        //Iterate over all entities inside the entity metadata
+        foreach ($metadata->getEntityFields() as $entityField){
+            $composedEntityMetadata = Entity::metadataOf($entityField->getType());
+            $relatedTableAlias = "$tableAlias." . $composedEntityMetadata->getEntityName();
+
+            //If the join is not needed, skip to another entity field
+            if(!$this->isJoinNeeded($query, $relatedTableAlias)){
+                continue;
+            }
+
+            $return .= "\nJOIN\n\t" . $composedEntityMetadata->getEntityName() . " AS `" . $relatedTableAlias . "`" .
+                "\nON\n\t`$tableAlias`.`" . $entityField->getName() . "`" .
+                " = `$relatedTableAlias`.`" . $this->uniqueIdentificationField($composedEntityMetadata)->getName() . "`" ;
+
+            $return .= $this->joinTables($query, $composedEntityMetadata, $tableAlias . ".");
+        }
+
+        return $return;
+    }
+
+
+
+    /**
+     * Create the QueryField objects of the fields that can be used in the query build
+     * @param EntityMetadata $metadata
+     * @param string $prefix
+     * @return QueryField[]
+     */
+    protected function queryFields(EntityMetadata $metadata, $prefix = ""){
+        $queryFields = [];
+        $propKey = $prefix . $metadata->getEntityName() . ".";
+
+        foreach ($metadata->getFields() as $field){
+            if($field->isEntity()){
+
+                //Get the metadata of the entity by the Field::type (read in @var annotation)
+                $composedEntityMetadata = Entity::metadataOf($field->getType());
+                $queryFields = array_merge($queryFields, $this->queryFields(
+                    $composedEntityMetadata,
+                    $propKey
+                ));
+
+            }else{
+                $queryFields[] = new QueryField("$propKey" . $field->getName(), $prefix . $metadata->getEntityName(), $field);
+            }
+        }
+
+        return $queryFields;
+    }
+
+    /**
+     * Return the TransactionField fields of the entity. The transacional fields is the fields that will be inserted
+     * or updated in the database. The fields marked as '@'auto is skipped.
      * @param EntityMetadata $metadata
      * @param Entity $entity
-     * @return array
+     * @see TransactionField
+     * @return TransactionField[]
      */
     protected function transactionalFields($metadata, $entity){
         $transactionalFields = [];
+
         foreach ($metadata->getFields() as $field){
 
             //*Auto fields is not considered transactional
@@ -120,25 +185,28 @@ class MySqlTranslator extends SqlTranslator
             if($field->isEntity()){
                 $composedEntity = $metadata->getPropertyValue($field->getPropertyName(), $entity);
 
+                //If the entity is currently null skip to another object
+                if($composedEntity === null ) continue;
+
                 //Check if the composed entity use Entity trait
-                if($composedEntity && method_exists($composedEntity, 'metadata')){
+                if(method_exists($composedEntity, 'metadata')){
 
                     $composedEntityMetadata = $composedEntity->metadata();
 
                     foreach ($composedEntityMetadata->getIdentificationFields() as $identificationField){
 
                         $propValue =
-                            $composedEntityMetadata->getPropertyValue($identificationField->getPropertyName(), $composedEntity) ?? "@auto";
+                            $composedEntityMetadata->getPropertyValue($identificationField->getPropertyName(),
+                                $composedEntity)
+                            ?? "@auto";
 
-                        $transactionalFields[] = new TransactionField($field,
-                            $propValue);
+                        $transactionalFields[] = new TransactionField($field, $propValue);
                     }
-
                 }else{
-                    throw new PersistenceException("The entity " . get_class($entity) . "::" . $field->getName() .
+                    //
+                    throw new PersistenceException("The entity " . get_class($entity) . "::" . $field->getPropertyName() .
                     " must implement the lore\\persistence\\Entity trait to make an transaction");
                 }
-
             }else{
                 $transactionalFields[] = new TransactionField($field, $metadata->getPropertyValue($field->getPropertyName(), $entity));
             }
@@ -149,29 +217,66 @@ class MySqlTranslator extends SqlTranslator
     }
 
     /**
+     * Get the identification field of the entity
+     * @param EntityMetadata $metadata
+     * @return Field
+     */
+    protected  function uniqueIdentificationField(EntityMetadata $metadata){
+        foreach ($metadata->getIdentificationFields() as $identificationField){
+            return $identificationField;
+        }
+
+        throw new PersistenceException("The entity " . $metadata->getEntityClassName() . " does not have an identification field");
+    }
+
+    /**
      * Translate the query filters (WHERE)
      * @param Query $query
+     * @param QueryField[] $queryFields
      * @return string
      */
-    protected function filters(Query $query)  {
+    protected function filters(Query $query, $queryFields)  {
         //If the query does not have a filter return an empty string
         if(!$query->hasFilter()) return "";
 
         //Get the first filter of the query
         $filter = $query->getFilter();
-        $return = "WHERE";
+        $return = "\nWHERE";
 
         //Iterate over all filters of the filter queue
         do{
-            $return .= " " .
-                $this->entityName($query->getMetadata()) . ".`" . $filter->getField() . "` " .  //entity.field
+            //Get the queryfield by the queryField
+            $queryField = $this->queryFieldByName($queryFields, $filter->getField());
+
+            if(!$queryField){
+                throw new PersistenceException("The filter " . var_dump($filter) . " has an invalid filter name: " . $filter->getField());
+            }
+
+            $return .= "\n\t`" .
+                $queryField->getEntityName() . "`.`" . $queryField->getField()->getName() . "` " .  //entity.field
                 $this->filterType($filter) . " " .                                              // =
-                $this->value($filter->getValue(), $filter) . " " .                              //  'value'
-                $this->bindType($filter);                                                       //'AND', 'OR' or ''
+                $this->value($filter->getValue(), $filter) . "\n" .                              //  'value'
+                $this->bindType($filter) . "\t";                                                       //'AND', 'OR' or ''
 
         }while($filter->hasNextFilter() && ($filter = $filter->getNextFilter()));
 
         return $return;
+    }
+
+    /**
+     * Return an QueryField by its name
+     * @param QueryField[] $queryFields
+     * @param string $name
+     * @return QueryField|false
+     */
+    protected function queryFieldByName($queryFields, string $name){
+        foreach ($queryFields as $queryField){
+            if($queryField->getName() === $name){
+                return $queryField;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -226,35 +331,64 @@ class MySqlTranslator extends SqlTranslator
     }
 
     /**
-     * Translate the fields of the entity
      * @param Query $query
+     * @param QueryField[] $queryFields
      * @return string
      */
-    protected function fieldsInList(Query $query){
+    protected function fieldsInList(Query $query, $queryFields){
         $return = "";
         $lastIndex = $this->getLastIndexInQuery($query);
         $counter = 0;
 
-        foreach ($query->getMetadata()->getFields() as $field){
+        foreach ($queryFields as $queryField){
 
-            //If the query is in FETCH_ONLY skip to the next field if the current field is not in the fetch list
-            if($query->getFetchMode() === Query::FETCH_ONLY &&
-            !in_array($field->getPropertyName(), $query->getFetchFields())) continue;
-
-            //The opposite of the verification above
-            if($query->getFetchMode() === Query::FETCH_EXCEPT &&
-                in_array($field->getPropertyName(), $query->getFetchFields())) continue;
+            if($this->isFieldNotRequested($query, $queryField->getName())){
+                continue;
+            }
 
             $counter++;
-
-            $return .= $this->entityName($query->getMetadata()) . "." . $this->fieldName($field);
+            $return .= "\t`" . $queryField->getEntityName() ."`" . "." . $this->fieldName($queryField->getField()) .
+            " AS `" . $queryField->getEntityName() . "." . $queryField->getField()->getName() ."`";
 
             if($counter <= $lastIndex){
-                $return .= ", ";
+                $return .= ",\n";
             }
         }
 
         return $return;
+    }
+
+    /**
+     * @param Query $query
+     * @param string $fieldName
+     * @return bool
+     */
+    protected function isFieldNotRequested(Query $query, string $fieldName){
+        //If the query is in FETCH_ONLY skip to the next field if the current field is not in the fetch list
+        return ($query->getFetchMode() === Query::FETCH_ONLY &&
+            !in_array($fieldName, $query->getFetchFields()))
+
+            || //or
+
+        //The opposite of the verification above
+        ($query->getFetchMode() === Query::FETCH_EXCEPT &&
+            in_array($fieldName, $query->getFetchFields()));
+    }
+
+    protected function isJoinNeeded(Query $query, string $joinTablePrefix){
+
+        //if the query is FETCH_ALL the join is always needed
+        if($query->getFetchMode() === Query::FETCH_ALL){
+            return true;
+        }else{
+            foreach ($query->getFetchFields() as $fetchField){
+                if(strpos($fetchField, $joinTablePrefix) === 0){
+                    return true;
+                }
+            }
+            //Return false if any of the fetch fields starts with the join table prefix
+            return false;
+        }
     }
 
     /**
@@ -428,6 +562,15 @@ class MySqlTranslator extends SqlTranslator
     }
 
     /**
+     * Return the formatted entity full name repository.entity with alias
+     * @param $metadata EntityMetadata
+     * @return  string
+     */
+    protected function entityNameWithAlias(EntityMetadata $metadata){
+        return $metadata->getEntityName() . " AS `" . $metadata->getEntityName() . "`";
+    }
+
+    /**
      * Return the formatted entity name of the field
      * @param Field $field
      * @return string
@@ -435,7 +578,4 @@ class MySqlTranslator extends SqlTranslator
     protected function fieldName(Field $field){
         return "`" . $field->getName() . "`";
     }
-
-
-
 }

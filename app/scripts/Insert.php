@@ -13,6 +13,5 @@ $user->setAddress($address);
 $user->setName("John Mayer");
 $user->setPassword("password123");
 
-//echo "<pre>"; die(var_dump($userQuery->all()));
 $user->insert();
 

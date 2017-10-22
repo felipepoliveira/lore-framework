@@ -8,7 +8,7 @@ require_once "Address.php";
 /**
  * @repository lore/mysql
  */
-class User
+class User extends Model
 {
     use Entity;
 
@@ -45,7 +45,7 @@ class User
     private $password;
 
     /**
-
+     * @field id_address
      * @one
      * @var Address
      */

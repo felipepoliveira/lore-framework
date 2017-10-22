@@ -1,7 +1,7 @@
 <?php
 namespace lore\persistence;
 
-require_once "InsertTranslationResult.php";
+require_once "TransactionTranslateResult.php";
 
 abstract class SqlTranslator
 {
@@ -37,7 +37,7 @@ abstract class SqlTranslator
      * @param Entity $entity
      * @return string
      */
-    public abstract function insert($entity) : InsertTranslationResult;
+    public abstract function insert($entity) : TransactionTranslateResult;
 
     /**
      * Create the query Sql

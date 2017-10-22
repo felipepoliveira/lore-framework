@@ -4,6 +4,7 @@ namespace lore\persistence;
 require_once "Entity.php";
 require_once "PersistenceException.php";
 require_once "Query.php";
+require_once "QueryField.php";
 require_once "TransactionField.php";
 
 abstract class Repository

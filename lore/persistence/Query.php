@@ -134,6 +134,14 @@ abstract class Query
      */
     public function fields($fetchMode, $fetchFields = []){
         $this->fetchMode = $fetchMode;
+        $copyFetchFields = $fetchFields;
+
+        //Put the entity prefix before the field
+        $fetchFields = [];
+        foreach ($copyFetchFields as $field){
+            $fetchFields[] = $this->metadata->getEntityName() . "." . $field;
+        }
+
         $this->fetchFields = $fetchFields;
 
         return $this;
