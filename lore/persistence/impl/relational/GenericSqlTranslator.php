@@ -48,17 +48,15 @@ class GenericSqlTranslator extends SqlTranslator
     {
         $queryFields = $this->queryFields($query->getMetadata());
 
+
         $sql = "SELECT\n" . $this->fieldsInList($query, $queryFields) . "\nFROM\n\t" .
             $this->entityNameWithAlias($query->getMetadata()) . " " .
             $this->joinTables($query, $query->getMetadata()) . " " .
             $this->filters($query, $queryFields);
 
         echo "<pre>";
-        //die(var_dump($queryFields));
-        //die(var_dump($query->getMetadata()));
         die($sql);
-
-        throw new PersistenceException("Not implemented yet: query");
+        return $sql;
     }
 
     public  function update($entity)
@@ -109,25 +107,26 @@ class GenericSqlTranslator extends SqlTranslator
      * @param EntityMetadata $metadata
      * @return string
      */
-    protected function joinTables(Query $query, EntityMetadata $metadata, $prefix = ""){
+    protected function joinTables(Query $query, EntityMetadata $metadata, $aliasPrefix = "", $propertyPrefix = ""){
         $return = "";
-        $tableAlias = $prefix .  $metadata->getEntityName();
+        $entityName = $aliasPrefix .  $metadata->getEntityName();
 
         //Iterate over all entities inside the entity metadata
         foreach ($metadata->getEntityFields() as $entityField){
             $composedEntityMetadata = Entity::metadataOf($entityField->getType());
-            $relatedTableAlias = "$tableAlias." . $composedEntityMetadata->getEntityName();
+            $rightJoinProperty = $propertyPrefix . $composedEntityMetadata->getEntityName(); //address
+            $rightJoinTableAlias = $aliasPrefix . $metadata->getEntityName() . "." . $composedEntityMetadata->getEntityName();
 
             //If the join is not needed, skip to another entity field
-            if(!$this->isJoinNeeded($query, $relatedTableAlias)){
+            if(!$this->isJoinNeeded($query, $rightJoinProperty)){
                 continue;
             }
 
-            $return .= "\nJOIN\n\t" . $composedEntityMetadata->getEntityName() . " AS `" . $relatedTableAlias . "`" .
-                "\nON\n\t`$tableAlias`.`" . $entityField->getName() . "`" .
-                " = `$relatedTableAlias`.`" . $this->uniqueIdentificationField($composedEntityMetadata)->getName() . "`" ;
+            $return .= "\nJOIN\n\t" . $composedEntityMetadata->getEntityName() . " AS `$rightJoinTableAlias`\n" .
+                "ON\n\t`$entityName`." . $entityField->getName() . " = `$rightJoinTableAlias`." .
+                $this->uniqueIdentificationField($composedEntityMetadata)->getName() ;
 
-            $return .= $this->joinTables($query, $composedEntityMetadata, $tableAlias . ".");
+            $return .= $this->joinTables($query, $composedEntityMetadata, "$entityName.", $composedEntityMetadata->getEntityName() . ".");
         }
 
         return $return;
@@ -138,12 +137,11 @@ class GenericSqlTranslator extends SqlTranslator
     /**
      * Create the QueryField objects of the fields that can be used in the query build
      * @param EntityMetadata $metadata
-     * @param string $prefix
+     * @param string $fieldNamePrefix
      * @return QueryField[]
      */
-    protected function queryFields(EntityMetadata $metadata, $prefix = ""){
+    protected function queryFields(EntityMetadata $metadata, $fieldNamePrefix = "", $entityNamePrefix = ""){
         $queryFields = [];
-        $propKey = $prefix . $metadata->getEntityName() . ".";
 
         foreach ($metadata->getFields() as $field){
             if($field->isEntity()){
@@ -152,11 +150,12 @@ class GenericSqlTranslator extends SqlTranslator
                 $composedEntityMetadata = Entity::metadataOf($field->getType());
                 $queryFields = array_merge($queryFields, $this->queryFields(
                     $composedEntityMetadata,
-                    $propKey
+                    $fieldNamePrefix . $composedEntityMetadata->getEntityName() . ".",
+                    $entityNamePrefix . $metadata->getEntityName() . "."
                 ));
 
             }else{
-                $queryFields[] = new QueryField("$propKey" . $field->getName(), $prefix . $metadata->getEntityName(), $field);
+                $queryFields[] = new QueryField($fieldNamePrefix . $field->getName(), $entityNamePrefix . $metadata->getEntityName(), $field);
             }
         }
 
@@ -248,8 +247,10 @@ class GenericSqlTranslator extends SqlTranslator
             //Get the queryfield by the queryField
             $queryField = $this->queryFieldByName($queryFields, $filter->getField());
 
+
             if(!$queryField){
-                throw new PersistenceException("The filter " . var_dump($filter) . " has an invalid filter name: " . $filter->getField());
+                throw new PersistenceException("The filter list of the query  has an invalid filter name: "
+                    . $filter->getField());
             }
 
             $return .= "\n\t`" .
@@ -337,7 +338,7 @@ class GenericSqlTranslator extends SqlTranslator
      */
     protected function fieldsInList(Query $query, $queryFields){
         $return = "";
-        $lastIndex = $this->getLastIndexInQuery($query);
+        $lastIndex = $this->getLastIndexInQuery($query, $queryFields);
         $counter = 0;
 
         foreach ($queryFields as $queryField){
@@ -348,7 +349,7 @@ class GenericSqlTranslator extends SqlTranslator
 
             $counter++;
             $return .= "\t`" . $queryField->getEntityName() ."`" . "." . $this->fieldName($queryField->getField()) .
-            " AS `" . $queryField->getEntityName() . "." . $queryField->getField()->getName() ."`";
+            " AS `" . $queryField->getName() . "`";
 
             if($counter <= $lastIndex){
                 $return .= ",\n";
@@ -364,6 +365,7 @@ class GenericSqlTranslator extends SqlTranslator
      * @return bool
      */
     protected function isFieldNotRequested(Query $query, string $fieldName){
+
         //If the query is in FETCH_ONLY skip to the next field if the current field is not in the fetch list
         return ($query->getFetchMode() === Query::FETCH_ONLY &&
             !in_array($fieldName, $query->getFetchFields()))
@@ -378,17 +380,32 @@ class GenericSqlTranslator extends SqlTranslator
     protected function isJoinNeeded(Query $query, string $joinTablePrefix){
 
         //if the query is FETCH_ALL the join is always needed
+        $result = false;
         if($query->getFetchMode() === Query::FETCH_ALL){
             return true;
-        }else{
+        }else if($query->getFetchMode() === Query::FETCH_ONLY){
             foreach ($query->getFetchFields() as $fetchField){
                 if(strpos($fetchField, $joinTablePrefix) === 0){
                     return true;
                 }
             }
-            //Return false if any of the fetch fields starts with the join table prefix
-            return false;
+        }else{
+            $result = true;
+            foreach ($query->getFetchFields() as $fetchField){
+                if(strpos($fetchField, $joinTablePrefix) === 0) {
+                    $result = false;
+                }
+            }
         }
+
+        //Check if a filter request the field to be joined
+        foreach ($query->getFilters() as $filter){
+            if(strpos($filter->getField(), $joinTablePrefix) === 0){
+                return true;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -463,16 +480,21 @@ class GenericSqlTranslator extends SqlTranslator
         return $return . ")";
     }
 
-    protected function getLastIndexInQuery(Query $query) : int {
+    /**
+     * @param Query $query
+     * @param QueryField[] $queryFields
+     * @return int
+     */
+    protected function getLastIndexInQuery(Query $query, $queryFields) : int {
         switch ($query->getFetchMode()){
             case Query::FETCH_ALL:
-                $lastIndex = count($query->getMetadata()->getFields()) - 1;
+                $lastIndex = count($queryFields) - 1;
                 break;
             case Query::FETCH_ONLY:
                 $lastIndex = count($query->getFetchFields()) - 1;
                 break;
             case Query::FETCH_EXCEPT:
-                $lastIndex = count($query->getMetadata()->getFields()) - count($query->getFetchFields()) - 1;
+                $lastIndex = count($queryFields) - count($query->getFetchFields()) - 1;
                 break;
         }
 

@@ -75,7 +75,7 @@ class QueryFilter
 //        }
         //Put the field name in the query filter
         //$this->field = $field->getName();
-        $this->field = $this->query->getMetadata()->getEntityName() . "." . $propName;
+        $this->field = $propName;
     }
 
     /**
@@ -93,7 +93,7 @@ class QueryFilter
      * Get the next filter
      * @return QueryFilter
      */
-    public function getNextFilter(): QueryFilter
+    public function getNextFilter()
     {
         return $this->nextFilter;
     }

@@ -2,6 +2,7 @@
 namespace lore\persistence;
 
 use lore\Lore;
+use lore\ModuleException;
 
 require_once __DIR__ . "/../../../utils/ReflectionManager.php";
 
@@ -96,13 +97,12 @@ class RelationalQuery extends Query
      */
     protected function loadEntity($args){
         $entity = $this->instantiateEntity();
-        foreach ($args as $fieldName => $propValue) {
 
-            $this->getMetadata()->setPropertyValue(
-                $this->getMetadata()->findFieldByName($fieldName)->getPropertyName(),
-                $propValue,
-                $entity
-            );
+        //Use the object loader module to load the data returned in sql into the entity
+        if(Lore::app()->isObjectLoaderEnabled()){
+            Lore::app()->getObjectLoader()->load($entity, $args);
+        }else{
+            throw new ModuleException("To use RelationalQuery::query functions you must use an ObjectLoader module");
         }
 
         return $entity;

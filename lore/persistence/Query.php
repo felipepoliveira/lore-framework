@@ -139,7 +139,7 @@ abstract class Query
         //Put the entity prefix before the field
         $fetchFields = [];
         foreach ($copyFetchFields as $field){
-            $fetchFields[] = $this->metadata->getEntityName() . "." . $field;
+            $fetchFields[] = $field;
         }
 
         $this->fetchFields = $fetchFields;
@@ -154,6 +154,21 @@ abstract class Query
     public function getFilter()
     {
         return $this->firstFilter;
+    }
+
+    /**
+     * Return the query filters in an array
+     * @return QueryFilter[]
+     */
+    public function getFilters(){
+        $filters = [];
+        $current = $this->getFilter();
+        while($current){
+            $filters[] = $current;
+            $current = $current->getNextFilter();
+        }
+
+        return $filters;
     }
 
     /**

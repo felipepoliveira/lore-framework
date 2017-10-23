@@ -33,16 +33,13 @@ class UserController extends ViewController
     public function select(){
         $result =  $this->queryUser
             ->fields(Query::FETCH_ONLY, [
-                "id",
-                "name",
-                "email",
-                "address.publicPlace",
-                "address.country.name"
+                "address.country.id",
+                "address.country.name",
             ])
             ->where("id")->greaterThan(0)
-            ->and("address.publicPlace")->startsWith("")
             ->all();
 
+        echo "<pre>";
         die(var_dump($result));
     }
 
@@ -61,7 +58,7 @@ class UserController extends ViewController
         $user->setPassword("password123");
         $user->setName("Felipe Olvieira");
         $user->setAddress($address);
-        $user->setEmail("email@email.com");
+        $user->setEmail("email3@email.com");
 
         $user->insert();
     }

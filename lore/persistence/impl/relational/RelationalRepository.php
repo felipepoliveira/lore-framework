@@ -228,9 +228,7 @@ class RelationalRepository extends Repository
             $insertData->setSql(str_replace("'@auto'", $lastInsertId, $insertData->getSql()));
             $stmt = $this->pdo->prepare($insertData->getSql());
             try{
-                echo "Executing " . $insertData->getSql();
                 $this->executeSql($stmt, $insertData->getSql());
-                echo " everything OK!<br>";
             }catch (\Exception $e){
                 //Rollback in case of transaction error
                 $this->pdo->rollBack();
