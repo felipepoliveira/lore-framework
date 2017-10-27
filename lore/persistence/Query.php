@@ -132,16 +132,8 @@ abstract class Query
      * @param $fetchFields
      * @return $this
      */
-    public function fields($fetchMode, $fetchFields = []){
+    public function fields($fetchMode, array $fetchFields = []){
         $this->fetchMode = $fetchMode;
-        $copyFetchFields = $fetchFields;
-
-        //Put the entity prefix before the field
-        $fetchFields = [];
-        foreach ($copyFetchFields as $field){
-            $fetchFields[] = $field;
-        }
-
         $this->fetchFields = $fetchFields;
 
         return $this;

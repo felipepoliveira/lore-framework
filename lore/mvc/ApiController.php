@@ -69,6 +69,6 @@ abstract class ApiController extends Controller
      * @param int $responseType - The response type
      */
     public function sendModel($code = 200, $responseType = DataFormatter::JSON){
-        $this->send($this->model->toArray(), $code);
+        $this->send($this->model->toArray(), $code, $responseType);
     }
 }

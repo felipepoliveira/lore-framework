@@ -54,8 +54,6 @@ class GenericSqlTranslator extends SqlTranslator
             $this->joinTables($query, $query->getMetadata()) . " " .
             $this->filters($query, $queryFields);
 
-        echo "<pre>";
-        die($sql);
         return $sql;
     }
 

@@ -17,6 +17,12 @@ class Request
                     DELETE =    1 << 3;
 
     /**
+     * Store the headers from the client request
+     * @var string[]
+     */
+    private $headers;
+
+    /**
      * Store the relative requested uri sent by the client
      * @var string
      */
@@ -34,6 +40,7 @@ class Request
      */
     function __construct($appContext)
     {
+        $this->detectContentType();
         $this->detectRequestMethod();
         $this->extractRelativeRequestedUri($appContext);
     }
@@ -147,6 +154,24 @@ class Request
     }
 
     /**
+     * Return all headers sent by the client in the request
+     * @return \string[]
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    /**
+     * Get an specific request header by its name. Return false if the headers was not sent by the client
+     * @param $header
+     * @return bool|\string[]
+     */
+    public function getHeader($header){
+        return $this->headers[$header] ?? false;
+    }
+
+    /**
      * Extract the relative path of the requested uri
      * @param $appContext ApplicationContext
      */
@@ -154,6 +179,10 @@ class Request
         $this->requestedUri = substr(   $this->getRawRequestedUri(),
                                         strlen($appContext->getRelativePath()),
                                         strlen($this->getRawRequestedUri()));
+    }
+
+    protected function detectContentType(){
+        $this->headers = getallheaders();
     }
 
     /**
