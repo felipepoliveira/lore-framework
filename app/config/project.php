@@ -1,6 +1,10 @@
 <?php
 return [
 
+    /*
+     * STATIC COMPONENT
+     * Store data about the application
+     */
     "application" => [
         /*
          * The states of the application.
@@ -10,40 +14,42 @@ return [
         "state" => "development"
     ],
 
-    /*
-     * PACKAGE: Object
-     * FROM: core
-     * The object module has the objective of automatize some repetitive work with objects, like:
-     * *Load object data from request sent by the user;
-     * *Validations;
-     * *Array serialization
-     */
-    "object" => [
+    //The data formatter handler
+    "dataFormatter" => [
+        "file" => "lore/web/impl/DefaultDataFormatter.php",
+        "class" => "lore\\web\\DefaultDataFormatter",
 
-        /*
-         * MODULE: ObjectLoader
-         * The ObjectLoader make automatic loading from data sent by the request of the client and
-         * general serialization
-         */
-        "loader" => [
-            "file" => "lore/core/impl/ReflexiveObjectLoader.php",
-            "class" => "\\lore\\ReflexiveObjectLoader",
-        ],
-
-        /*
-         * MODULE: ObjectValidator
-         * The ObjectValidator make automatic validations of an object
-         */
-        "validator" => [
-            "file" => "lore/core/impl/ReflexiveObjectValidator.php",
-            "class" => "\\lore\\ReflexiveObjectValidator"
-        ],
+        "defaultFormatType" => "json" //can be: json, txt or xml
     ],
 
+    /*
+     * MODULE: ObjectLoader
+     * The ObjectLoader make automatic loading from data sent by the request of the client and
+     * general serialization
+     */
+    "objectLoader" => [
+        "file" => "lore/core/impl/ReflexiveObjectLoader.php",
+        "class" => "\\lore\\ReflexiveObjectLoader",
+    ],
+
+    /*
+     * MODULE: ObjectValidator
+     * The ObjectValidator make automatic validations of an object
+     */
+    "objectValidator" => [
+        "file" => "lore/core/impl/ReflexiveObjectValidator.php",
+        "class" => "\\lore\\ReflexiveObjectValidator"
+    ],
+
+    /*
+     * MODULE: Persistence
+     * The Persistence module handles object persistence.
+     */
     "persistence" => [
         "file" => "lore/persistence/impl/RepositoryLoader.php",
         "class" => "lore\\persistence\\RepositoryLoader",
     ],
+
     /*
      * STATIC COMPONENT: Response
      * FROM: web
@@ -137,7 +143,7 @@ return [
      * *Restrict pure PHP Scripts executions;
      */
     "resourcesManager" => [
-       "file" => "lore/web/impl/DefaultResourcesManager.php",
+        "file" => "lore/web/impl/DefaultResourcesManager.php",
         "class" => "\\lore\\web\\DefaultResourcesManager",
 
         /*
@@ -171,14 +177,6 @@ return [
     "responseManager" => [
         "file" => "lore/web/impl/DefaultResponseManager.php",
         "class" => "\\lore\\web\\DefaultResponseManager",
-
-        //The data formatter handler
-        "dataFormatter" => [
-            "file" => "lore/web/impl/DefaultDataFormatter.php",
-            "class" => "lore\\web\\DefaultDataFormatter",
-
-            "defaultFormatType" => "json" //can be: json, txt or xml
-        ],
     ],
 
     "stringProvider" => [
