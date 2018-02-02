@@ -30,7 +30,7 @@ abstract class Router
      * Load all route rules from the project => router => rules configuration file
      */
     protected function loadRouteRules(){
-        $routeRules = Configurations::get("project", "router")["rules"] ?? [];
+        $routeRules = Configurations::get("app", "router")["rules"] ?? [];
 
         //Add each route rule from the configuration file into the route rules list
         foreach ($routeRules as $uri => $script) {

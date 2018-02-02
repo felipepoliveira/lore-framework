@@ -28,7 +28,7 @@ abstract class DataFormatter
     private function loadDefaultFormatType(){
         //Get the default format type from configuration file
         $defaultFormatType =
-            Configurations::get("project", "responseManager")["dataFormatter"]["defaultFormatType"];
+            Configurations::get("app", "dataFormatter")["defaultFormatType"];
         $defaultFormatType = strtolower($defaultFormatType);
 
         switch ($defaultFormatType){

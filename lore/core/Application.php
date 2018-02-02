@@ -265,7 +265,7 @@ class Application
      * of this class
      */
     private function loadConfigurations(){
-        Configurations::load("project", __DIR__ . "/../../app/config/project.php");
+        Configurations::load("app", __DIR__ . "/../../app/config/app.php");
         $this->context->loadApplicationState();
     }
 
@@ -275,10 +275,10 @@ class Application
      */
     private function loadObjectLoader(){
 
-        if(Configurations::contains("project", "object") && Configurations::get("project", "object")["loader"]){
+        if(Configurations::contains("app", "objectLoader")){
             return ReflectionManager::instanceFromFile(
-                Configurations::get("project", "object")["loader"]["class"],
-                Configurations::get("project", "object")["loader"]["file"]);
+                Configurations::get("app", "objectLoader")["class"],
+                Configurations::get("app", "objectLoader")["file"]);
         }else{
             return null;
         }
@@ -289,20 +289,20 @@ class Application
      * THIS MODULE CAN BE NULL
      */
     private function loadObjectValidator(){
-        if(Configurations::contains("project", "object") && Configurations::get("project", "object")["loader"]) {
+        if(Configurations::contains("app", "object") && Configurations::get("app", "object")["loader"]) {
             return ReflectionManager::instanceFromFile(
-                Configurations::get("project", "object")["validator"]["class"],
-                Configurations::get("project", "object")["validator"]["file"]);
+                Configurations::get("app", "object")["validator"]["class"],
+                Configurations::get("app", "object")["validator"]["file"]);
         }else{
             return null;
         }
     }
 
     private function loadPersistence(){
-        if(Configurations::contains("project", "persistence")) {
+        if(Configurations::contains("app", "persistence")) {
             return ReflectionManager::instanceFromFile(
-                Configurations::get("project", "persistence")["class"],
-                Configurations::get("project", "persistence")["file"]);
+                Configurations::get("app", "persistence")["class"],
+                Configurations::get("app", "persistence")["file"]);
         }else{
             return null;
         }
@@ -313,8 +313,8 @@ class Application
      * @return ResponseManager
      */
     private function loadResponseManager(){
-        return ReflectionManager::instanceFromFile( Configurations::get("project", "responseManager")["class"],
-            Configurations::get("project", "responseManager")["file"]);
+        return ReflectionManager::instanceFromFile( Configurations::get("app", "responseManager")["class"],
+            Configurations::get("app", "responseManager")["file"]);
     }
 
     /**
@@ -322,8 +322,8 @@ class Application
      * @return ResourcesManager
      */
     private function loadResourcesManager(){
-        return ReflectionManager::instanceFromFile( Configurations::get("project", "resourcesManager")["class"],
-            Configurations::get("project", "resourcesManager")["file"], $this->request);
+        return ReflectionManager::instanceFromFile( Configurations::get("app", "resourcesManager")["class"],
+            Configurations::get("app", "resourcesManager")["file"], $this->request);
     }
 
     /**
@@ -331,8 +331,8 @@ class Application
      * @return Router
      */
     private function loadRouter(){
-        return ReflectionManager::instanceFromFile( Configurations::get("project", "router")["class"],
-            Configurations::get("project", "router")["file"]);
+        return ReflectionManager::instanceFromFile( Configurations::get("app", "router")["class"],
+            Configurations::get("app", "router")["file"]);
     }
 
     /**
@@ -340,10 +340,10 @@ class Application
      * @return StringProvider|null
      */
     private function loadStringProvider(){
-        if(Configurations::contains("project", "stringProvider")){
+        if(Configurations::contains("app", "stringProvider")){
             return ReflectionManager::instanceFromFile(
-                Configurations::get("project", "stringProvider")["class"],
-                Configurations::get("project", "stringProvider")["file"]
+                Configurations::get("app", "stringProvider")["class"],
+                Configurations::get("app", "stringProvider")["file"]
             );
         }else{
             return null;

@@ -14,7 +14,7 @@ abstract class StringProvider
 
     function __construct()
     {
-        $this->stringsDirectories = Configurations::get("project", "stringProvider")["dirs"];
+        $this->stringsDirectories = Configurations::get("app", "stringProvider")["dirs"];
     }
 
     /**

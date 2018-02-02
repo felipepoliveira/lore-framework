@@ -104,7 +104,7 @@ class Response
         $this->redirect = $redirect;
         $this->code = $code;
         $this->headers["Content-Type"] = $contentType;
-        $this->charset = $charset ?? Configurations::get("project", "response")["defaultCharset"];
+        $this->charset = $charset ?? Configurations::get("app", "response")["defaultCharset"];
         $this->sendResource = $sendResource;
         $this->loadHeaderEntities();
     }

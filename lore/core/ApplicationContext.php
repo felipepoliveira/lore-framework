@@ -39,10 +39,10 @@ class ApplicationContext
      * Load the application state from the configuration file project => application => state
      */
     function loadApplicationState(){
-        if( Configurations::contains("project", "application") &&
-            isset(Configurations::get("project", "application")["state"])){
+        if( Configurations::contains("app", "application") &&
+            isset(Configurations::get("app", "application")["state"])){
 
-            $state = Configurations::get("project", "application")["state"];
+            $state = Configurations::get("app", "application")["state"];
 
             switch (strtolower($state)){
                 case "development":
@@ -56,7 +56,7 @@ class ApplicationContext
             }
 
         }else{
-            throw new ConfigurationException("The configuration project=>application=>state must be 
+            throw new ConfigurationException("The configuration app=>application=>state must be 
             defined to make the application run properly");
         }
     }

@@ -30,8 +30,8 @@ abstract class ResponseManager
     private function loadDataFormatter(){
         $this->dataFormatter =
             ReflectionManager::instanceFromFile(
-            Configurations::get("project", "responseManager")["dataFormatter"]["class"],
-            Configurations::get("project", "responseManager")["dataFormatter"]["file"]);
+            Configurations::get("app", "dataFormatter")["class"],
+            Configurations::get("app", "dataFormatter")["file"]);
     }
 
     /**
