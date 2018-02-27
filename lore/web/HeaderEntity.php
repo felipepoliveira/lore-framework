@@ -7,7 +7,7 @@ abstract class HeaderEntity
     /**
      * @var array
      */
-    protected $headerValues;
+    protected $headerValues = [];
 
     /**
      * Return the values to be applied in header value
