@@ -9,6 +9,9 @@
 namespace lore\web;
 
 
+use lore\mvc\Controller;
+use lore\mvc\ViewController;
+
 class ViewPreProcessor
 {
 
@@ -28,6 +31,10 @@ class ViewPreProcessor
         $this->data = $data;
     }
 
+    /**
+     * Match the mustaches in the page with the content sent by the Controller in 'data' to be rendered.
+     * @see Controller
+     */
     private function processPage(){
         $htmlContent = file_get_contents($this->view);
         preg_match_all("{{{[A-z0-9\"'!@#$%¨&*()_+'`/´[\]^:;\-<>]*}}}",$htmlContent,$matches);
@@ -36,7 +43,7 @@ class ViewPreProcessor
             $start = strrpos($expression,"{");
             $end = strrpos($expression, "}")-2;
             $expression = substr($expression,2,($end-$start));
-            eval('$value = '.$expression.';');
+            eval('$value = $'.$expression.';');
             $htmlContent = str_replace("{{".$expression."}}",$value,$htmlContent);
         }
         $this->page = $htmlContent;
