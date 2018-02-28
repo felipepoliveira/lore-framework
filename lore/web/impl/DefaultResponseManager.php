@@ -2,7 +2,6 @@
 namespace lore\web;
 
 require_once __DIR__ . "/../ResponseManager.php";
-require_once __DIR__ . "/../ViewPreProcessor.php";
 
 /**
  * Class DefaultResponseManager - Implementation of ResponseManager that handle the response that will be sended

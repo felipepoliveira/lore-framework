@@ -91,10 +91,10 @@ abstract class Controller
         }
     }
 
-    public function putModelInResponse(){
+    public function putModelInResponse($prefix = "model"){
         //Convert the model into an one-dimensional (plain) array an put the values into response
         foreach ($this->getModel()->toArray() as $key => $value){
-            $this->getResponse()->put("model." .  $key, $value);
+            $this->getResponse()->put("$prefix." .  $key, $value);
         }
     }
 
@@ -124,13 +124,14 @@ abstract class Controller
      * and, in case of error, put the errors into response
      * @param int $validationMode
      * @param array $validationExceptions
+     * @param string $prefix
      * @return bool
      */
-    public function validateModel($validationMode = ValidationModes::ALL, $validationExceptions = null){
+    public function validateModel($validationMode = ValidationModes::ALL, $validationExceptions = null, $prefix = "model"){
         //Only validate if validation mode is inputed
         if(isset($validationMode)){
             //Validate the model and, if errors were found, send it to the response
-            $validationResult = $this->model->validate($validationMode, $validationExceptions ?? [], "model.");
+            $validationResult = $this->model->validate($validationMode, $validationExceptions ?? [], $prefix.'.');
             if($validationResult !== true){
                 $this->response->setErrors($validationResult);
                 return false;

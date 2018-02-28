@@ -2,6 +2,9 @@
 
 use lore\mvc\ViewController;
 
+require_once __DIR__ . "/../../models/Usuario.php";
+require_once __DIR__ . "/../../models/Ocorrencia.php";
+
 class IndexController extends ViewController
 {
     public function createNewModelInstance()
@@ -14,9 +17,14 @@ class IndexController extends ViewController
      * @method get
      */
     public function index(){
+        $ocorrencia = new Ocorrencia();
+        $ocorrencia->setId(32);
+        $ocorrencia->setNome('Olá Felipe');
         $this->render("index.lore.php",[
             'teste'=>'oi',
-            'other'=>'olá mundo'
+            'other'=>'olá mundo',
+            'usuario' => new Usuario(),
+            'ocorrencias' => [$ocorrencia,$ocorrencia,$ocorrencia,$ocorrencia]
         ]);
 
     }

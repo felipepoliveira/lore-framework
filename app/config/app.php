@@ -198,8 +198,8 @@ return [
      */
 
     "viewPreProcessor" => [
-        "file" => "lore/web/ViewPreProcessor.php",
-        "class" => "\\lore\\web\\ViewPreProcessor",
+        "file" => "lore/web/impl/DefaultViewPreProcessor.php",
+        "class" => "\\lore\\web\\DefaultViewPreProcessor",
         "enabled" => true,
         "minify" => true,
         "buildDirectory" => "build",
