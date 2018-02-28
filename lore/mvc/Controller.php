@@ -3,6 +3,7 @@ namespace lore\mvc;
 
 use lore\Lore;
 use lore\web\Response;
+use lore\ValidationModes;
 
 abstract class Controller
 {
@@ -68,14 +69,26 @@ abstract class Controller
      * @param string $uri
      */
     public function redirect($uri){
-        //Check if the redirect uri is relative of the project root
-        if(strlen($uri) > 0 && $uri[0] !== "/"){
-            $this->response->setUri(Lore::app()->getContext()->getRelativePath() . "/$uri" );
+        //The redirect will be absolute if the redirection uri is empty (return to index) or if starts with '/'
+        if(strlen($uri) == 0 || $uri[0] !== "/"){
+            $this->response->setUri(Lore::app()->getContext()->getRelativePath() . $uri );
         }else{
             //otherwise put the absolute path over the host domain
             $this->response->setUri($uri);
         }
         $this->response->setRedirect(true);
+    }
+
+    /**
+     * Put the identified errors in response. This method must be called after the AbstractController->validateModel
+     * or AbstractController->loadAndValidateModel. and before the ApiController->send method
+     * @see Controller
+     */
+    public function putErrorsInResponse(){
+        //Check if the response contains e'rrors
+        if($this->response->hasErrors()){
+            $this->response->put("errors", $this->response->getErrors());
+        }
     }
 
     public function putModelInResponse(){
@@ -103,7 +116,7 @@ abstract class Controller
      */
     public function loadModel(){
         //Load the model data passing the request
-        $this->model->load(Lore::app()->getRequest());
+        $this->model->load(Lore::app()->getRequest()->requestData());
     }
 
     /**

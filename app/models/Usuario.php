@@ -4,6 +4,10 @@ use lore\mvc\Model;
 
 class Usuario extends Model
 {
+    /**
+     * @id
+     * @var
+     */
     private $id;
 
     private $email;
@@ -11,6 +15,16 @@ class Usuario extends Model
     private $senha;
 
     private $token;
+    /**
+     * @one
+     * @var \lore\persistence\Entity
+     */
+    private $endereco;
+
+    public function __construct()
+    {
+
+    }
 
     /**
      * @return mixed

@@ -1,109 +1,38 @@
 <?php
 namespace lore\mvc;
 
-require_once "NoModelLoaderDefinedException.php";
-
-
-use lore\Configurations;
-use lore\util\ReflectionManager;
+use lore\Lore;
+use lore\ModuleException;
 use lore\web\Request;
 
 abstract class Model
 {
     /**
-     * @var ModelValidator
+     * @param array $data
      */
-    private $validator = null;
+    public function load(array $data){
 
-    /**
-     * @var ModelLoader
-     */
-    private $loader = null;
-
-    function __construct()
-    {
-        $this->loader = $this->loadLoader();
-        $this->validator = $this->loadValidator();
-    }
-
-    protected function loadLoader(){
-        if(isset(Configurations::get("mvc", "models")["loader"])){
-            return ReflectionManager::instanceFromFile(
-                Configurations::get("mvc", "models")["loader"]["class"],
-                Configurations::get("mvc", "models")["loader"]["file"]
-            );
+        if(Lore::app()->isObjectLoaderEnabled()){
+            Lore::app()->getObjectLoader()->load($this, $data);
         }else{
-            return null;
-        }
-    }
-
-    /**
-     * Load the ModelValidator from the configuration files
-     * @return ModelValidator|null
-     */
-    protected function loadValidator(){
-        if(isset(Configurations::get("mvc", "models")["validator"]))
-        {
-            return ReflectionManager::instanceFromFile(
-                Configurations::get("mvc", "models")["validator"]["class"],
-                Configurations::get("mvc", "models")["validator"]["file"]);
-        }else{
-            return null;
-        }
-    }
-
-    /**
-     * @return ModelLoader
-     */
-    public function getLoader(): ModelLoader
-    {
-        return $this->loader;
-    }
-
-    /**
-     * Validator singleton
-     * @return ModelValidator
-     */
-    public function getValidator(){
-        return $this->validator;
-    }
-
-    /**
-     * Check if loader is defined in configuration file
-     */
-    private function isLoaderLoaded(){
-        return $this->loader !== null;
-    }
-
-    /**
-     * Check if validator is defined in configuration file
-     * @return bool
-     */
-    private function isValidatorLoaded(){
-        return $this->validator !== null;
-    }
-
-    /**
-     * @param Request $request
-     */
-    public function load(Request $request){
-        if($this->isLoaderLoaded()){
-            $this->loader->load($this, $request);
+            throw new ModuleException("An object loader is needed to do the object loading. Check
+            if an ObjectLoader implementation is defined in config/project.php file");
         }
     }
 
     /**
      * Serialize the model to an array. If an model loader is defined this method use it to do the serialization.
-     * Otherwise an exception will be thrown
+     * Otherwise an exception wil   1l be thrown
      * @param $args
      * @return array
      */
     public function toArray(...$args) : array {
-        if($this->isLoaderLoaded()){
-            return $this->getLoader()->toArray($this);
+
+        if(Lore::app()->isObjectLoaderEnabled()){
+            return Lore::app()->getObjectLoader()->toArray($this);
         }else{
-            throw new NoModelLoaderDefinedException("An model loader is needed to do the array serialization. Check
-            if an ModelLoader implementation is defined in config/mvc.php file");
+            throw new ModuleException("An object loader is needed to do the array serialization. Check
+            if an ObjectLoader implementation is defined in config/project.php file");
         }
     }
 
@@ -116,10 +45,11 @@ abstract class Model
      * @return bool|array
      */
     public function validate($validationMode = null, $validationExceptions = null, $prefix = ""){
-        if($this->isValidatorLoaded()){
-            return $this->getValidator()->validate($this, $validationMode, $validationExceptions, $prefix);
-        }else{
-            return true;
+        if(Lore::app()->isObjectValidatorEnabled()){
+            return Lore::app()->getObjectValidator()->validate($this, $validationMode, $validationExceptions, $prefix);
+        }else {
+            throw new ModuleException("An object validator is needed to do model validation. Check
+            if an ObjectValidator implementation is defined in config/project.php file");
         }
     }
 }

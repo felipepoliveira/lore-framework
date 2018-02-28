@@ -1,28 +1,27 @@
 <?php
-namespace lore\mvc;
-use lore\web\Request;
+namespace lore;
 
 /**
- * Class ModelLoader
+ * Class ObjectLoader
  * @package lore\mvc
  */
-abstract class ModelLoader
+abstract class ObjectLoader
 {
     function __construct()
     {
     }
 
     /**
-     * Load an model object with data from request
+     * Load an model object with data from an array
      * @param $model - The model that will be loaded
-     * @param $request - The request data
+     * @param array $data - The array with the data to be loaded in the object
      * @return void
      */
-    public abstract function load($model, Request $request);
+    public abstract function load($model, array $data);
 
     /**
      * Convert the model to an array
-     * @param Model $obj
+     * @param object $obj
      * @param bool $plainMode
      * @return array
      */

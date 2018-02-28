@@ -3,6 +3,7 @@ namespace lore\web;
 
 
 use lore\Configurations;
+use lore\Lore;
 use lore\util\ReflectionManager;
 
 abstract class ResponseManager
@@ -30,8 +31,8 @@ abstract class ResponseManager
     private function loadDataFormatter(){
         $this->dataFormatter =
             ReflectionManager::instanceFromFile(
-            Configurations::get("project", "responseManager")["dataFormatter"]["class"],
-            Configurations::get("project", "responseManager")["dataFormatter"]["file"]);
+            Configurations::get("app", "dataFormatter")["class"],
+            Configurations::get("app", "dataFormatter")["file"]);
     }
 
     /**
@@ -69,7 +70,11 @@ abstract class ResponseManager
             }else if ($response->isRedirect()) {
                 $this->redirect($response);
             } else {
-
+                // If VPP is enabled we will render the VPP file
+                if(Lore::app()->isVPPEnabled() && explode('.',Lore::app()->getResponse()->getUri())[1] === 'lore'){
+                    Lore::app()->getViewPreProcessor()->processView($response->getUri(), $response->getData());
+                    $response->setUri(Lore::app()->getViewPreProcessor()->getViewProcessed());
+                }
                 //Otherwise it will render the view
                 $this->render($response);
             }

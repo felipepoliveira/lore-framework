@@ -1,6 +1,3 @@
-<?php
-use lore\mvc\View;
-?>
 <!doctype html>
 <html lang="pt">
 <head>
@@ -8,14 +5,16 @@ use lore\mvc\View;
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Loretitle</title>
+    <title>TODO</title>
 </head>
 <body>
-    {{teste}}{{teste}}{{teste}}
-    {{other}}
-    {{@section}}
-    <a href="<?=View::url("register")?>">Register</a>
-    <a href="<?=View::url("login")?>">Sign in</a>
-    {{@sectionend}}
+    <header>
+        <nav>
+            <?=$teste;?>
+            @input(model=user.name)
+            @error(model=user.name)
+
+        </nav>
+    </header>
 </body>
 </html>

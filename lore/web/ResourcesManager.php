@@ -49,9 +49,9 @@ abstract class ResourcesManager
     {
         $this->request = $request;
         $this->mode = $this->loadMode();
-        $this->exceptions = Configurations::get("project", "resourcesManager")["exceptions"];
-        $this->allowScriptProcessing = Configurations::get("project", "resourcesManager")["allowScriptProcessing"];
-        $this->scriptExtensions = Configurations::get("project", "resourcesManager")["scriptExtensions"];
+        $this->exceptions = Configurations::get("app", "resourcesManager")["exceptions"];
+        $this->allowScriptProcessing = Configurations::get("app", "resourcesManager")["allowScriptProcessing"];
+        $this->scriptExtensions = Configurations::get("app", "resourcesManager")["scriptExtensions"];
     }
 
     /**
@@ -175,7 +175,7 @@ abstract class ResourcesManager
                     $response->setCode(403);
                 }
             }
-            //If is not a script check if can process it
+            //If is a script check if it can be executed
             else if($this->isScriptingProcessingAllowed()){
                 $response->setCode(200);
                 $response->setUri($this->getResource());
@@ -195,7 +195,7 @@ abstract class ResourcesManager
      */
     protected function loadMode()
     {
-        $mode = Configurations::get("project", "resourcesManager")["mode"];
+        $mode = Configurations::get("app", "resourcesManager")["mode"];
 
         switch (strtolower($mode)){
             case "allow":

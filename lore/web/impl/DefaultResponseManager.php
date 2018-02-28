@@ -28,9 +28,13 @@ class DefaultResponseManager extends ResponseManager
     }
 
     protected function render(Response $response){
-        $viewPreProcessor = new ViewPreProcessor($response->getUri(),$response->getData());
-        $pageProcessed = $viewPreProcessor->getPageProcessed();
-        echo $pageProcessed;
+        //Extract the variables that data and the errors that will be send to the page
+        if(is_array($response->getData())) {
+            extract($response->getData());
+        }
+        //Send the data
+        $uri = $response->getUri();
+        require "$uri";
     }
 
 }

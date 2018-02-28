@@ -3,6 +3,7 @@ namespace lore\mvc;
 
 require_once __DIR__ . "/../utils/File.php";
 require_once "Controller.php";
+require_once "ViewNotFoundException.php";
 
 use lore\util\File;
 
@@ -32,9 +33,8 @@ abstract class ViewController extends Controller
                 $this->response->put($key, $value);
             }
         }
-        //Otherwise, send code 404
         else{
-            $this->response->setCode(404);
+            throw new ViewNotFoundException("The view \"$view\" does not exists in the view directories");
         }
     }
 }

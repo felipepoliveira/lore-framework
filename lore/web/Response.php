@@ -104,7 +104,7 @@ class Response
         $this->redirect = $redirect;
         $this->code = $code;
         $this->headers["Content-Type"] = $contentType;
-        $this->charset = $charset ?? Configurations::get("project", "response")["defaultCharset"];
+        $this->charset = $charset ?? Configurations::get("app", "response")["defaultCharset"];
         $this->sendResource = $sendResource;
         $this->loadHeaderEntities();
     }
@@ -142,6 +142,18 @@ class Response
     public function setErrors(array $errors)
     {
         $this->errors = $errors;
+    }
+
+    public function putErrors(array  $errors){
+        $this->errors = array_merge($this->errors, $errors);
+    }
+
+    public function putErrorsOn($key, array $errors){
+        if(!isset($this->errors[$key])){
+            $this->errors[$key] = $errors;
+        }else{
+            $this->errors[$key] = array_merge($this->errors[$key], $errors);
+        }
     }
 
     /**
@@ -311,7 +323,7 @@ class Response
     }
 
     /**
-     * Get the refresh header entity of the response
+     * Get the refresh header persistence of the response
      * @return RefreshHeader
      */
     public function getRefreshHeader()

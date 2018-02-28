@@ -28,7 +28,7 @@ abstract class DataFormatter
     private function loadDefaultFormatType(){
         //Get the default format type from configuration file
         $defaultFormatType =
-            Configurations::get("project", "responseManager")["dataFormatter"]["defaultFormatType"];
+            Configurations::get("app", "dataFormatter")["defaultFormatType"];
         $defaultFormatType = strtolower($defaultFormatType);
 
         switch ($defaultFormatType){
@@ -62,7 +62,7 @@ abstract class DataFormatter
 
         switch ($format){
             case DataFormatter::JSON:
-                return $this->formatJson($data);
+                return $this->formatToJson($data);
             case DataFormatter::TEXT:
                 return $this->formatToText($data);
             case DataFormatter::XML:
@@ -104,14 +104,15 @@ abstract class DataFormatter
      * @param $data - The data that will be formatted
      * @return string|null
      */
-    public abstract function formatJson($data);
+    public abstract function formatToJson($data);
+
 
     /**
-     * Format an given data to string
-     * @param $data - The data that will be formatted
-     * @return string|null
+     * Format an valid JSON string into array
+     * @param string $json
+     * @return mixed
      */
-    public abstract function formatToText($data);
+    public abstract function jsonToArray(string $json);
 
     /**
      * Format an given data into xml
@@ -119,6 +120,13 @@ abstract class DataFormatter
      * @return string|null
      */
     public abstract function formatToXml($data);
+
+    /**
+     * Format an valid XML string to PHP array
+     * @param $xml
+     * @return mixed
+     */
+    public abstract function xmlToArray($xml);
 
     /**
      * Return the value of the format as content type description

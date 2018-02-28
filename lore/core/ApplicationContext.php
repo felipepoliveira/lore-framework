@@ -2,22 +2,79 @@
 namespace lore;
 
 /**
- * Class ApplicationContext - Class that store data about the application runtime environment
+ * Class ApplicationContext - Class that store data about the application runtime environment.
+ * An object of this class should be accessed in the singleton in Lore::app()->getContext()
  * @package lore
  */
 class ApplicationContext
 {
+    public const    STATE_PRODUCTION = 1,
+                    STATE_DEVELOPMENT = 2;
+
+    /**
+     * Store the absolute path (to server document root)
+     * @var string
+     */
+    private $absolutePath;
+
     /**
      * Store the relative path (to server document root)
      * @var string
      */
     private $relativePath;
 
+    /**
+     * @var int
+     */
+    private $applicationState;
+
     function __construct()
     {
-        $absolutePath = $this->getAbsolutePath();
-        $this->relativePath = substr($absolutePath, strlen($_SERVER["DOCUMENT_ROOT"]), strlen($absolutePath));
+        $this->absolutePath = dirname(dirname(__DIR__));
+        $this->relativePath = substr($this->absolutePath, strlen($_SERVER["DOCUMENT_ROOT"]), strlen($this->absolutePath));
         $this->relativePath = str_replace(DIRECTORY_SEPARATOR, "/", $this->relativePath);
+    }
+
+    /**
+     * Load the application state from the configuration file project => application => state
+     */
+    function loadApplicationState(){
+        if( Configurations::contains("app", "application") &&
+            isset(Configurations::get("app", "application")["state"])){
+
+            $state = Configurations::get("app", "application")["state"];
+
+            switch (strtolower($state)){
+                case "development":
+                    $this->applicationState = self::STATE_DEVELOPMENT;
+                    break;
+                case "production":
+                    $this->applicationState = self::STATE_PRODUCTION;
+                    break;
+                default:
+                    throw new ConfigurationException("The application state \"$state\" is not valid");
+            }
+
+        }else{
+            throw new ConfigurationException("The configuration app=>application=>state must be 
+            defined to make the application run properly");
+        }
+    }
+
+    /**
+     * Return an flag indicating if the state of the application is on DEVELOPMENT mode
+     * @return bool
+     */
+    public function onDevelopment(){
+        return $this->applicationState === self::STATE_DEVELOPMENT;
+    }
+
+    /**
+     * Return an flag indicating if the state of the application is on PRODUCTION mode
+     * @return bool
+     */
+    public function onProduction(){
+        return $this->applicationState === self::STATE_PRODUCTION;
     }
 
     /**
@@ -35,6 +92,6 @@ class ApplicationContext
      * @return string
      */
     public function getAbsolutePath() : string {
-        return dirname(dirname(__DIR__));
+        return $this->absolutePath;
     }
 }

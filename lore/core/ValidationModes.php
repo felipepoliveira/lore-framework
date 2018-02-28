@@ -6,7 +6,7 @@
  * Time: 10:48
  */
 
-namespace lore\mvc;
+namespace lore;
 
 
 abstract class ValidationModes

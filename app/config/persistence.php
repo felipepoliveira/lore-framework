@@ -1,0 +1,13 @@
+<?php
+return [
+//    "lore/mysql" => [
+//        "file" => "lore/persistence/impl/relational/RelationalRepository.php",
+//        "class" => "lore\\persistence\\RelationalRepository",
+//
+//        "rdbms" => "mysql",
+//        "host" => "localhost:3306",
+//        "database" => "",
+//        "user" => "root",
+//        "password" => ""
+//    ],
+];

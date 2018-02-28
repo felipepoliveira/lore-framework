@@ -17,6 +17,12 @@ class Request
                     DELETE =    1 << 3;
 
     /**
+     * Store the headers from the client request
+     * @var string[]
+     */
+    private $headers;
+
+    /**
      * Store the relative requested uri sent by the client
      * @var string
      */
@@ -34,6 +40,7 @@ class Request
      */
     function __construct($appContext)
     {
+        $this->detectContentType();
         $this->detectRequestMethod();
         $this->extractRelativeRequestedUri($appContext);
     }
@@ -81,46 +88,6 @@ class Request
      */
     public function requestData(){
         return ($this->isPost() || $this->isPut())? $_POST : $_GET;
-    }
-
-    /**
-     * Return the data sent by the client in request in an formatted array
-     * @return array
-     */
-    public function requestDataAsRecursiveArray(){
-        $array = array();
-
-        //Iterate over
-        foreach ($this->requestData() as $key => $value) {
-            $this->lastRecursiveIterationOf($array, $key, $trueKey, $value);
-        }
-
-        return $array;
-    }
-
-    protected function lastRecursiveIterationOf(&$array, $key, &$trueKey, $value){
-        //Check if the key has an composition value (separting . or _ )
-        $pos = strpos($key, ".");
-        if(!$pos) $pos = strpos($key, "_");
-
-        if($pos){
-            //Get the key before the first dot
-            $keyBeforeDot = substr($key, 0, $pos);
-            //Get the key after the first dot
-            $trueKey = substr($key, $pos+1, strlen($key));
-
-            //If the index is not defined craete an array
-            if(!isset($array[$keyBeforeDot])){
-                $array[$keyBeforeDot] = [];
-            }
-
-            //Iterate over the last index while the key has a dot
-            $this->lastRecursiveIterationOf($array[$keyBeforeDot], $trueKey, $trueKey, $value);
-        }else{
-            //If the key does not have a dot put the value into array
-            $trueKey = $key;
-            $array[$trueKey] = $value;
-        }
     }
 
     /**
@@ -187,6 +154,24 @@ class Request
     }
 
     /**
+     * Return all headers sent by the client in the request
+     * @return \string[]
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
+
+    /**
+     * Get an specific request header by its name. Return false if the headers was not sent by the client
+     * @param $header
+     * @return bool|\string[]
+     */
+    public function getHeader($header){
+        return $this->headers[$header] ?? false;
+    }
+
+    /**
      * Extract the relative path of the requested uri
      * @param $appContext ApplicationContext
      */
@@ -194,6 +179,10 @@ class Request
         $this->requestedUri = substr(   $this->getRawRequestedUri(),
                                         strlen($appContext->getRelativePath()),
                                         strlen($this->getRawRequestedUri()));
+    }
+
+    protected function detectContentType(){
+        $this->headers = getallheaders();
     }
 
     /**

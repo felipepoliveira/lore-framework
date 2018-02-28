@@ -81,6 +81,20 @@ class View
         return "<input $attrs name=$modelAttr value='".self::data("model.$modelAttr")."'>";
     }
 
+    public static function textarea($modelAttr, $attrs = ""){
+        return "<textarea $attrs name=$modelAttr value='".self::data("model.$modelAttr")."'></textarea>";
+    }
+
+    public static function ul($li = [], $attrs = ""){
+
+        $htmlContent = "<ul $attrs>";
+        foreach ($li as $item){
+            $htmlContent.= "<li>$item</li>";
+        }
+        $htmlContent .= '</ul>';
+        return $htmlContent;
+    }
+
     /**
      * Return an relative path to application app root
      * @param $path

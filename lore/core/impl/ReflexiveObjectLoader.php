@@ -1,46 +1,32 @@
 <?php
-namespace lore\mvc;
+namespace lore;
 
 use lore\Configurations;
 use lore\Lore;
+use lore\util\Arrays;
 use lore\util\DocCommentUtil;
 use lore\util\File;
 use lore\util\ReflectionManager;
 use lore\web\Request;
 
-require_once __DIR__ . "/../ModelLoader.php";
+require_once __DIR__ . "/../../core/ObjectLoader.php";
 
 
-class ReflexiveModelLoader extends ModelLoader
+class ReflexiveObjectLoader extends ObjectLoader
 {
-
-    /**
-     * @var array
-     */
-    private $viewsDirectories;
-
-    function __construct()
+    public function load($model, array $data)
     {
-        $this->viewsDirectories = Configurations::get("mvc", "models")["dirs"];
-    }
-
-    public function load($model, Request $request)
-    {
-        $this->loadRecursive($model, $request->requestDataAsRecursiveArray());
+        $this->loadRecursive($model, Arrays::toRecursiveArray($data));
     }
 
     /**
      * Load the object recursively interacting over the encapsulated objects
-     * @param Model $model
+     * @param object $model
      * @param array $array
      */
-    protected function loadRecursive(Model $model, array $array){
-        //Store the name of the class
-        $className = get_class($model);
-
+    protected function loadRecursive($model, array $array){
         //Create reflection object
-        $reflectionClass = new \ReflectionClass($className);
-        $className = strtolower($className);
+        $reflectionClass = new \ReflectionClass(get_class($model));
 
         //Iterate over all object property
         foreach ($reflectionClass->getProperties() as $prop) {
@@ -60,11 +46,12 @@ class ReflexiveModelLoader extends ModelLoader
 
                 //If the data is an array, check if the property is a array...
                 if(is_array($arrayValue) && $propClassName = ReflectionManager::propertyIsObject($prop, $model)){
-                    $reflectionClass = new \ReflectionClass($propClassName);
-                    $prop->setValue($model, $reflectionClass->newInstance());
-                    $this->loadRecursive($prop->getValue($model), $arrayValue);
+                    $reflectionClassProp = new \ReflectionClass($propClassName);
+                    ReflectionManager::invokeSetOf($propName, $reflectionClassProp->newInstance(), $model, $reflectionClass);
+                    $this->loadRecursive(ReflectionManager::invokeGetOf($propName, $model, $reflectionClass),
+                                            $arrayValue);
                 }else{
-                    $prop->setValue($model, $arrayValue);
+                    ReflectionManager::invokeSetOf($propName, $arrayValue, $model, $reflectionClass);
                 }
             }
 

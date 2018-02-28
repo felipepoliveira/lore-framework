@@ -27,9 +27,21 @@ abstract class ReflectionManager
 
         if(file_exists($file)){
             require_once "$file";
-            return ReflectionManager::reflectionClass($class)->newInstance($args);
+            if(isset($args) && is_array($args)){
+                return ReflectionManager::reflectionClass($class)->newInstanceArgs($args);
+            }else{
+                return ReflectionManager::reflectionClass($class)->newInstance($args);
+            }
         }else{
             throw new \ReflectionException("The file containing the class \"$class\" was not found in path: $file");
+        }
+    }
+
+    public static function newInstance($className, $args = null){
+        if(isset($args) && is_array($args)){
+            return ReflectionManager::reflectionClass($className)->newInstanceArgs($args);
+        }else{
+            return ReflectionManager::reflectionClass($className)->newInstance($args);
         }
     }
 
@@ -39,6 +51,34 @@ abstract class ReflectionManager
         }
 
         return ReflectionManager::$reflectionClass;
+    }
+
+    public static function invokeGetOf(string $property, $object, \ReflectionClass $refClass = null){
+        if(!isset($refClass)){
+            $refClass = ReflectionManager::reflectionClass(get_class($object));
+        }
+
+        try{
+            $method = $refClass->getMethod("get" .  ucfirst($property));
+            return $method->invoke($object);
+        }catch (\Exception $e){
+            throw new \ReflectionException("The property \"$property\" of class " . $refClass->getName() . " does not have
+            an get method");
+        }
+    }
+
+    public static function invokeSetOf(string $property, $value, $object, \ReflectionClass $refClass = null){
+        if(!isset($refClass)){
+            $refClass = ReflectionManager::reflectionClass(get_class($object));
+        }
+
+        try{
+            $method = $refClass->getMethod("set" .  ucfirst($property));
+            return $method->invokeArgs($object, [$value]);
+        }catch (\Exception $e){
+            throw new \ReflectionException("The property \"$property\" of class " . $refClass->getName() . " does not have
+            an set method");
+        }
     }
 
     /**

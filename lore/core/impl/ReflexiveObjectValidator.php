@@ -1,14 +1,15 @@
 <?php
-namespace lore\mvc;
+namespace lore;
 
 use lore\Lore;
 use lore\util\DocCommentUtil;
+use lore\util\ReflectionManager;
 
-require_once __DIR__ . "/../ModelValidator.php";
+require_once __DIR__ . "/../ObjectValidator.php";
 require_once __DIR__ . "/../../utils/DocCommentUtil.php";
 
 
-class ReflexiveModelValidator extends ModelValidator
+class ReflexiveObjectValidator extends ObjectValidator
 {
     /**
      * Store the class name of the current validation class
@@ -56,7 +57,7 @@ class ReflexiveModelValidator extends ModelValidator
         }
     }
 
-    public function validate(Model $model, $validationMode, $validationArgs, $prefix = "")
+    public function validate($model, $validationMode, $validationArgs, $prefix = "")
     {
         $errors = [];
         $this->className = get_class($model);
@@ -73,11 +74,15 @@ class ReflexiveModelValidator extends ModelValidator
                 $prop->setAccessible(true);
             }
 
+            //Get property value invoking the get method
+            $propValue = ReflectionManager::invokeGetOf($prop->getName(), $model, $reflectionClass);
+
             //If the property is another model, call validate it validate method
-            if(is_object($prop->getValue($model))){
+            if(is_object($propValue)){
                 //Validate recursively the models inside the current model. In validation args, just get the validations
                 //that is inside the prop validation array
-                $return = $prop->getValue($model)->validate($validationMode, $validationArgs[$prop->getName()] ?? [], $prefix . $prop->getName() . ".");
+                $return = $this->validate($propValue, $validationMode, $validationArgs[$prop->getName()] ?? [], $prefix .= $prop->getName() . ".");
+                //$return = $propValue->validate($validationMode, $validationArgs[$prop->getName()] ?? [], $prefix . $prop->getName() . ".");
 
                 //if validation contains errors add in pre recursive method call error array
                 if($return !== true){
@@ -104,7 +109,7 @@ class ReflexiveModelValidator extends ModelValidator
             }
 
             //Make the validation
-            $validationResult = $this->validateProperty($prop, $model);
+            $validationResult = $this->validateProperty($prop, $model, $propValue);
 
             //If validation is not ok, store the errors in array
             if($validationResult !== true){
@@ -167,32 +172,32 @@ class ReflexiveModelValidator extends ModelValidator
     /**
      * Validate an property  of an object
      * @param \ReflectionProperty $prop
-     * @param Model $model
+     * @param object $model
      * @return array|true
      */
-    public function validateProperty(\ReflectionProperty $prop, Model $model){
+    public function validateProperty(\ReflectionProperty $prop, $model, $propValue){
         //Store errors
         $errors = [];
 
         //Validating max
         $errors["max"] = self::makeSpecificValidation(
             "max",
-            function($v, $a){return ModelValidator::validateMax($v, $a);},
-            $prop->getValue($model),
+            function($v, $a){return ObjectValidator::validateMax($v, $a);},
+            $propValue,
             $prop);
 
         //Validating min
         $errors["min"] = self::makeSpecificValidation(
             "min",
-            function($v, $a){return ModelValidator::validateMin($v, $a);},
-            $prop->getValue($model),
+            function($v, $a){return ObjectValidator::validateMin($v, $a);},
+            $propValue,
             $prop);
 
         //Validate not null
         $errors["notNull"] =  self::makeSpecificValidation(
             "notNull",
-            function($v){return ModelValidator::validateNotNull($v);},
-            $prop->getValue($model),
+            function($v){return ObjectValidator::validateNotNull($v);},
+            $propValue,
             $prop,
             false);
 
@@ -200,7 +205,14 @@ class ReflexiveModelValidator extends ModelValidator
         $errors["regex"] =  self::makeSpecificValidation(
             "regex",
             function($v, $r){return preg_match($r, $v);},
-            $prop->getValue($model),
+            $propValue,
+            $prop);
+
+        //Validate filter var
+        $errors["filterVar"] =  self::makeSpecificValidation(
+            "filterVar",
+            function($v, $f){return ObjectValidator::filterVariable($v, $f);},
+            $propValue,
             $prop);
 
         //Filter where errors where not found

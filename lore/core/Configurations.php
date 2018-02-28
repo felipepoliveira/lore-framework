@@ -35,17 +35,27 @@ abstract class Configurations
     }
 
     /**
-     * Load an configuration file
+     * Load an configuration file and return its value
      * @param $key string  - An unique key to identify the configuration file
      * @param $file string - The configuration file path
+     * @return array
      */
-    public static function load($key, $file){
+    public static function load($key, $file = null){
+
+        if(isset($file) || $file === null){
+            $file = Lore::app()->getContext()->getAbsolutePath() . "/app/config/$key.php";
+        }
+
         if(file_exists($file)){
-            Configurations::$configurations[$key] = require "$file";
+            $config = require "$file";
+            Configurations::$configurations[$key] = $config;
+
+            return $config;
         }else{
             throw new ConfigurationException("The file $file was not found while trying to load the
-            configurations.");
+        configurations.");
         }
+
     }
 
     /**
